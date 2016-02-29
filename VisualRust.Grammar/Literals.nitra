@@ -1,0 +1,188 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module Literals
+  {
+    using Nitra.Core;
+
+	regex DecDigit	= ['0'..'9'];
+    regex HexDigit	= ['0'..'9', 'a'..'f', 'A'..'F'];
+	regex OctDigit	= ['0'..'7'];
+	regex BinDigit	= '0' | '1';
+
+	regex QuoteEscapes					= "\\'" | "\\\"";
+	regex ByteEscapes					= ("\\x" HexDigit HexDigit) |  "\\n" | "\\r" | "\\t" | "\\\\" | "\\0";
+	regex UnicodeEscapes				= "\\u" '{' HexDigit HexDigit? HexDigit? HexDigit? HexDigit? HexDigit? '}';
+    regex NotAllowedCharLiteralChar		= NewLineCharacter | "'" | "\\";
+    token SingleCharacter				= !NotAllowedCharLiteralChar Any;
+
+	// Character and string literals (https://doc.rust-lang.org/reference.html#character-and-string-literals)
+
+	token Character
+    {
+      | QuoteEscapeChar     = QuoteEscapes;
+      | ByteEscapeChar		= ByteEscapes;
+      | UnicodeEscapeChar	= UnicodeEscapes;
+      | SingleCharacterChar = SingleCharacter;
+    }
+
+    [SpanClass(Char)] token CharacterLiteral = '\'' Character '\'';
+
+	regex NotAllowedRegularStringLiteralChar = '"' | '\\';
+
+    token RegularStringLiteralPart
+    {
+      | QuoteEscapeStrPart						= QuoteEscapes;
+      | ByteEscapeStrPart						= ByteEscapes;
+      | UnicodeEscapeStrPart					= UnicodeEscapes;
+	  | NewLineEscapeSequenceStrPart			= "\\" NewLineCharacter;
+      | RegularStringLiteralCharacterSequence	= (!NotAllowedRegularStringLiteralChar Any)+;
+    }
+
+    token RegularStringLiteral = '"' RegularStringLiteralPart* '"';
+
+	syntax RawStringLiteral0 = Open (!Close Any)* Close
+	{
+	  regex Open   = "r\"";
+	  regex Close  = '\"';
+	}
+	
+	syntax RawStringLiteral1 = Open (!Close Any)* Close
+	{
+	  regex Sharps = "#";
+	  regex Open   = 'r' Sharps '\"';
+	  regex Close  = '\"' Sharps;
+	}
+
+	syntax RawStringLiteral2 = Open (!Close Any)* Close
+	{
+	  regex Sharps = "##";
+	  regex Open   = 'r' Sharps '\"';
+	  regex Close  = '\"' Sharps;
+	} 
+
+	syntax RawStringLiteral3 = Open (!Close Any)* Close
+	{
+	  regex Sharps = "###";
+	  regex Open   = 'r' Sharps '\"';
+	  regex Close  = '\"' Sharps;
+	}
+
+	syntax RawStringLiteral4 = Open (!Close Any)* Close
+	{
+	  regex Sharps = "####";
+	  regex Open   = 'r' Sharps '\"';
+	  regex Close  = '\"' Sharps;
+	}
+
+	syntax RawStringLiteral5 = Open (!Close Any)* Close
+	{
+	  regex Sharps = "#####";
+	  regex Open   = 'r' Sharps '\"';
+	  regex Close  = '\"' Sharps;
+	}
+
+	[SpanClass(String)]
+	syntax StringLiteral 
+	{ 
+		| RegularStringLiteral;
+		| RawStringLiteral0;
+		| RawStringLiteral1; 
+		| RawStringLiteral2;
+		| RawStringLiteral3;
+		| RawStringLiteral4;
+		| RawStringLiteral5;
+	}
+
+	// Byte and byte string literals (https://doc.rust-lang.org/reference.html#byte-and-byte-string-literals)
+
+	regex Ascii = ['\u0000'..'\u007F'];
+
+	token ByteCharacter
+    {
+      | QuoteEscapeChar     = QuoteEscapes;
+      | ByteEscapeChar		= ByteEscapes;
+      | SingleByteChar		= Ascii;
+    }
+
+	[SpanClass(Char)] token ByteLiteral = 'b' '\'' ByteCharacter '\'';
+
+	token RegularByteStringLiteralPart
+    {
+      | QuoteEscapeStrPart						= QuoteEscapes;
+      | ByteEscapeStrPart						= ByteEscapes;
+	  | NewLineEscapeSequenceStrPart			= '\\' NewLineCharacter;
+      | RegularStringLiteralCharacterSequence	= Ascii+;
+    }
+
+	[SpanClass(Char)] token RegularByteStringLiteral = 'b' '"' RegularByteStringLiteralPart* '"';
+
+	syntax RawByteStringLiteral0 = Open (!Close Ascii)* Close
+	{
+	  regex Open   = "br\"";
+	  regex Close  = '"';
+	}
+
+	syntax RawByteStringLiteral1 = Open (!Close Ascii)* Close
+	{
+	  regex Sharps = "#";
+	  regex Open   = "br" Sharps '"';
+	  regex Close  = '"' Sharps;
+	}
+
+	syntax RawByteStringLiteral2 = Open (!Close Ascii)* Close
+	{
+	  regex Sharps = "##";
+	  regex Open   = "br" Sharps '"';
+	  regex Close  = '"' Sharps;
+	}
+
+	syntax RawByteStringLiteral3 = Open (!Close Ascii)* Close
+	{
+	  regex Sharps = "###";
+	  regex Open   = "br" Sharps '"';
+	  regex Close  = '"' Sharps;
+	}
+
+	syntax RawByteStringLiteral4 = Open (!Close Ascii)* Close
+	{
+	  regex Sharps = "####";
+	  regex Open   = "br" Sharps '"';
+	  regex Close  = '"' Sharps;
+	}
+
+	syntax RawByteStringLiteral5 = Open (!Close Ascii)* Close
+	{
+	  regex Sharps = "#####";
+	  regex Open   = "br" Sharps '"';
+	  regex Close  = '"' Sharps;
+	}
+
+	[SpanClass(String)]
+	syntax RawByteStringLiteral 
+	{ 
+		| RawByteStringLiteral0;
+		| RawByteStringLiteral1; 
+		| RawByteStringLiteral2;
+		| RawByteStringLiteral3;
+		| RawByteStringLiteral4;
+		| RawByteStringLiteral5;
+	}
+
+	// Number literals (https://doc.rust-lang.org/reference.html#number-literals)
+
+	regex IntegerTypeSuffix		= "u8" | "i8" | "u16" | "i16" | "u32" | "i32" | "u64" | "i64" | "isize" | "usize";
+	regex DecLiteral			= DecDigit (DecDigit | '_')*;
+	regex DecIntegerLiteral		= DecLiteral IntegerTypeSuffix?;
+	regex HexIntegerLiteral		= "0x" (HexDigit | '_')+ IntegerTypeSuffix?;
+	regex OctIntegerLiteral		= "0o" (OctDigit | '_')+ IntegerTypeSuffix?;
+	regex BinIntegerLiteral		= "0b" (BinDigit | '_')+ IntegerTypeSuffix?;
+
+	regex FloatingPointSuffix	= "f32" | "f64";
+	regex ExponentPart			= ('E' | 'e') ('-' | '+')? DecLiteral;
+	regex FloatingPointLiteral	= (DecLiteral ('.' DecLiteral)? ExponentPart? FloatingPointSuffix?) | (DecLiteral '.');
+
+	// Boolean literals (https://doc.rust-lang.org/reference.html#boolean-literals)
+
+	regex BooleanLiteral = "true" | "false";
+  }
+}

@@ -1,0 +1,21 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module Attributes
+  {
+    using Nitra.Core;
+
+	using Identifiers;
+	using Literals;
+
+	syntax InnerAttr = "#!" '[' MetaItem ']';
+
+	syntax OuterAttr = '#' '[' MetaItem ']';
+
+	syntax MetaItem  
+	{
+		| MetaWord		= Name
+		| MetaNameValue	= Name '=' StringLiteral //TODO: ident '=' lit
+		| MetaList		= Name '(' (MetaItem; ',')* ','? ')'
+	}
+  }
+}
