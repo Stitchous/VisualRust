@@ -1,0 +1,16 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module Main
+  {
+	using Nitra.Core;
+	using Nitra.CStyleComments;
+
+	using ModItems;
+	using Attributes;
+
+	token ShebangLine = "#!" !'[' (!NewLine Any)* NewLine;
+
+	[StartRule]
+	syntax Crate = ShebangLine? InnerAttr* ModItem* !Any;
+   }
+}

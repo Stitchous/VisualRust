@@ -1,0 +1,22 @@
+﻿language NitraRust
+{
+  //span class StringEx         { ForegroundColor=Maroon;     }
+  //span class Namespace        { ForegroundColor=Chocolate;  }
+  //span class Alias            { ForegroundColor=DarkViolet; }
+  //span class Constant         { ForegroundColor=Goldenrod;  }
+  //span class Field            { ForegroundColor=Goldenrod;  }
+  //span class Property         { ForegroundColor=Goldenrod;  }
+  //span class Method           { ForegroundColor=Goldenrod;  }
+  //span class Parameter        { ForegroundColor=Goldenrod;  }
+
+  extension = .nrst;
+
+  company     = IngenuiousSolution; // TODO: Проверять, что не содержит пробелов.
+  description = Nitra driven Rust plugin for Visual Studio;
+  authors     = Alexander Stroykov, Alexander Stroykov;
+  copyright   = IngenuiousSolution;
+  license url = http://opensource.org/licenses/BSD-3-Clause;
+  // require license acceptance;
+
+  syntax module Nitrust.Rust.Grammar.Main start rule Crate;
+}

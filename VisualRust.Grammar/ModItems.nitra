@@ -1,0 +1,90 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module ModItems
+  {
+	using Nitra.Core;
+
+	using Identifiers;
+	using Attributes;
+
+	syntax Visibility = "pub" sm;
+	
+	syntax AttrsAndVis = OuterAttr* Visibility?;
+
+	syntax ModItem = AttrsAndVis Item;
+
+	syntax Item
+	{
+		| StmtItem
+		//| ItemMacro
+	}
+
+	//TODO:
+	syntax StmtItem
+	{
+		//| ItemStatic
+		//| ItemConst
+		//| ItemType
+		| BlockItem
+		| ViewItem
+	}
+
+	//TODO:
+	syntax BlockItem
+	{
+		//| ItemFn
+		//| ItemUnsafeFn
+		| ItemMod
+		//| ItemForeignMod
+		//| ItemStruct
+		//| ItemEnum
+		//| ItemTrait
+		//| ItemImpl
+
+	}
+
+	syntax ItemMod
+	{
+		| ItemMod1 = "mod" Name ';'
+		| ItemMod2 = "mod" Name '{' InnerAttr* ModItem* '}'
+	}
+
+	//TODO:
+	syntax ViewItem
+	{
+		| UseItem
+		//| extern_fn_item
+		| "extern" "crate" Reference ("as" Name)?';'
+	}
+
+	syntax UseItem = "use" ViewPath ';';
+
+	syntax ViewPath
+	{
+		| PathNoTypesAllowed
+		| ViewPathList = (PathNoTypesAllowed? "::")? '{' (IdentsOrSelf ','?)?'}'
+		| ViewPathGlob = PathNoTypesAllowed  "::" '*' 
+		| ViewPathListEmpty = '{' '}'
+		| ViewPathSimple = PathNoTypesAllowed "as" Name
+		
+		syntax IdentOrSelf
+		{
+			| Reference
+			| "self"
+		}
+
+		syntax IdentsOrSelf = (IdentOrSelf ("as" Name)?; ',')+;
+	}
+
+	syntax PathNoTypesAllowed = PathNoTypesAllowedHead ("::" Reference)*
+	{
+		syntax PathNoTypesAllowedHead
+		{
+			| PathNoTypesAllowedHead1 = Reference
+			| PathNoTypesAllowedHead2 = "::" Reference
+			| PathNoTypesAllowedHead3 = "self"
+			| PathNoTypesAllowedHead4 = "::" "self" 
+		}
+	}
+  }
+}
