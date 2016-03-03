@@ -1,4 +1,6 @@
-﻿namespace VisualRust.Text
+﻿using VisualRust.Grammar;
+
+namespace VisualRust.Text
 {
 	using System;
 	using System.Diagnostics;
@@ -27,8 +29,8 @@
 		{
 			MessageBox.Show("oh hi");
 
-			return null;
-			// return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new RustClassifier(classificationRegistry, standardClassificationService));
+			//return null;
+			 return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new RustClassifier(classificationRegistry, standardClassificationService));
 		}
 	}
 
