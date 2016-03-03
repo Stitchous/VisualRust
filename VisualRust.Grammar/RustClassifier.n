@@ -17,7 +17,7 @@ namespace VisualRust.Grammar
 {
     public class RustClassifier : IClassifier
     {
-        public this(registry : IClassificationTypeRegistryService, standardClassificationService : IStandardClassificationService)
+        public this(standardClassificationService : IStandardClassificationService)
         {
              ClassificationChanged = (_,_) => { };
              
@@ -45,13 +45,15 @@ namespace VisualRust.Grammar
             def spans = HashSet();
             parseResult.GetSpans(span.Start, span.End, spans);
             
-            MapNitraSpansToClassificationSpans(spans, span)
+            def result = MapNitraSpansToClassificationSpans(spans, span);
+            
+            result
 		}
 		
 		private MapNitraSpansToClassificationSpans(spans : IEnumerable[SpanInfo], span : SnapshotSpan) : IList[ClassificationSpan]
 		{
 		    spans.Select(s => ClassificationSpan(
-		                        SnapshotSpan(span.Snapshot, Span(s.Span.StartPos, s.Span.EndPos)),
+		                        SnapshotSpan(span.Snapshot, Span(s.Span.StartPos, s.Span.EndPos - s.Span.StartPos)),
 		                        MapSpanClass(s.SpanClass.Name)))
                              .ToList();
 		}

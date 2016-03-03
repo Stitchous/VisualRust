@@ -10,6 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VisualRust.Grammar</RootNamespace>
     <AssemblyName>VisualRust.Grammar</AssemblyName>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NoStdLib>true</NoStdLib>
@@ -17,6 +18,7 @@
     <NemerleBinPathRoot Condition=" '$(NemerleBinPathRoot)' == '' ">$(ProgramFiles)\Nemerle</NemerleBinPathRoot>
     <Nemerle Condition=" '$(Nemerle)' == '' ">$(NemerleBinPathRoot)\$(NemerleVersion)</Nemerle>
     <Name>VisualRust.Grammar</Name>
+    <KeyOriginatorFile>key.snk</KeyOriginatorFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -133,6 +135,12 @@
     <Compile Include="NitraRust.nitra">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="OutliningTagger.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParsedDocument.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
     <Compile Include="Main.nitra">
       <SubType>Code</SubType>
@@ -157,6 +165,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
+  <!--   <Target Name="AfterBuild">
+  <AL ToolPath="$(SDKBin)" KeyFile="key.snk" />
+  </Target> -->
   <!--
 		To modify your build process, add your task inside one of the targets below and uncomment it. 
 		Other similar extension points exist, see Microsoft.Common.targets.
