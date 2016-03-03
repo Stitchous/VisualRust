@@ -1,47 +1,35 @@
 ﻿namespace VisualRust.Text
 {
-    using System;
-    using System.Diagnostics;
-    using System.Collections.Generic;
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Classification;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
-    using Microsoft.VisualStudio.Language.StandardClassification;
-
-    [Export(typeof(ITaggerProvider))]
+	using System;
+	using System.Diagnostics;
+	using System.Collections.Generic;
+	using System.ComponentModel.Composition;
+	using Microsoft.VisualStudio.Text;
+	using Microsoft.VisualStudio.Text.Classification;
+	using Microsoft.VisualStudio.Text.Editor;
+	using Microsoft.VisualStudio.Text.Tagging;
+	using Microsoft.VisualStudio.Utilities;
+	using Microsoft.VisualStudio.Language.StandardClassification;
+	
+	using System.Windows.Forms;
+	[Export(typeof(IClassifierProvider))]
     [ContentType("rust")]
-    [TagType(typeof(ClassificationTag))]
-    public sealed class RustClassifierProvider : ITaggerProvider
-    {
-        [Export]
-        [Name("rust")]
-        [BaseDefinition("code")]
-        internal static ContentTypeDefinition RustContentType = null;
+    
+    public sealed class RustClassifierProvider : IClassifierProvider
+	{
+		[Import]
+		private IClassificationTypeRegistryService classificationRegistry;
 
-        [Export]
-        [FileExtension(".rs")]
-        [ContentType("rust")]
-        internal static FileExtensionToContentTypeDefinition RustFileType = null;
+		[Import]
+		private IStandardClassificationService standardClassificationService;
 
-        [Import]
-        internal IStandardClassificationService StandardClassificationService = null;
+		public IClassifier GetClassifier(ITextBuffer buffer)
+		{
+			MessageBox.Show("oh hi");
 
-        [Import]
-        readonly IRustLexer lexer;
-
-        [ImportingConstructor]
-        public RustClassifierProvider(IRustLexer lexer)
-        {
-            this.lexer = lexer;
-        }
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
-        {
-            return new RustClassifier(lexer, buffer, StandardClassificationService) as ITagger<T>;
-        }
-    }
+			return null;
+			// return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new RustClassifier(classificationRegistry, standardClassificationService));
+		}
+	}
 
 }

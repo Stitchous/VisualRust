@@ -42,13 +42,60 @@
       <HintPath>..\External\Nitra.Compiler.dll</HintPath>
       <Private>False</Private>
     </MacroReference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.CoreUtility</Name>
+      <AssemblyName>Microsoft.VisualStudio.CoreUtility.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.CoreUtility.12.0.4\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Language.Intellisense</Name>
+      <AssemblyName>Microsoft.VisualStudio.Language.Intellisense.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Language.12.0.4\lib\net45\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Language.StandardClassification</Name>
+      <AssemblyName>Microsoft.VisualStudio.Language.StandardClassification.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Language.12.0.4\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Text.Data</Name>
+      <AssemblyName>Microsoft.VisualStudio.Text.Data.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Text.Logic</Name>
+      <AssemblyName>Microsoft.VisualStudio.Text.Logic.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Text.UI</Name>
+      <AssemblyName>Microsoft.VisualStudio.Text.UI.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualStudio.Text.UI.Wpf</Name>
+      <AssemblyName>Microsoft.VisualStudio.Text.UI.Wpf.dll</AssemblyName>
+      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Nitra.Runtime, Version=0.1.3208.0, Culture=neutral, PublicKeyToken=e080a9c724e2bfcd">
       <Name>Nitra.Runtime</Name>
       <AssemblyName>Nitra.Runtime.dll</AssemblyName>
       <HintPath>..\External\Nitra.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore">
+      <Name>PresentationCore</Name>
+      <HintPath>..\..\..\Windows\Microsoft.Net\assembly\GAC_64\PresentationCore\v4.0_4.0.0.0__31bf3856ad364e35\PresentationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <Name>PresentationFramework</Name>
+      <HintPath>..\..\..\Windows\Microsoft.Net\assembly\GAC_MSIL\PresentationFramework\v4.0_4.0.0.0__31bf3856ad364e35\PresentationFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition">
+      <Name>System.ComponentModel.Composition</Name>
+      <HintPath>..\..\..\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ComponentModel.Composition\v4.0_4.0.0.0__b77a5c561934e089\System.ComponentModel.Composition.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -68,6 +115,10 @@
     <MacroReference Include="Nemerle.Linq">
       <HintPath>$(Nemerle)\Nemerle.Linq.dll</HintPath>
     </MacroReference>
+    <Reference Include="WindowsBase">
+      <Name>WindowsBase</Name>
+      <HintPath>..\..\..\Windows\Microsoft.Net\assembly\GAC_MSIL\WindowsBase\v4.0_4.0.0.0__31bf3856ad364e35\WindowsBase.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.nitra">
@@ -89,11 +140,18 @@
     <Compile Include="ModItems.nitra">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RustClassifier.n">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NewFolder1\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Sample.rs">
       <SubType>Content</SubType>
     </Content>

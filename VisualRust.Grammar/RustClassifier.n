@@ -1,0 +1,72 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using Nitra;
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Language.StandardClassification;
+
+namespace VisualRust.Grammar
+{
+    public class RustClassifier : IClassifier
+    {
+        public this(registry : IClassificationTypeRegistryService, standardClassificationService : IStandardClassificationService)
+        {
+             ClassificationChanged = (_,_) => { };
+             
+             def sc = standardClassificationService;
+             _classifications = 
+                [ ("InlineComment", sc.Comment), 
+                  ("String",        sc.StringLiteral), 
+                  ("Number",        sc.NumberLiteral), 
+                  ("Keyword",       sc.Keyword)].ToDictionary(s=>s[0], s=>s[1]);
+                  
+            _defaultClassificationType = sc.Other;                              
+        }
+        
+        public event ClassificationChanged : EventHandler[ClassificationChangedEventArgs];
+        
+        public GetClassificationSpans(span : SnapshotSpan) : IList[ClassificationSpan]
+		{
+		    def text = span.Snapshot.GetText();
+            
+            def lang = NitraRust.Instance;
+            def session = Nitra.ParseSession(lang.StartRule, lang.CompositeGrammar);
+            
+            def parseResult = session.Parse(text);
+                        
+            def spans = HashSet();
+            parseResult.GetSpans(span.Start, span.End, spans);
+            
+            MapNitraSpansToClassificationSpans(spans, span)
+		}
+		
+		private MapNitraSpansToClassificationSpans(spans : IEnumerable[SpanInfo], span : SnapshotSpan) : IList[ClassificationSpan]
+		{
+		    spans.Select(s => ClassificationSpan(
+		                        SnapshotSpan(span.Snapshot, Span(s.Span.StartPos, s.Span.EndPos)),
+		                        MapSpanClass(s.SpanClass.Name)))
+                             .ToList();
+		}
+		
+		private MapSpanClass(spanClass : string) : IClassificationType
+		{
+		    mutable classificationType;
+		    
+		    if (_classifications.TryGetValue(spanClass, out classificationType))
+		        classificationType
+		    else
+		        _defaultClassificationType
+		}
+		
+		private _classifications : Dictionary[string, IClassificationType];
+		private _defaultClassificationType : IClassificationType;
+    }
+}
