@@ -12,9 +12,9 @@
 	{
 		| TyPrim
 		//| TyClosure
-		//| '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident                                      
-		//| SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident 
-		| TyTup = '(' (TySum; ',')+ ','? ')'                                                        
+		| TyQualifiedPath1 = '<' TySum ("as" TraitRef)? '>' "::" Reference
+		| TyQualifiedPath2 = "<<" TySum ("as" TraitRef)? '>' "::" Reference ("as" TraitRef)? '>' "::" Reference
+		| TyTup = '(' (TySum; ',')+ ','? ')'
 		| TyNil = '(' ')'
 	}
 
@@ -41,7 +41,25 @@
 		//| for_in_type
 	}
 
+	syntax WhereClause = "where" (WherePredicate; ',')+ ','?;
+	
+	syntax WherePredicate
+	{
+		| WherePredicate1 = ForLifetimes? Lifetime ':' (Bound; '+')+;
+		| WherePredicate2 = ForLifetimes? Ty ':' TyParamBounds;
+	} 
+	
+	syntax ForLifetimes = "for" '<' Lifetimes '>';
+
 	regex MutOrConst = "mut" | "const";
+
+	syntax TyQualifiedPathAndGenericValues
+	{
+		| TyQualifiedPathAndGenericValues1 = TyQualifiedPath (',' (Binding; ',')+)?
+		| TyQualifiedPathAndGenericValues2 = TyQualifiedPath ',' (TySum; ',')+ (',' (Binding; ',')+)?
+	}
+
+	syntax TyQualifiedPath = TySum "as" TraitRef '>' "::" Reference ('+' TyParamBounds)?;
 
 	syntax Lifetime
 	{	
@@ -73,13 +91,14 @@
 
 	syntax Ltbounds = ':' (Lifetime; '+')+;
 
-	//TODO:
 	syntax Bound 
 	{
 		| Lifetime
-		//| TraitRef
+		| TraitRef
 	}
 
 	syntax Binding = Name '=' Ty;
+
+	syntax TraitRef = "::"? PathGenericArgsWithoutColons;
   }
 }
