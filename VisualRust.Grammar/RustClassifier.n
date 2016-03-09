@@ -35,15 +35,12 @@ namespace VisualRust.Grammar
         
         public GetClassificationSpans(span : SnapshotSpan) : IList[ClassificationSpan]
 		{
-		    def text = span.Snapshot.GetText();
-            
-            def lang = NitraRust.Instance;
-            def session = Nitra.ParseSession(lang.StartRule, lang.CompositeGrammar);
-            
-            def parseResult = session.Parse(text);
-                        
+		    
+		    def buffer = span.Snapshot.TextBuffer;
+		    def parsedDocument = ParsedDocument.Get(buffer);
+
             def spans = HashSet();
-            parseResult.GetSpans(span.Start, span.End, spans);
+            parsedDocument.ParseResult.GetSpans(span.Start, span.End, spans);
             
             def result = MapNitraSpansToClassificationSpans(spans, span);
             
