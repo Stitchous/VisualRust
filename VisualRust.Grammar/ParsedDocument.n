@@ -22,9 +22,18 @@ namespace VisualRust.Grammar
             }
         }
         
+        public CurrentSnapshot : ITextSnapshot
+        {
+            get
+            {
+                _snapshot;
+            }
+        }
+        
         public Update(snapshot : ITextSnapshot) : void
         {
-            _parseResult = Lazy(() => Parse(snapshot));
+            _snapshot = snapshot;
+            _parseResult = Lazy(() => Parse(_snapshot));
         }
 
         public static Get(buffer : ITextBuffer ) : ParsedDocument 
@@ -52,5 +61,7 @@ namespace VisualRust.Grammar
         
         private static Key = object();
         private mutable _parseResult : Lazy[IParseResult];
+        private mutable _snapshot : ITextSnapshot;
+        
     }
 }
