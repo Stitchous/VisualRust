@@ -1,0 +1,11 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module Blocks
+  {
+	//TODO:
+	syntax InnerAttrsAndBlock
+	{
+		//'{' maybe_inner_attrs maybe_stmts '}'
+	}
+  }
+}

@@ -14,7 +14,7 @@
 	syntax MetaItem  
 	{
 		| MetaWord		= Name
-		| MetaNameValue	= Name '=' StringLiteral //TODO: ident '=' lit
+		| MetaNameValue	= Name '=' Str //TODO: ident '=' lit
 		| MetaList		= Name '(' (MetaItem; ',')* ','? ')'
 	}
   }

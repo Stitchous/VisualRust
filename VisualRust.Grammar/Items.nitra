@@ -7,6 +7,8 @@
 	using Identifiers;
 	using Attributes;
 	using Types;
+	using Literals;
+	using Blocks;
 
 	syntax Visibility = "pub" sm;
 	
@@ -50,14 +52,15 @@
 		| ItemMod2 = "mod" Name '{' InnerAttr* ModItem* '}'
 	}
 
-	//TODO:
 	syntax ViewItem
 	{
 		| UseItem
-		//| extern_fn_item
+		| ExternFnItem
 		| "extern" "crate" Reference ("as" Name)?';'
 	}
 
+	syntax ExternFnItem = "extern" Str? ItemFn;
+	
 	syntax UseItem = "use" ViewPath ';';
 
 	syntax ViewPath
@@ -76,6 +79,8 @@
 
 		syntax IdentsOrSelf = (IdentOrSelf ("as" Name)?; ',')+;
 	}
+
+	syntax ForLifetimes = "for" '<' Lifetimes '>';
 
 	// A path with no type parameters; e.g. `foo::bar::Baz`
 	//
@@ -137,6 +142,39 @@
 		| RetTy1 = "->" '!'
 		| RetTy2 = "->" Ty
 	}
+
+	syntax GenericParams
+	{
+		| Generics1 = '<' Lifetimes ','? '>'
+		| Generics2 = '<' Lifetimes ','? '>'
+		| Generics3 = '<' Lifetimes ','? ">>"
+		| Generics4 = '<' Lifetimes ',' TyParams ','? '>'
+	}
 	
+//| '<' lifetimes ',' ty_params '>'     { $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params ',' '>' { $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params SHR     { push_back('>'); $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params ',' SHR { push_back('>'); $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' ty_params '>'                   { $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params ',' '>'               { $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params SHR                   { push_back('>'); $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params ',' SHR               { push_back('>'); $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| %empty                              { $$ = mk_none(); }
+//;
+	syntax WhereClause = "where" (WherePredicate; ',')+ ','?;
+	
+	syntax WherePredicate
+	{
+		| WherePredicate1 = ForLifetimes? Lifetime ':' (Bound; '+')+;
+		| WherePredicate2 = ForLifetimes? Ty ':' TyParamBounds;
+	}
+
+	//TODO:
+	syntax TyParams {}
+
+	syntax ItemFn = "fn" Name GenericParams FnDecl WhereClause? InnerAttrsAndBlock;
+
+	//TODO:
+	syntax FnDecl {}
   }
 }

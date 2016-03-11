@@ -81,10 +81,8 @@
 	  regex Close  = '\"' Sharps;
 	}
 
-	[SpanClass(String)]
-	syntax StringLiteral 
+	syntax RawStringLiteral 
 	{ 
-		| RegularStringLiteral;
 		| RawStringLiteral0;
 		| RawStringLiteral1; 
 		| RawStringLiteral2;
@@ -184,5 +182,14 @@
 	// Boolean literals (https://doc.rust-lang.org/reference.html#boolean-literals)
 
 	regex BooleanLiteral = "true" | "false";
+
+	[SpanClass(String)]
+	syntax Str
+	{
+		| RegularStringLiteral
+		| RawStringLiteral
+		| RegularByteStringLiteral
+		| RawByteStringLiteral
+	}
   }
 }
