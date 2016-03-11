@@ -1,0 +1,46 @@
+﻿namespace BisonRulesParser.Grammar
+{
+  syntax module Main
+  {
+	using Nitra.Core;
+	using Nitra.CStyleComments;
+
+	using Identifiers;
+
+	[StartRule]
+	syntax GrammarFile = Prologue Declaration* RulesSection Epilogue;
+
+	syntax Prologue = "%{" (!"%}" Any)* "%}";
+
+    syntax Declaration = (!"%%" Any)*;
+
+    syntax RulesSection = "%%" Rule+ "%%"?;
+
+	syntax Epilogue = Any*;
+
+	syntax Rule = Name ':' (RuleComponent; '|')+ ';';
+
+	syntax RuleComponent = Symbol+ Action?;
+	
+	syntax Symbol
+	{
+		| Reference
+		| CharacterLiteral
+	}
+	
+	syntax Action = '{' (!'}' Any)* '}';
+
+	[SpanClass(Char)] token CharacterLiteral = '\'' Character '\'';
+
+	token Character
+    {
+      | SimpleEscapeSequenceChar      = SimpleEscapeSequence;
+      | SingleCharacterChar           = SingleCharacter;
+    }
+
+	token SingleCharacter   = !NotAllowedCharLiteralChar Any;
+
+	regex NotAllowedCharLiteralChar           = NewLineCharacter | "'" | "\\";
+	regex SimpleEscapeSequence                = "\\'" | "\\\"" | "\\\\" | "\\0" | "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v";
+   }
+}
