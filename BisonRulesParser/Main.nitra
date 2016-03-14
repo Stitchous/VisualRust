@@ -18,24 +18,42 @@
 
 	syntax Epilogue = Any*;
 
-	syntax Rule = Name ':' (RuleComponent; '|')+ ';';
+	syntax Rule = Name ':' (RuleComponent; '|')+ ';'?;
 
-	syntax RuleComponent = Symbol+ Action?;
+	token Epsilon = "%empty";
+
+	syntax Precedence = "%prec" Reference;
+
+	syntax RuleComponent 
+	{ 
+		| NotEmpty = Precedence? Symbol+ Precedence? Action?
+		| Empty = Precedence? Epsilon Precedence? Action?
+	}
 	
 	syntax Symbol
 	{
 		| Reference
 		| CharacterLiteral
 	}
+
+	[SpanClass(String)] token StringLiteral = '"' (!'"' Any)* '"';
 	
-	syntax Action = '{' (!'}' Any)* '}';
+	syntax Action = '{' ActionElement* '}'
+	{
+		regex NotAllowedActionElementChar = ('}' | '"');
+		syntax ActionElement
+		{ 
+			| StringLiteral
+			| (!NotAllowedActionElementChar Any)*
+		}
+	}
 
 	[SpanClass(Char)] token CharacterLiteral = '\'' Character '\'';
 
 	token Character
     {
-      | SimpleEscapeSequenceChar      = SimpleEscapeSequence;
-      | SingleCharacterChar           = SingleCharacter;
+		| SimpleEscapeSequence
+		| SingleCharacter
     }
 
 	token SingleCharacter   = !NotAllowedCharLiteralChar Any;
