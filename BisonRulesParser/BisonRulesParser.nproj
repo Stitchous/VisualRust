@@ -74,6 +74,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Main.nitra" />
+    <Compile Include="Mapping.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NitraBison.nitra">
       <SubType>Code</SubType>
     </Compile>

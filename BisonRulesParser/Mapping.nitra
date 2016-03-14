@@ -1,0 +1,37 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BisonRulesParser.Grammar;
+
+namespace BisonRulesParser
+{
+	
+	abstract ast RuleComponent
+	{
+		| EmptyRuleComponent
+		| NotEmptyRuleComponent
+	}
+
+	declaration Rule
+	{
+		RuleComponents : RuleComponent*;
+	}
+
+	map syntax Main.RuleComponent -> RuleComponent
+	{
+		| NotEmpty -> NotEmptyRuleComponent {}
+		| Empty -> EmptyRuleComponent {}
+	}
+
+	map syntax Main.Rule -> Rule
+	{
+		Name -> Name;
+		RuleComponents.Item1 -> RuleComponents;
+	}
+
+}
