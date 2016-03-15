@@ -10,22 +10,66 @@ using BisonRulesParser.Grammar;
 
 namespace BisonRulesParser
 {
+
+
 	
-	abstract ast RuleComponent
+	
+	abstract ast Symbol
 	{
-		| EmptyRuleComponent
-		| NotEmptyRuleComponent
+		| Reference 
+		| CharacterLiteral
 	}
 
+	abstract ast RuleComponent
+	{
+		| Empty
+		{
+			
+		}
+		| NotEmpty
+		{
+			Symbols : Symbol*;
+		}
+	}
+
+	
+
+	ast GrammarFile
+	{
+		Rules : Rule*;
+	}
+	
 	declaration Rule
 	{
 		RuleComponents : RuleComponent*;
 	}
 
+	map syntax Main.GrammarFile -> GrammarFile
+	{
+		RulesSection -> Rules;
+	}
+
+	map syntax Main.Symbol -> Symbol
+	{
+		| Reference -> Reference {}
+		| CharacterLiteral -> CharacterLiteral {}
+	}
+
+	map syntax Main.RulesSection -> Rule*
+	{
+		Rules
+	}
+
 	map syntax Main.RuleComponent -> RuleComponent
 	{
-		| NotEmpty -> NotEmptyRuleComponent {}
-		| Empty -> EmptyRuleComponent {}
+		| NotEmpty -> NotEmpty
+		{
+		Symbols -> Symbols;
+		}
+		| Empty -> Empty 
+		{
+			
+		}
 	}
 
 	map syntax Main.Rule -> Rule
