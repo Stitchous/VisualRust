@@ -11,13 +11,17 @@ using BisonRulesParser.Grammar;
 namespace BisonRulesParser
 {
 
-
-	
 	
 	abstract ast Symbol
 	{
 		| Reference 
+		{
+			Reference : Nitra.Declarations.Reference;
+		}
 		| CharacterLiteral
+		{
+
+		}
 	}
 
 	abstract ast RuleComponent
@@ -31,8 +35,6 @@ namespace BisonRulesParser
 			Symbols : Symbol*;
 		}
 	}
-
-	
 
 	ast GrammarFile
 	{
@@ -51,8 +53,14 @@ namespace BisonRulesParser
 
 	map syntax Main.Symbol -> Symbol
 	{
-		| Reference -> Reference {}
-		| CharacterLiteral -> CharacterLiteral {}
+		| Reference -> Reference 
+		{
+			Reference -> Reference;
+		}
+		| CharacterLiteral -> CharacterLiteral 
+		{
+			
+		}
 	}
 
 	map syntax Main.RulesSection -> Rule*
@@ -64,7 +72,7 @@ namespace BisonRulesParser
 	{
 		| NotEmpty -> NotEmpty
 		{
-		Symbols -> Symbols;
+			Symbols -> Symbols;
 		}
 		| Empty -> Empty 
 		{

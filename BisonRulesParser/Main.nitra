@@ -32,7 +32,7 @@
 	
 	syntax Symbol
 	{
-		| Reference
+		| Reference 
 		| CharacterLiteral
 	}
 
