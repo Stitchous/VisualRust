@@ -6,17 +6,22 @@ using Nemerle.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using BisonRulesParser.AstUtils;
+
 using BisonRulesParser.Grammar;
+
+using Nitra.Declarations;
 
 namespace BisonRulesParser
 {
-
-	
 	abstract ast Symbol
 	{
+		in  ContainingTable : TableScope;
 		| Reference 
 		{
 			Reference : Nitra.Declarations.Reference;
+			Reference.Scope =  ContainingTable;
 		}
 		| CharacterLiteral
 		{
@@ -26,6 +31,8 @@ namespace BisonRulesParser
 
 	abstract ast RuleComponent
 	{
+		in  ContainingTable : TableScope;
+
 		| Empty
 		{
 			
@@ -33,17 +40,26 @@ namespace BisonRulesParser
 		| NotEmpty
 		{
 			Symbols : Symbol*;
+			Symbols.ContainingTable =  ContainingTable;
 		}
 	}
 
 	ast GrammarFile
 	{
+		out ContainingTable : TableScope = TableScope("Global", null);
+		
 		Rules : Rule*;
+
+		Rules.ContainingTable = ContainingTable;
 	}
 	
 	declaration Rule
 	{
 		RuleComponents : RuleComponent*;
+
+		out isOptional : bool = RuleComponents.ContainsType(typeof(RuleComponent.Empty));
+		
+		RuleComponents.ContainingTable =  ContainingTable;
 	}
 
 	map syntax Main.GrammarFile -> GrammarFile
@@ -76,7 +92,6 @@ namespace BisonRulesParser
 		}
 		| Empty -> Empty 
 		{
-			
 		}
 	}
 
