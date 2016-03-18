@@ -7,12 +7,46 @@
 
 	using Identifiers;
 
+	regex DecDigit	= ['0'..'9'];
+
 	[StartRule]
 	syntax GrammarFile = Prologue Declaration* RulesSection Epilogue;
 
 	syntax Prologue = "%{" (!"%}" Any)* "%}";
 
-    syntax Declaration = (!"%%" Any)*;
+    syntax Declaration
+	{
+		| TokenDeclaration
+		| PrecedenceDeclaration
+		| DebugDirective
+		| ExpectDeclaration
+		| NonAssocDeclaration
+		| RightAssociativityDeclaration
+		| LeftAssociativityDeclaration
+		| StartRuleDeclaration
+	}
+
+	syntax TokenDeclaration = "%token" Name;
+
+	syntax PrecedenceDeclaration = "%precedence" PrecedenceAndAssocComponent+;
+
+	syntax PrecedenceAndAssocComponent
+	{  
+		| Reference 
+		| CharacterLiteral
+	}
+
+	token DebugDirective = "%debug";
+
+	syntax ExpectDeclaration = "%expect" DecDigit+;
+
+	syntax NonAssocDeclaration = "%nonassoc" Reference; 
+
+	syntax RightAssociativityDeclaration = "%right" PrecedenceAndAssocComponent+;
+
+	syntax LeftAssociativityDeclaration = "%left" PrecedenceAndAssocComponent+;
+
+	syntax StartRuleDeclaration = "%start" Reference;
 
     syntax RulesSection = "%%" Rule+ "%%"?;
 
