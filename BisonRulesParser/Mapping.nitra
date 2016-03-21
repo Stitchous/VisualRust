@@ -29,6 +29,19 @@ namespace BisonRulesParser
 		}
 	}
 
+	declaration TokenDeclarationT {}
+
+	abstract ast Declaration
+	{
+		in  ContainingTable : TableScope;
+		| TokenDeclaration1
+		{
+			Declaration : TokenDeclarationT;
+			Declaration.ContainingTable = ContainingTable;
+		}
+		| OtherDeclaration 
+	}
+	
 	abstract ast RuleComponent
 	{
 		in  ContainingTable : TableScope;
@@ -48,8 +61,10 @@ namespace BisonRulesParser
 	{
 		out ContainingTable : TableScope = TableScope("Global", null);
 		
+		Declarations : Declaration*;
 		Rules : Rule*;
 
+		Declarations.ContainingTable = ContainingTable;
 		Rules.ContainingTable = ContainingTable;
 	}
 	
@@ -64,8 +79,31 @@ namespace BisonRulesParser
 
 	map syntax Main.GrammarFile -> GrammarFile
 	{
+		Declarations -> Declarations;
 		RulesSection -> Rules;
 	}
+
+	map syntax Main.TokenDeclaration -> TokenDeclarationT
+	{
+		Name -> Name;
+	}
+
+	map syntax Main.Declaration-> Declaration
+	{
+
+		| TokenDeclaration					-> TokenDeclaration1
+		{ 
+			TokenDeclaration -> Declaration; 
+		}
+		| PrecedenceDeclaration				-> OtherDeclaration {}
+		| DebugDirective					-> OtherDeclaration {}
+		| ExpectDeclaration					-> OtherDeclaration	{}
+		| NonAssocDeclaration				-> OtherDeclaration	{}
+		| RightAssociativityDeclaration		-> OtherDeclaration	{}
+		| LeftAssociativityDeclaration		-> OtherDeclaration	{}
+		| StartRuleDeclaration				-> OtherDeclaration	{}
+	}
+
 
 	map syntax Main.Symbol -> Symbol
 	{
