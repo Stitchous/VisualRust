@@ -17,6 +17,7 @@ namespace BisonRulesParser
 {
 	abstract ast Symbol
 	{
+	stage 1:
 		in  ContainingTable : TableScope;
 		| Reference 
 		{
@@ -29,14 +30,14 @@ namespace BisonRulesParser
 		}
 	}
 
-	declaration TokenDeclarationT {}
+	declaration TokenDeclaration {}
 
 	abstract ast Declaration
 	{
 		in  ContainingTable : TableScope;
-		| TokenDeclaration1
+		| TokenDeclarationAst
 		{
-			Declaration : TokenDeclarationT;
+			Declaration : TokenDeclaration;
 			Declaration.ContainingTable = ContainingTable;
 		}
 		| OtherDeclaration 
@@ -83,7 +84,7 @@ namespace BisonRulesParser
 		RulesSection -> Rules;
 	}
 
-	map syntax Main.TokenDeclaration -> TokenDeclarationT
+	map syntax Main.TokenDeclarationSyntax -> TokenDeclaration
 	{
 		Name -> Name;
 	}
@@ -91,9 +92,9 @@ namespace BisonRulesParser
 	map syntax Main.Declaration-> Declaration
 	{
 
-		| TokenDeclaration					-> TokenDeclaration1
+		| TokenDeclarationSyntax					-> TokenDeclarationAst
 		{ 
-			TokenDeclaration -> Declaration; 
+			TokenDeclarationSyntax -> Declaration; 
 		}
 		| PrecedenceDeclaration				-> OtherDeclaration {}
 		| DebugDirective					-> OtherDeclaration {}

@@ -16,7 +16,7 @@
 
     syntax Declaration
 	{
-		| TokenDeclaration
+		| TokenDeclarationSyntax
 		| PrecedenceDeclaration
 		| DebugDirective
 		| ExpectDeclaration
@@ -26,7 +26,7 @@
 		| StartRuleDeclaration
 	}
 
-	syntax TokenDeclaration = "%token" Name;
+	syntax TokenDeclarationSyntax = "%token" Name;
 
 	syntax PrecedenceDeclaration = "%precedence" PrecedenceAndAssocComponent+;
 
