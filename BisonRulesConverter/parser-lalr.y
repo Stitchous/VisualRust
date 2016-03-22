@@ -1,46 +1,4 @@
-﻿using Nemerle.Collections;
-using Nemerle.Text;
-using Nemerle.Utility;
-
-using System;
-using System.Collections.Generic;
-using System.Console;
-using System.Linq;
-
-using BisonRulesParser;
-
-using Nitra.Declarations;
-using Nitra.ProjectSystem;
-
-module Program
-{
-    Main() : void
-    {
-        def lang = NitraBison.Instance;
-        def file = FsFile("parser-lalr.y", lang);
-        def context = DependentPropertyEvalContext();
-        def propsEvalHost = ProjectEvalPropertiesHost([file]);
-        
-        propsEvalHost.EvalProperties(context, "Collect variables", 0); 
-        propsEvalHost.EvalProperties(context, "Compute variables", 1);
-        
-        foreach(rule in (file.Ast :> GrammarFile).Rules.Where(r=>r.HasDirectLeftRecursion))
-        {
-            WriteLine(file.GetSource().Text.Substring(rule.Span.StartPos, rule.Span.EndPos - rule.Span.StartPos));
-            WriteLine();
-        }
-        
-        WriteLine("Done!");
-        _ = ReadLine();
-    }
-    
-    
-    
-    
-    GetText() : string
-    {
-    <#
-    // Copyright 2015 The Rust Project Developers. See the COPYRIGHT
+﻿// Copyright 2015 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
 // http://rust-lang.org/COPYRIGHT.
 //
@@ -1978,6 +1936,3 @@ brackets_delimited_token_trees
                mk_node("TTTok", 1, mk_atom("]")));
 }
 ;
-    #>
-    }
-}

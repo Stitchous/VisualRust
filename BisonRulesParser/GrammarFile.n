@@ -9,7 +9,6 @@ using System.Linq;
 
 using Nitra.Declarations;
 using Nitra.ProjectSystem;
-using Nitra.Internal;
 
 namespace BisonRulesParser
 {
@@ -18,15 +17,16 @@ namespace BisonRulesParser
       public RefreshProject(project : Project) : void
       {
         def files   = project.Files.ToArray();
-        def context = DependentPropertyEvalContext(); // 1
-        def scope   = TableScope("Variables", null);  // 2
+        def context = DependentPropertyEvalContext(); 
+        def scope   = TableScope("Variables", null);  
 
-        foreach (file in files)
-          when (file.Ast is GrammarFile as grammarFile)
-            grammarFile.ContainingTable = scope; // 3
+        foreach (grammarFile in files.OfType.[GrammarFile]())
+        {
+            grammarFile.ContainingTable = scope; 
+        }
 
-        project.EvalProperties(context, "Collect variables", 0); // 4
-        project.EvalProperties(context, "Compute variables", 1); // 5
+        project.EvalProperties(context, "Collect variables", 0); 
+        project.EvalProperties(context, "Compute variables", 1); 
       }
   }
 }
