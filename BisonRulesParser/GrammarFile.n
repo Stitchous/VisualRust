@@ -21,8 +21,7 @@ namespace BisonRulesParser
         def context = DependentPropertyEvalContext(); // 1
         def scope   = TableScope("Variables", null);  // 2
 
-        foreach (file in files)
-          when (file.Ast is GrammarFile as grammarFile)
+        foreach (grammarFile in files.OfType.[GrammarFile]())
             grammarFile.ContainingTable = scope; // 3
 
         project.EvalProperties(context, "Collect variables", 0); // 4
