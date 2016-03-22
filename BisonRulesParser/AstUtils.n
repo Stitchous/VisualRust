@@ -20,19 +20,16 @@ namespace BisonRulesParser
         
         public ContainsDirectRecursionTo(this collection : IEnumerable[RuleComponent], name : Name) : bool
         {
-            mutable hasRecursion = false;
-            
-            foreach (component in collection.OfType.[RuleComponent.NotEmpty]())
+            def HasRecursiveFirstSymbol(component : RuleComponent.NotEmpty)
             {
-                def firstSymbol = component.Symbols.FirstOrDefault();
-                match (firstSymbol)
+                match(NList.ToList(component.Symbols))
                 {
-                    | f is Symbol.Reference => when (f.Reference.Id == name.Id) hasRecursion = true;
-                    | _ => ()
+                    | (first is Symbol.Reference) :: _ => first.Reference.Id == name.Id
+                    | _ => false
                 }
             }
-            
-            hasRecursion;
+ 
+            collection.OfType.[RuleComponent.NotEmpty]().Any(HasRecursiveFirstSymbol)
         }
     }
 }
