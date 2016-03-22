@@ -24,7 +24,7 @@ module Program
         propsEvalHost.EvalProperties(context, "Collect variables", 0); 
         propsEvalHost.EvalProperties(context, "Compute variables", 1);
         
-        foreach(rule in (file.Ast :> GrammarFile).Rules.Where(r=>r.HasDirectLeftRecursion))
+        foreach(rule in (file.Ast :> GrammarFile).Rules.Where(_.HasDirectLeftRecursion))
         {
             WriteLine(file.GetSource().Text.Substring(rule.Span.StartPos, rule.Span.EndPos - rule.Span.StartPos));
             WriteLine();
