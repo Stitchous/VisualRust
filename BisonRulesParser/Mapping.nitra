@@ -26,7 +26,7 @@ namespace BisonRulesParser
 		}
 		| CharacterLiteral
 		{
-
+			in Val : string;
 		}
 	}
 
@@ -73,9 +73,14 @@ namespace BisonRulesParser
 	{
 		RuleComponents : RuleComponent*;
 
-		out isOptional : bool = RuleComponents.ContainsType(typeof(RuleComponent.Empty));
+		out IsOptional : bool = RuleComponents.ContainsType(typeof(RuleComponent.Empty));
 		
 		RuleComponents.ContainingTable =  ContainingTable;
+
+		stage 1:
+
+		out HasDirectLeftRecursion : bool = RuleComponents.ContainsDirectRecursionTo(Name);
+
 	}
 
 	map syntax Main.GrammarFile -> GrammarFile

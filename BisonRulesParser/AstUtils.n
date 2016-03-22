@@ -7,13 +7,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Nitra.Declarations;
+
 namespace BisonRulesParser
 {
     public module AstUtils
     {
-        public ContainsType[T](this collection : IEnumerable[T], t : Type)  :bool 
+        public ContainsType[T](this collection : IEnumerable[T], t : System.Type)  :bool 
         {
             collection.Any(c => c.GetType().IsAssignableFrom(t));
+        }
+        
+        public ContainsDirectRecursionTo(this collection : IEnumerable[RuleComponent], name : Name) : bool
+        {
+            mutable hasRecursion = false;
+            
+            foreach (component in collection.OfType.[RuleComponent.NotEmpty]())
+            {
+                def firstSymbol = component.Symbols.FirstOrDefault();
+                match (firstSymbol)
+                {
+                    | f is Symbol.Reference => when (f.Reference.Id == name.Id) hasRecursion = true;
+                    | _ => ()
+                }
+            }
+            
+            hasRecursion;
         }
     }
 }
