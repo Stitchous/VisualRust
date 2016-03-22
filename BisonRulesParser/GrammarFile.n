@@ -17,13 +17,14 @@ namespace BisonRulesParser
       public RefreshProject(project : Project) : void
       {
         def files   = project.Files.ToArray();
-        def context = DependentPropertyEvalContext(); 
         def scope   = TableScope("Variables", null);  
 
         foreach (grammarFile in files.OfType.[GrammarFile]())
         {
             grammarFile.ContainingTable = scope; 
         }
+        
+        def context = DependentPropertyEvalContext(); 
 
         project.EvalProperties(context, "Collect variables", 0); 
         project.EvalProperties(context, "Compute variables", 1); 
