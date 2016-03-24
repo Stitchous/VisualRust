@@ -24,14 +24,61 @@ module Program
         propsEvalHost.EvalProperties(context, "Collect variables", 0); 
         propsEvalHost.EvalProperties(context, "Compute variables", 1);
         
+        WriteLine(GenerateNitraGrammar(file.Ast :> GrammarFile));
+        
+        /*
         foreach(rule in (file.Ast :> GrammarFile).Rules.Where(_.HasDirectLeftRecursion))
         {
             def span = rule.Span;
             WriteLine(file.GetSource().Text.Substring(span.StartPos, span.EndPos - span.StartPos));
             WriteLine();
         }
+        */
         
         WriteLine("Done!");
         _ = ReadLine();
+    }
+    
+    GenerateNitraGrammar(grammarFile : GrammarFile) : string
+    {
+        def GenerateRule(rule : Rule)
+        {
+            def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
+            
+            def Symbol(symbol : Symbol)
+            {
+                match (symbol)
+                {
+                    | x is Symbol.Reference        => x.Reference.Text
+                    | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
+                }
+            }
+            
+            def Symbols(component : RuleComponent.NotEmpty)
+            {
+                $<#..$(component.Symbols; " "; Symbol)#>
+            }
+                                                
+            def Components()
+            {
+                mutable result = "";
+                foreach (component in components with index)
+                    result += $"\n\t| $(rule.Name)$(index) = " + Symbols(component);
+                result
+            }
+                        
+            if (components.Count() == 1)
+            {
+                $"syntax $(rule.Name) = " + Symbols(components.First())
+            }
+            else
+            {
+                $"syntax $(rule.Name)\n{" + Components() + $"\n}"
+            }
+        }
+        
+        def rules = grammarFile.Rules.Where(x => !x.HasDirectLeftRecursion && !x.IsOptional);
+                    
+        $<#..$(rules;"\n";GenerateRule)#>        
     }
 }
