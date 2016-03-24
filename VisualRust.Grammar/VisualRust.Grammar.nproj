@@ -70,6 +70,9 @@
     </MacroReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ast.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Attributes.nitra">
       <SubType>Code</SubType>
     </Compile>

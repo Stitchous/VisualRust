@@ -56,7 +56,7 @@
 	{
 		| UseItem
 		| ExternFnItem
-		| "extern" "crate" Reference ("as" Name)?';'
+		| Extern = "extern" "crate" Identifier ("as" Name)?';'
 	}
 
 	syntax ExternFnItem = "extern" Str? ItemFn;

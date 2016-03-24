@@ -1,0 +1,104 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nitrust.Rust.Grammar;
+
+namespace VisualRust.Grammar
+{
+
+	abstract ast Item 
+	{
+		| StmtItem
+		{
+			Val : StmtItemAst;
+		}
+	}
+
+	ast ModItem 
+	{
+		Item : VisualRust.Grammar.Item;
+	}
+
+
+	abstract ast StmtItemAst
+	{
+		| BlockItem
+		| ViewItem 
+		{
+			Val : ViewItemAst;
+		}
+	}
+
+	abstract ast ViewItemAst
+	{
+		| UseItem
+		| ExternFnItem
+		| Extern
+		{
+			Ref : Nitra.Declarations.Reference;
+		}
+	}
+
+	ast Crate 
+	{
+		ModItems: ModItem*;
+	}
+
+	map syntax Main.Crate -> Crate
+	{
+		ModItems -> ModItems;
+	}
+
+	map syntax Items.ModItem -> ModItem
+	{
+		Item -> Item;
+	}
+
+	map syntax Items.Item -> VisualRust.Grammar.Item
+	{
+		| StmtItem -> StmtItem 
+		{
+			StmtItem -> Val;
+		}
+	}
+	
+	map syntax Items.StmtItem -> VisualRust.Grammar.StmtItemAst
+	{
+		| BlockItem -> BlockItem {}
+		| ViewItem -> ViewItem 
+		{
+			ViewItem -> Val;
+		}
+	}
+	
+	map syntax Items.ViewItem -> VisualRust.Grammar.ViewItemAst
+	{
+		| UseItem -> UseItem {}
+		| ExternFnItem -> ExternFnItem {}
+		| Extern -> Extern 
+		{
+			Identifier(ReferenceIdentifierTag {}) -> Ref;
+		}
+	}
+
+
+
+	ast ReferenceIdentifierTag {}
+
+	ast NameIdentifierTag {}
+
+	map syntax Identifiers.Identifier(ref : ReferenceIdentifierTag) -> Nitra.Declarations.Reference
+	{
+		
+	}
+ 
+	map syntax Identifiers.Identifier(n : NameIdentifierTag) -> Nitra.Declarations.Name
+	{}
+
+}

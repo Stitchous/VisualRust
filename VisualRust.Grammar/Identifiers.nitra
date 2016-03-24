@@ -23,5 +23,7 @@
 	[Reference] token Reference = !Keyword IdentifierBody;
   
 	[Name] token Name = !Keyword IdentifierBody;
+
+	token Identifier = !Keyword IdentifierBody;
   }
 }
