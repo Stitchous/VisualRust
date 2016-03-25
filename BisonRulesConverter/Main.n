@@ -32,7 +32,7 @@ module Program
     {                
         mutable result = "";
         
-        foreach (rule in grammarFile.Rules.Skip(10000))
+        foreach (rule in grammarFile.Rules)
         {
             def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
             
@@ -89,12 +89,12 @@ module Program
             if (!optional.IsEmpty())
             {
                 if (components.First().Count() > 1)
-                    ident + $"syntax $name = (" + GenerateSymbols(components.First()) + ")" + optional
+                    ident + $"syntax $name = (" + GenerateSymbols(components.First()) + ")" + optional + ";"
                  else
-                    ident + $"syntax $name = " + GenerateSymbols(components.First()) + optional
+                    ident + $"syntax $name = " + GenerateSymbols(components.First()) + optional + ";"
             }
             else
-                ident + $"syntax $name = " + GenerateSymbols(components.First())
+                ident + $"syntax $name = " + GenerateSymbols(components.First()) + ";"
         }
         else
         {

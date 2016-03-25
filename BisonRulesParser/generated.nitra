@@ -14,20 +14,20 @@ namespace BisonRulesParser
 {
 	syntax module RRules
 	{
-	syntax crate
+syntax crate
 {
         | crate0 = maybe_shebang inner_attrs maybe_mod_items
         | crate1 = maybe_shebang maybe_mod_items
 }
 
-syntax maybe_shebang = SHEBANG_LINE?
+syntax maybe_shebang = SHEBANG_LINE?;
 
-syntax maybe_inner_attrs = inner_attrs?
+syntax maybe_inner_attrs = inner_attrs?;
 
 syntax inner_attrs = (inner_attrs_heads inner_attrs_tails*)
 {
-        syntax inner_attrs_heads = inner_attr
-        syntax inner_attrs_tails = inner_attr
+        syntax inner_attrs_heads = inner_attr;
+        syntax inner_attrs_tails = inner_attr;
 }
 
 syntax inner_attr
@@ -36,12 +36,12 @@ syntax inner_attr
         | inner_attr1 = INNER_DOC_COMMENT
 }
 
-syntax maybe_outer_attrs = outer_attrs?
+syntax maybe_outer_attrs = outer_attrs?;
 
 syntax outer_attrs = (outer_attrs_heads outer_attrs_tails*)
 {
-        syntax outer_attrs_heads = outer_attr
-        syntax outer_attrs_tails = outer_attr
+        syntax outer_attrs_heads = outer_attr;
+        syntax outer_attrs_tails = outer_attr;
 }
 
 syntax outer_attr
@@ -60,21 +60,21 @@ syntax meta_item
 
 syntax meta_seq = (meta_seq_heads meta_seq_tails*)?
 {
-        syntax meta_seq_heads = meta_item
-        syntax meta_seq_tails = "," meta_item
+        syntax meta_seq_heads = meta_item;
+        syntax meta_seq_tails = "," meta_item;
 }
 
-syntax maybe_mod_items = mod_items?
+syntax maybe_mod_items = mod_items?;
 
 syntax mod_items = (mod_items_heads mod_items_tails*)
 {
-        syntax mod_items_heads = mod_item
-        syntax mod_items_tails = mod_item
+        syntax mod_items_heads = mod_item;
+        syntax mod_items_tails = mod_item;
 }
 
-syntax attrs_and_vis = maybe_outer_attrs visibility
+syntax attrs_and_vis = maybe_outer_attrs visibility;
 
-syntax mod_item = attrs_and_vis item
+syntax mod_item = attrs_and_vis item;
 
 syntax item
 {
@@ -97,7 +97,7 @@ syntax item_static
         | item_static1 = STATIC MUT ident ":" ty "=" expr ";"
 }
 
-syntax item_const = CONST ident ":" ty "=" expr ";"
+syntax item_const = CONST ident ":" ty "=" expr ";";
 
 syntax item_macro
 {
@@ -114,9 +114,9 @@ syntax view_item
         | view_item3 = EXTERN CRATE ident AS ident ";"
 }
 
-syntax extern_fn_item = EXTERN maybe_abi item_fn
+syntax extern_fn_item = EXTERN maybe_abi item_fn;
 
-syntax use_item = USE view_path ";"
+syntax use_item = USE view_path ";";
 
 syntax view_path
 {
@@ -146,9 +146,9 @@ syntax block_item
         | block_item7 = item_impl
 }
 
-syntax maybe_ty_ascription = (":" ty_sum)?
+syntax maybe_ty_ascription = (":" ty_sum)?;
 
-syntax maybe_init_expr = ("=" expr)?
+syntax maybe_init_expr = ("=" expr)?;
 
 syntax item_struct
 {
@@ -171,19 +171,19 @@ syntax struct_tuple_args
 
 syntax struct_decl_fields = (struct_decl_fields_heads struct_decl_fields_tails*)?
 {
-        syntax struct_decl_fields_heads = struct_decl_field
-        syntax struct_decl_fields_tails = "," struct_decl_field
+        syntax struct_decl_fields_heads = struct_decl_field;
+        syntax struct_decl_fields_tails = "," struct_decl_field;
 }
 
-syntax struct_decl_field = attrs_and_vis ident ":" ty_sum
+syntax struct_decl_field = attrs_and_vis ident ":" ty_sum;
 
 syntax struct_tuple_fields = (struct_tuple_fields_heads struct_tuple_fields_tails*)
 {
-        syntax struct_tuple_fields_heads = struct_tuple_field
-        syntax struct_tuple_fields_tails = "," struct_tuple_field
+        syntax struct_tuple_fields_heads = struct_tuple_field;
+        syntax struct_tuple_fields_tails = "," struct_tuple_field;
 }
 
-syntax struct_tuple_field = attrs_and_vis ty_sum
+syntax struct_tuple_field = attrs_and_vis ty_sum;
 
 syntax item_enum
 {
@@ -193,11 +193,11 @@ syntax item_enum
 
 syntax enum_defs = (enum_defs_heads enum_defs_tails*)?
 {
-        syntax enum_defs_heads = enum_def
-        syntax enum_defs_tails = "," enum_def
+        syntax enum_defs_heads = enum_def;
+        syntax enum_defs_tails = "," enum_def;
 }
 
-syntax enum_def = attrs_and_vis ident enum_args
+syntax enum_def = attrs_and_vis ident enum_args;
 
 syntax enum_args = enum_args_internal?
 {       syntax enum_args_internal
@@ -222,14 +222,14 @@ syntax item_foreign_mod
         | item_foreign_mod1 = EXTERN maybe_abi "{" inner_attrs maybe_foreign_items "}"
 }
 
-syntax maybe_abi = str?
+syntax maybe_abi = str?;
 
-syntax maybe_foreign_items = foreign_items?
+syntax maybe_foreign_items = foreign_items?;
 
 syntax foreign_items = (foreign_items_heads foreign_items_tails*)
 {
-        syntax foreign_items_heads = foreign_item
-        syntax foreign_items_tails = foreign_item
+        syntax foreign_items_heads = foreign_item;
+        syntax foreign_items_tails = foreign_item;
 }
 
 syntax foreign_item
@@ -239,11 +239,11 @@ syntax foreign_item
         | foreign_item2 = attrs_and_vis UNSAFE item_foreign_fn
 }
 
-syntax item_foreign_static = maybe_mut ident ":" ty ";"
+syntax item_foreign_static = maybe_mut ident ":" ty ";";
 
-syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ";"
+syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ";";
 
-syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty
+syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty;
 
 syntax fn_params_allow_variadic
 {
@@ -253,7 +253,7 @@ syntax fn_params_allow_variadic
         | fn_params_allow_variadic3 = "(" params "," DOTDOTDOT ")"
 }
 
-syntax visibility = PUB?
+syntax visibility = PUB?;
 
 syntax idents_or_self = (idents_or_self_heads idents_or_self_tails*)
 {
@@ -262,7 +262,7 @@ syntax idents_or_self = (idents_or_self_heads idents_or_self_tails*)
                 | idents_or_self_heads0 = ident_or_self
                 | idents_or_self_heads1 = ident_or_self AS ident
         }
-        syntax idents_or_self_tails = "," ident_or_self
+        syntax idents_or_self_tails = "," ident_or_self;
 }
 
 syntax ident_or_self
@@ -271,7 +271,7 @@ syntax ident_or_self
         | ident_or_self1 = SELF
 }
 
-syntax item_type = TYPE ident generic_params maybe_where_clause "=" ty_sum ";"
+syntax item_type = TYPE ident generic_params maybe_where_clause "=" ty_sum ";";
 
 syntax for_sized = for_sized_internal?
 {       syntax for_sized_internal
@@ -281,14 +281,14 @@ syntax for_sized = for_sized_internal?
         }
 }
 
-syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause "{" maybe_trait_items "}"
+syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause "{" maybe_trait_items "}";
 
-syntax maybe_trait_items = trait_items?
+syntax maybe_trait_items = trait_items?;
 
 syntax trait_items = (trait_items_heads trait_items_tails*)
 {
-        syntax trait_items_heads = trait_item
-        syntax trait_items_tails = trait_item
+        syntax trait_items_heads = trait_item;
+        syntax trait_items_tails = trait_item;
 }
 
 syntax trait_item
@@ -298,13 +298,13 @@ syntax trait_item
         | trait_item2 = trait_method
 }
 
-syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ";"
+syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ";";
 
-syntax maybe_const_default = ("=" expr)?
+syntax maybe_const_default = ("=" expr)?;
 
-syntax trait_type = maybe_outer_attrs TYPE ty_param ";"
+syntax trait_type = maybe_outer_attrs TYPE ty_param ";";
 
-syntax maybe_unsafe = UNSAFE?
+syntax maybe_unsafe = UNSAFE?;
 
 syntax trait_method
 {
@@ -340,7 +340,7 @@ syntax item_impl
         | item_impl5 = maybe_unsafe IMPL generic_params "!" trait_ref FOR DOTDOT "{" "}"
 }
 
-syntax maybe_impl_items = impl_items?
+syntax maybe_impl_items = impl_items?;
 
 syntax impl_items
 {
@@ -356,11 +356,11 @@ syntax impl_item
         | impl_item3 = impl_type
 }
 
-syntax impl_const = attrs_and_vis item_const
+syntax impl_const = attrs_and_vis item_const;
 
-syntax impl_type = attrs_and_vis TYPE ident generic_params "=" ty_sum ";"
+syntax impl_type = attrs_and_vis TYPE ident generic_params "=" ty_sum ";";
 
-syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block
+syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
 
 syntax item_unsafe_fn
 {
@@ -368,13 +368,13 @@ syntax item_unsafe_fn
         | item_unsafe_fn1 = UNSAFE EXTERN maybe_abi FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block
 }
 
-syntax fn_decl = fn_params ret_ty
+syntax fn_decl = fn_params ret_ty;
 
-syntax fn_decl_with_self = fn_params_with_self ret_ty
+syntax fn_decl_with_self = fn_params_with_self ret_ty;
 
-syntax fn_decl_with_self_allow_anon_params = fn_anon_params_with_self ret_ty
+syntax fn_decl_with_self_allow_anon_params = fn_anon_params_with_self ret_ty;
 
-syntax fn_params = "(" maybe_params ")"
+syntax fn_params = "(" maybe_params ")";
 
 syntax fn_anon_params
 {
@@ -408,19 +408,19 @@ syntax maybe_params = maybe_params_internal?
 
 syntax params = (params_heads params_tails*)
 {
-        syntax params_heads = param
-        syntax params_tails = "," param
+        syntax params_heads = param;
+        syntax params_tails = "," param;
 }
 
-syntax param = pat ":" ty_sum
+syntax param = pat ":" ty_sum;
 
 syntax inferrable_params = (inferrable_params_heads inferrable_params_tails*)
 {
-        syntax inferrable_params_heads = inferrable_param
-        syntax inferrable_params_tails = "," inferrable_param
+        syntax inferrable_params_heads = inferrable_param;
+        syntax inferrable_params_tails = "," inferrable_param;
 }
 
-syntax inferrable_param = pat maybe_ty_ascription
+syntax inferrable_param = pat maybe_ty_ascription;
 
 syntax maybe_unboxed_closure_kind = maybe_unboxed_closure_kind_internal?
 {       syntax maybe_unboxed_closure_kind_internal
@@ -458,8 +458,8 @@ syntax maybe_anon_params = maybe_anon_params_internal?
 
 syntax anon_params = (anon_params_heads anon_params_tails*)
 {
-        syntax anon_params_heads = anon_param
-        syntax anon_params_tails = "," anon_param
+        syntax anon_params_heads = anon_param;
+        syntax anon_params_tails = "," anon_param;
 }
 
 syntax anon_param
@@ -513,7 +513,7 @@ syntax generic_params = generic_params_internal?
         }
 }
 
-syntax maybe_where_clause = where_clause?
+syntax maybe_where_clause = where_clause?;
 
 syntax where_clause
 {
@@ -523,8 +523,8 @@ syntax where_clause
 
 syntax where_predicates = (where_predicates_heads where_predicates_tails*)
 {
-        syntax where_predicates_heads = where_predicate
-        syntax where_predicates_tails = "," where_predicate
+        syntax where_predicates_heads = where_predicate;
+        syntax where_predicates_tails = "," where_predicate;
 }
 
 syntax where_predicate
@@ -533,12 +533,12 @@ syntax where_predicate
         | where_predicate1 = maybe_for_lifetimes ty ":" ty_param_bounds
 }
 
-syntax maybe_for_lifetimes = (FOR "<" lifetimes ">")?
+syntax maybe_for_lifetimes = (FOR "<" lifetimes ">")?;
 
 syntax ty_params = (ty_params_heads ty_params_tails*)
 {
-        syntax ty_params_heads = ty_param
-        syntax ty_params_tails = "," ty_param
+        syntax ty_params_heads = ty_param;
+        syntax ty_params_tails = "," ty_param;
 }
 
 syntax path_no_types_allowed = (path_no_types_allowed_heads path_no_types_allowed_tails*)
@@ -550,7 +550,7 @@ syntax path_no_types_allowed = (path_no_types_allowed_heads path_no_types_allowe
                 | path_no_types_allowed_heads2 = SELF
                 | path_no_types_allowed_heads3 = MOD_SEP SELF
         }
-        syntax path_no_types_allowed_tails = MOD_SEP ident
+        syntax path_no_types_allowed_tails = MOD_SEP ident;
 }
 
 syntax path_generic_args_without_colons = (path_generic_args_without_colons_heads path_generic_args_without_colons_tails*)
@@ -581,7 +581,7 @@ syntax generic_args
         | generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ
 }
 
-syntax generic_values = maybe_lifetimes maybe_ty_sums_and_or_bindings
+syntax generic_values = maybe_lifetimes maybe_ty_sums_and_or_bindings;
 
 syntax maybe_ty_sums_and_or_bindings = maybe_ty_sums_and_or_bindings_internal?
 {       syntax maybe_ty_sums_and_or_bindings_internal
@@ -594,7 +594,7 @@ syntax maybe_ty_sums_and_or_bindings = maybe_ty_sums_and_or_bindings_internal?
         }
 }
 
-syntax maybe_bindings = ("," bindings)?
+syntax maybe_bindings = ("," bindings)?;
 
 syntax pat
 {
@@ -622,8 +622,8 @@ syntax pat
 
 syntax pats_or = (pats_or_heads pats_or_tails*)
 {
-        syntax pats_or_heads = pat
-        syntax pats_or_tails = "|" pat
+        syntax pats_or_heads = pat;
+        syntax pats_or_tails = "|" pat;
 }
 
 syntax binding_mode
@@ -652,8 +652,8 @@ syntax pat_field
 
 syntax pat_fields = (pat_fields_heads pat_fields_tails*)
 {
-        syntax pat_fields_heads = pat_field
-        syntax pat_fields_tails = "," pat_field
+        syntax pat_fields_heads = pat_field;
+        syntax pat_fields_tails = "," pat_field;
 }
 
 syntax pat_struct
@@ -666,8 +666,8 @@ syntax pat_struct
 
 syntax pat_tup = (pat_tup_heads pat_tup_tails*)
 {
-        syntax pat_tup_heads = pat
-        syntax pat_tup_tails = "," pat
+        syntax pat_tup_heads = pat;
+        syntax pat_tup_tails = "," pat;
 }
 
 syntax pat_vec = pat_vec_internal?
@@ -689,8 +689,8 @@ syntax pat_vec = pat_vec_internal?
 
 syntax pat_vec_elts = (pat_vec_elts_heads pat_vec_elts_tails*)
 {
-        syntax pat_vec_elts_heads = pat
-        syntax pat_vec_elts_tails = "," pat
+        syntax pat_vec_elts_heads = pat;
+        syntax pat_vec_elts_tails = "," pat;
 }
 
 syntax ty
@@ -735,7 +735,7 @@ syntax ty_bare_fn
         | ty_bare_fn3 = UNSAFE EXTERN maybe_abi FN ty_fn_decl
 }
 
-syntax ty_fn_decl = generic_params fn_anon_params ret_ty
+syntax ty_fn_decl = generic_params fn_anon_params ret_ty;
 
 syntax ty_closure
 {
@@ -745,9 +745,9 @@ syntax ty_closure
         | ty_closure3 = OROR maybe_bounds ret_ty
 }
 
-syntax ty_proc = PROC generic_params fn_params maybe_bounds ret_ty
+syntax ty_proc = PROC generic_params fn_params maybe_bounds ret_ty;
 
-syntax for_in_type = FOR "<" maybe_lifetimes ">" for_in_type_suffix
+syntax for_in_type = FOR "<" maybe_lifetimes ">" for_in_type_suffix;
 
 syntax for_in_type_suffix
 {
@@ -757,7 +757,7 @@ syntax for_in_type_suffix
         | for_in_type_suffix3 = ty_closure
 }
 
-syntax maybe_mut = MUT?
+syntax maybe_mut = MUT?;
 
 syntax maybe_mut_or_const = maybe_mut_or_const_internal?
 {       syntax maybe_mut_or_const_internal
@@ -789,8 +789,8 @@ syntax maybe_ty_sums = maybe_ty_sums_internal?
 
 syntax ty_sums = (ty_sums_heads ty_sums_tails*)
 {
-        syntax ty_sums_heads = ty_sum
-        syntax ty_sums_tails = "," ty_sum
+        syntax ty_sums_heads = ty_sum;
+        syntax ty_sums_tails = "," ty_sum;
 }
 
 syntax ty_sum
@@ -805,14 +805,14 @@ syntax ty_prim_sum
         | ty_prim_sum1 = ty_prim "+" ty_param_bounds
 }
 
-syntax maybe_ty_param_bounds = (":" ty_param_bounds)?
+syntax maybe_ty_param_bounds = (":" ty_param_bounds)?;
 
-syntax ty_param_bounds = boundseq?
+syntax ty_param_bounds = boundseq?;
 
 syntax boundseq = (boundseq_heads boundseq_tails*)
 {
-        syntax boundseq_heads = polybound
-        syntax boundseq_tails = "+" polybound
+        syntax boundseq_heads = polybound;
+        syntax boundseq_tails = "+" polybound;
 }
 
 syntax polybound
@@ -824,11 +824,11 @@ syntax polybound
 
 syntax bindings = (bindings_heads bindings_tails*)
 {
-        syntax bindings_heads = binding
-        syntax bindings_tails = "," binding
+        syntax bindings_heads = binding;
+        syntax bindings_tails = "," binding;
 }
 
-syntax binding = ident "=" ty
+syntax binding = ident "=" ty;
 
 syntax ty_param
 {
@@ -836,12 +836,12 @@ syntax ty_param
         | ty_param1 = ident "?" ident maybe_ty_param_bounds maybe_ty_default
 }
 
-syntax maybe_bounds = (":" bounds)?
+syntax maybe_bounds = (":" bounds)?;
 
 syntax bounds = (bounds_heads bounds_tails*)
 {
-        syntax bounds_heads = bound
-        syntax bounds_tails = "+" bound
+        syntax bounds_heads = bound;
+        syntax bounds_tails = "+" bound;
 }
 
 syntax bound
@@ -850,15 +850,15 @@ syntax bound
         | bound1 = trait_ref
 }
 
-syntax maybe_ltbounds = (":" ltbounds)?
+syntax maybe_ltbounds = (":" ltbounds)?;
 
 syntax ltbounds = (ltbounds_heads ltbounds_tails*)
 {
-        syntax ltbounds_heads = lifetime
-        syntax ltbounds_tails = "+" lifetime
+        syntax ltbounds_heads = lifetime;
+        syntax ltbounds_tails = "+" lifetime;
 }
 
-syntax maybe_ty_default = ("=" ty_sum)?
+syntax maybe_ty_default = ("=" ty_sum)?;
 
 syntax maybe_lifetimes = maybe_lifetimes_internal?
 {       syntax maybe_lifetimes_internal
@@ -870,8 +870,8 @@ syntax maybe_lifetimes = maybe_lifetimes_internal?
 
 syntax lifetimes = (lifetimes_heads lifetimes_tails*)
 {
-        syntax lifetimes_heads = lifetime_and_bounds
-        syntax lifetimes_tails = "," lifetime_and_bounds
+        syntax lifetimes_heads = lifetime_and_bounds;
+        syntax lifetimes_tails = "," lifetime_and_bounds;
 }
 
 syntax lifetime_and_bounds
@@ -892,9 +892,9 @@ syntax trait_ref
         | trait_ref1 = MOD_SEP path_generic_args_without_colons
 }
 
-syntax inner_attrs_and_block = "{" maybe_inner_attrs maybe_stmts "}"
+syntax inner_attrs_and_block = "{" maybe_inner_attrs maybe_stmts "}";
 
-syntax block = "{" maybe_stmts "}"
+syntax block = "{" maybe_stmts "}";
 
 syntax maybe_stmts = maybe_stmts_internal?
 {       syntax maybe_stmts_internal
@@ -907,8 +907,8 @@ syntax maybe_stmts = maybe_stmts_internal?
 
 syntax stmts = (stmts_heads stmts_tails*)
 {
-        syntax stmts_heads = stmt
-        syntax stmts_tails = stmt
+        syntax stmts_heads = stmt;
+        syntax stmts_tails = stmt;
 }
 
 syntax stmt
@@ -932,12 +932,12 @@ syntax maybe_exprs = maybe_exprs_internal?
         }
 }
 
-syntax maybe_expr = expr?
+syntax maybe_expr = expr?;
 
 syntax exprs = (exprs_heads exprs_tails*)
 {
-        syntax exprs_heads = expr
-        syntax exprs_tails = "," expr
+        syntax exprs_heads = expr;
+        syntax exprs_tails = "," expr;
 }
 
 syntax path_expr
@@ -949,7 +949,7 @@ syntax path_expr
 
 syntax path_generic_args_with_colons = (path_generic_args_with_colons_heads path_generic_args_with_colons_tails*)
 {
-        syntax path_generic_args_with_colons_heads = ident
+        syntax path_generic_args_with_colons_heads = ident;
         syntax path_generic_args_with_colons_tails
         {
                 | path_generic_args_with_colons_tails0 = MOD_SEP ident
@@ -1264,9 +1264,9 @@ syntax expr_qualified_path
         | expr_qualified_path4 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident generic_args maybe_as_trait_ref ">" MOD_SEP ident generic_args
 }
 
-syntax maybe_qpath_params = (MOD_SEP generic_args)?
+syntax maybe_qpath_params = (MOD_SEP generic_args)?;
 
-syntax maybe_as_trait_ref = (AS trait_ref)?
+syntax maybe_as_trait_ref = (AS trait_ref)?;
 
 syntax lambda_expr
 {
@@ -1321,13 +1321,13 @@ syntax maybe_field_inits = maybe_field_inits_internal?
 
 syntax field_inits = (field_inits_heads field_inits_tails*)
 {
-        syntax field_inits_heads = field_init
-        syntax field_inits_tails = "," field_init
+        syntax field_inits_heads = field_init;
+        syntax field_inits_tails = "," field_init;
 }
 
-syntax field_init = ident ":" expr
+syntax field_init = ident ":" expr;
 
-syntax default_field_init = DOTDOT expr
+syntax default_field_init = DOTDOT expr;
 
 syntax block_expr
 {
@@ -1344,7 +1344,7 @@ syntax block_expr
 
 syntax full_block_expr = (full_block_expr_heads full_block_expr_tails*)
 {
-        syntax full_block_expr_heads = block_expr
+        syntax full_block_expr_heads = block_expr;
         syntax full_block_expr_tails
         {
                 | full_block_expr_tails0 = "." path_generic_args_with_colons
@@ -1364,8 +1364,8 @@ syntax expr_match
 
 syntax match_clauses = (match_clauses_heads match_clauses_tails*)
 {
-        syntax match_clauses_heads = match_clause
-        syntax match_clauses_tails = match_clause
+        syntax match_clauses_heads = match_clause;
+        syntax match_clauses_tails = match_clause;
 }
 
 syntax match_clause
@@ -1381,9 +1381,9 @@ syntax nonblock_match_clause
         | nonblock_match_clause1 = maybe_outer_attrs pats_or maybe_guard FAT_ARROW full_block_expr
 }
 
-syntax block_match_clause = maybe_outer_attrs pats_or maybe_guard FAT_ARROW block
+syntax block_match_clause = maybe_outer_attrs pats_or maybe_guard FAT_ARROW block;
 
-syntax maybe_guard = (IF expr_nostruct)?
+syntax maybe_guard = (IF expr_nostruct)?;
 
 syntax expr_if
 {
@@ -1404,17 +1404,17 @@ syntax block_or_if
         | block_or_if2 = expr_if_let
 }
 
-syntax expr_while = maybe_label WHILE expr_nostruct block
+syntax expr_while = maybe_label WHILE expr_nostruct block;
 
-syntax expr_while_let = maybe_label WHILE LET pat "=" expr_nostruct block
+syntax expr_while_let = maybe_label WHILE LET pat "=" expr_nostruct block;
 
-syntax expr_loop = maybe_label LOOP block
+syntax expr_loop = maybe_label LOOP block;
 
-syntax expr_for = maybe_label FOR pat IN expr_nostruct block
+syntax expr_for = maybe_label FOR pat IN expr_nostruct block;
 
-syntax maybe_label = (lifetime ":")?
+syntax maybe_label = (lifetime ":")?;
 
-syntax let = LET pat maybe_ty_ascription maybe_init_expr ";"
+syntax let = LET pat maybe_ty_ascription maybe_init_expr ";";
 
 syntax lit
 {
@@ -1435,9 +1435,9 @@ syntax str
         | str3 = LIT_BYTE_STR_RAW
 }
 
-syntax maybe_ident = ident?
+syntax maybe_ident = ident?;
 
-syntax ident = IDENT
+syntax ident = IDENT;
 
 syntax unpaired_token
 {
@@ -1540,7 +1540,7 @@ syntax unpaired_token
         | unpaired_token96 = "%"
 }
 
-syntax token_trees = token_tree*
+syntax token_trees = token_tree*;
 
 syntax token_tree
 {
@@ -1555,13 +1555,11 @@ syntax delimited_token_trees
         | delimited_token_trees2 = brackets_delimited_token_trees
 }
 
-syntax parens_delimited_token_trees = "(" token_trees ")"
+syntax parens_delimited_token_trees = "(" token_trees ")";
 
-syntax braces_delimited_token_trees = "{" token_trees "}"
+syntax braces_delimited_token_trees = "{" token_trees "}";
 
-syntax brackets_delimited_token_trees = "[" token_trees "]"
-
-
+syntax brackets_delimited_token_trees = "[" token_trees "]";
 
 
 	}
