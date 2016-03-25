@@ -40,12 +40,35 @@ module Program
     }
     
     GenerateNitraGrammar(grammarFile : GrammarFile) : string
-    {
-        def GenerateRule(rule : Rule)
+    {                
+        mutable result = "";
+        foreach (rule in grammarFile.Rules.Where(x => !x.HasDirectLeftRecursion))
         {
             def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
             
-            def Symbol(symbol : Symbol)
+            if (rule.IsOptional)
+            {
+                if (components.Count() == 1 && components.First().Symbols.Count() == 1)
+                    result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols)) + "?";
+                else
+                    result += GenerateCompoundRule($"$(rule.Name) = Optional?", [GenerateRule("Optional", components.Map(x => x.Symbols), "\t")]);
+            }
+            else
+            {
+                result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols));
+            }
+            
+            result += "\n\n";
+        }
+        
+        result
+    }
+            
+    GenerateRule(name : string, components : IEnumerable[IEnumerable[Symbol]], ident = "") : string
+    {
+        def GenerateSymbols(symbols : IEnumerable[Symbol])
+        {            
+            def GenerateSymbol(symbol : Symbol)
             {
                 match (symbol)
                 {
@@ -53,32 +76,32 @@ module Program
                     | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
                 }
             }
-            
-            def Symbols(component : RuleComponent.NotEmpty)
-            {
-                $<#..$(component.Symbols; " "; Symbol)#>
-            }
-                                                
-            def Components()
-            {
-                mutable result = "";
-                foreach (component in components with index)
-                    result += $"\n\t| $(rule.Name)$(index) = " + Symbols(component);
-                result
-            }
-                        
-            if (components.Count() == 1)
-            {
-                $"syntax $(rule.Name) = " + Symbols(components.First())
-            }
-            else
-            {
-                $"syntax $(rule.Name)\n{" + Components() + $"\n}"
-            }
+        
+            $<#..$(symbols; " "; GenerateSymbol)#>
         }
         
-        def rules = grammarFile.Rules.Where(x => !x.HasDirectLeftRecursion && !x.IsOptional);
-                    
-        $<#..$(rules;"\n";GenerateRule)#>        
+        if (components.Count() == 1)
+        {
+            ident + $"syntax $name = " + GenerateSymbols(components.First())
+        }
+        else
+        {
+            mutable body = ident + $"syntax $name\n$ident{";
+                
+            foreach (component in components with index)
+                body += $"\n$ident\t| $name$index = " + GenerateSymbols(component);
+                
+            body + $"\n$ident}"
+        }
     }
+        
+    GenerateCompoundRule(rule : string, subrules : IEnumerable[string], ident = "") : string
+    {
+        mutable result = ident + $"syntax $rule\n$ident{\n";
+            
+        foreach (subrule in subrules)
+            result += ident + subrule;
+                
+        result + $"\n$ident}"
+    }    
 }
