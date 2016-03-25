@@ -92,6 +92,9 @@
     <Compile Include="Items.nitra">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tokens.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Types.nitra">
       <SubType>Code</SubType>
     </Compile>

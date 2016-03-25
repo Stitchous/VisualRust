@@ -175,6 +175,14 @@
 	regex OctIntegerLiteral		= "0o" (OctDigit | '_')+ IntegerTypeSuffix?;
 	regex BinIntegerLiteral		= "0b" (BinDigit | '_')+ IntegerTypeSuffix?;
 
+	syntax IntegerLiteral
+	{
+		| DecIntegerLiteral
+		| HexIntegerLiteral
+		| OctIntegerLiteral
+		| BinIntegerLiteral
+	}
+
 	regex FloatingPointSuffix	= "f32" | "f64";
 	regex ExponentPart			= ('E' | 'e') ('-' | '+')? DecLiteral;
 	regex FloatingPointLiteral	= (DecLiteral ('.' DecLiteral)? ExponentPart? FloatingPointSuffix?) | (DecLiteral '.');

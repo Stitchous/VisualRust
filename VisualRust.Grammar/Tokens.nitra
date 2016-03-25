@@ -1,0 +1,88 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+	using Nitra.Core;
+	
+	using Identifiers;
+	using Literals;
+
+	syntax module Tokens
+	{
+		token SHL									= "<<";
+		token SHR									= ">>";
+		token LE									= "<=";
+		token EQEQ									= "==";
+		token NE									= "!=";
+		token GE									= ">=";
+		token ANDAND								= "&&";
+		token OROR									= "||";
+		token SHLEQ									= "<<=";
+		token SHREQ									= ">>=";
+		token MINUSEQ								= "-=";
+		token ANDEQ									= "&=";
+		token OREQ									= "|=";
+		token PLUSEQ								= "+=";
+		token STAREQ								= "*=";
+		token SLASHEQ								= "/=";
+		token CARETEQ								= "^=";
+		token PERCENTEQ								= "%=";
+		token DOTDOT								= "..";
+		token DOTDOTDOT								= "...";
+		token MOD_SEP								= "::";
+		token RARROW								= "->";
+		token LARROW								= "<-";
+		token FAT_ARROW								= "=>";
+		token LIT_BYTE								= ByteLiteral;
+		token LIT_CHAR								= CharacterLiteral;
+		alias LIT_INTEGER							= IntegerLiteral;
+		token LIT_FLOAT								= FloatingPointLiteral;
+		token LIT_STR								= RegularStringLiteral;
+		alias LIT_STR_RAW							= RawStringLiteral;
+		token LIT_BYTE_STR							= RegularByteStringLiteral;
+		alias LIT_BYTE_STR_RAW						= RawByteStringLiteral;
+		token IDENT									= !Keyword IdentifierBody;
+		token UNDERSCORE							= "_";
+		token LIFETIME								= "{" IDENT "}";
+		token SELF									= "self";
+		token STATIC								= "static";
+		token AS									= "as";
+		token BREAK									= "break";
+		token CRATE									= "crate";
+		token ELSE									= "else";
+		token ENUM									= "enum";
+		token EXTERN								= "extern";
+		token FALSE									= "false";
+		token FN									= "fn";
+		token FOR									= "for";
+		token IF									= "if";
+		token IMPL									= "impl";
+		token IN									= "in";
+		token LET									= "let";
+		token LOOP									= "loop";
+		token MATCH									= "match";
+		token MOD									= "mod";
+		token MOVE									= "move";
+		token MUT									= "mut";
+		token PRIV									= "priv";
+		token PUB									= "pub";
+		token REF									= "ref";
+		token RETURN								= "return";
+		token STRUCT								= "struct";
+		token TRUE									= "true";
+		token TRAIT									= "trait";
+		token TYPE									= "type";
+		token UNSAFE								= "unsafe";
+		token USE									= "use";
+		token WHILE									= "while";
+		token CONTINUE								= "continue";
+		token PROC									= "proc";
+		token BOX									= "box";
+		token CONST									= "const";
+		token WHERE									= "where";
+		token TYPEOF								= "typeof";
+		token INNER_DOC_COMMENT						= "TODO"; //TODO
+		token OUTER_DOC_COMMENT						= "TODO"; //TODO
+		token SHEBANG								= "#!";
+		token SHEBANG_LINE							= "#!" !'[' (!NewLine Any)* NewLine;
+		token STATIC_LIFETIME						= "static";
+	}
+}
