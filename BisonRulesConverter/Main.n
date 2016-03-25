@@ -25,37 +25,41 @@ module Program
         propsEvalHost.EvalProperties(context, "Compute variables", 1);
         
         WriteLine(GenerateNitraGrammar(file.Ast :> GrammarFile));
-        
-        /*
-        foreach(rule in (file.Ast :> GrammarFile).Rules.Where(_.HasDirectLeftRecursion))
-        {
-            def span = rule.Span;
-            WriteLine(file.GetSource().Text.Substring(span.StartPos, span.EndPos - span.StartPos));
-            WriteLine();
-        }
-        */
-        
-        WriteLine("Done!");
         _ = ReadLine();
     }
     
     GenerateNitraGrammar(grammarFile : GrammarFile) : string
     {                
         mutable result = "";
-        foreach (rule in grammarFile.Rules.Where(x => !x.HasDirectLeftRecursion))
+        
+        foreach (rule in grammarFile.Rules.Skip(10000))
         {
             def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
             
-            if (rule.IsOptional)
+            if (rule.HasDirectLeftRecursion)
             {
-                if (components.Count() == 1 && components.First().Symbols.Count() == 1)
-                    result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols)) + "?";
+                def (heads, tails) = components.NToList().Partition(c => 
+                        match (c.Symbols.First())
+                        {
+                            | c is Symbol.Reference => c.Reference.Id != rule.Name.Id
+                            | _ => true
+                        });
+                        
+                if (heads.Any())
+                {
+                    result += GenerateCompoundRule(
+                        $"$(rule.Name) = ($(rule.Name)_heads $(rule.Name)_tails*)" + if (rule.IsOptional) "?" else "",
+                        [GenerateRule(rule.Name + "_heads", heads.Map(x => x.Symbols), "", "\t"),
+                         GenerateRule(rule.Name + "_tails", tails.Map(x => x.Symbols.Skip(1)), "", "\t")]);                     
+                }
                 else
-                    result += GenerateCompoundRule($"$(rule.Name) = Optional?", [GenerateRule("Optional", components.Map(x => x.Symbols), "\t")]);
+                {
+                    result += GenerateRule(rule.Name.Text, tails.Map(x => x.Symbols.Skip(1)), "*");
+                }
             }
             else
             {
-                result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols));
+                result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols), if (rule.IsOptional) "?" else "");
             }
             
             result += "\n\n";
@@ -64,7 +68,7 @@ module Program
         result
     }
             
-    GenerateRule(name : string, components : IEnumerable[IEnumerable[Symbol]], ident = "") : string
+    GenerateRule(name : string, components : IEnumerable[IEnumerable[Symbol]], optional = "", ident = "") : string
     {
         def GenerateSymbols(symbols : IEnumerable[Symbol])
         {            
@@ -82,14 +86,30 @@ module Program
         
         if (components.Count() == 1)
         {
-            ident + $"syntax $name = " + GenerateSymbols(components.First())
+            if (!optional.IsEmpty())
+            {
+                if (components.First().Count() > 1)
+                    ident + $"syntax $name = (" + GenerateSymbols(components.First()) + ")" + optional
+                 else
+                    ident + $"syntax $name = " + GenerateSymbols(components.First()) + optional
+            }
+            else
+                ident + $"syntax $name = " + GenerateSymbols(components.First())
         }
         else
         {
-            mutable body = ident + $"syntax $name\n$ident{";
-                
-            foreach (component in components with index)
-                body += $"\n$ident\t| $name$index = " + GenerateSymbols(component);
+            mutable body = ident;
+            
+            if (!optional.IsEmpty())
+            {
+                body += $"syntax $name = $(name)_internal$optional\n$ident{" + GenerateRule(name + "_internal", components, "", ident + "\t");
+            }
+            else
+            {
+                body += $"syntax $name\n$ident{";                
+                foreach (component in components with index)
+                    body += $"\n$ident\t| $name$index = " + GenerateSymbols(component);
+            }
                 
             body + $"\n$ident}"
         }
@@ -100,8 +120,8 @@ module Program
         mutable result = ident + $"syntax $rule\n$ident{\n";
             
         foreach (subrule in subrules)
-            result += ident + subrule;
+            result += ident + subrule + "\n";
                 
-        result + $"\n$ident}"
+        result + $"$ident}"
     }    
 }
