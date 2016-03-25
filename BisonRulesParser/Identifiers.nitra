@@ -1,0 +1,11 @@
+﻿namespace BisonRulesParser.Grammar
+{
+  syntax module Identifiers
+  {
+	using Nitra.Core;
+
+	[Reference] token Reference = IdentifierBody;
+  
+	[Name] token Name = IdentifierBody;
+  }
+}

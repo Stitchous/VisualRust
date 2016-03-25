@@ -1,0 +1,180 @@
+﻿namespace Nitrust.Rust.Grammar
+{
+  syntax module Items
+  {
+	using Nitra.Core;
+
+	using Identifiers;
+	using Attributes;
+	using Types;
+	using Literals;
+	using Blocks;
+
+	syntax Visibility = "pub" sm;
+	
+	syntax AttrsAndVis = OuterAttr* Visibility?;
+
+	syntax ModItem = AttrsAndVis Item;
+
+	syntax Item
+	{
+		| StmtItem
+		//| ItemMacro
+	}
+
+	//TODO:
+	syntax StmtItem
+	{
+		//| ItemStatic
+		//| ItemConst
+		//| ItemType
+		| BlockItem
+		| ViewItem
+	}
+
+	//TODO:
+	syntax BlockItem
+	{
+		//| ItemFn
+		//| ItemUnsafeFn
+		| ItemMod
+		//| ItemForeignMod
+		//| ItemStruct
+		//| ItemEnum
+		//| ItemTrait
+		//| ItemImpl
+
+	}
+
+	syntax ItemMod
+	{
+		| ItemMod1 = "mod" Name ';'
+		| ItemMod2 = "mod" Name '{' InnerAttr* ModItem* '}'
+	}
+
+	syntax ViewItem
+	{
+		| UseItem
+		| ExternFnItem
+		| "extern" "crate" Reference ("as" Name)?';'
+	}
+
+	syntax ExternFnItem = "extern" Str? ItemFn;
+	
+	syntax UseItem = "use" ViewPath ';';
+
+	syntax ViewPath
+	{
+		| PathNoTypesAllowed
+		| ViewPathList = (PathNoTypesAllowed? "::")? '{' (IdentsOrSelf ','?)?'}'
+		| ViewPathGlob = PathNoTypesAllowed  "::" '*' 
+		| ViewPathListEmpty = '{' '}'
+		| ViewPathSimple = PathNoTypesAllowed "as" Name
+		
+		syntax IdentOrSelf
+		{
+			| Reference
+			| "self"
+		}
+
+		syntax IdentsOrSelf = (IdentOrSelf ("as" Name)?; ',')+;
+	}
+
+	syntax ForLifetimes = "for" '<' Lifetimes '>';
+
+	// A path with no type parameters; e.g. `foo::bar::Baz`
+	//
+	// These show up in 'use' view-items, because these are processed
+	// without respect to types.
+	syntax PathNoTypesAllowed = PathNoTypesAllowedHead ("::" Reference)*
+	{
+		syntax PathNoTypesAllowedHead
+		{
+			| PathNoTypesAllowedHead1 = Reference
+			| PathNoTypesAllowedHead2 = "::" Reference
+			| PathNoTypesAllowedHead3 = "self"
+			| PathNoTypesAllowedHead4 = "::" "self"
+		}
+	}
+
+	syntax PathGenericArgsWithoutColons = PathGenericArgsWithoutColonsHead PathGenericArgsWithoutColonsTail*
+	{ 
+		syntax PathGenericArgsWithoutColonsHead
+		{
+			| PathGenericArgsWithoutColonsHead1 = Reference GenericArgs?
+			| PathGenericArgsWithoutColonsHead2 = Reference '(' ((TySum; ',')* ','?)? ')' RetTy?
+		}
+
+		syntax PathGenericArgsWithoutColonsTail
+		{
+			| PathGenericArgsWithoutColonsTail1 = "::" Reference GenericArgs?
+			| PathGenericArgsWithoutColonsTail2 = "::" Reference '(' ((TySum; ',')* ','?)? ')' RetTy?
+		}
+	}
+
+	syntax GenericArgs
+	{
+		| GenericArgs1 = '<' GenericValues '>'
+		| GenericArgs2 = '<' GenericValues ">>"
+		| GenericArgs3 = '<' GenericValues ">="
+		| GenericArgs4 = '<' GenericValues ">>="
+		// If generic_args starts with "<<", the first arg must be a
+		// TyQualifiedPath because that's the only type that can start with a
+		// '<'. This rule parses that as the first ty_sum and then continues
+		// with the rest of generic_values.
+		| GenericArgs5 = "<<" TyQualifiedPathAndGenericValues '>'
+		| GenericArgs6 = "<<" TyQualifiedPathAndGenericValues ">>"
+		| GenericArgs7 = "<<" TyQualifiedPathAndGenericValues ">="
+		| GenericArgs8 = "<<" TyQualifiedPathAndGenericValues ">>="
+	}
+
+	syntax GenericValues = Lifetimes? TySumsAndOrBindings?;
+
+	syntax TySumsAndOrBindings
+	{
+		| TySumsAndOrBindings1 = (TySum; ',')+ ','?
+		| TySumsAndOrBindings2 = (TySum; ',')+ ',' (Binding; ',')+
+		| TySumsAndOrBindings3 = (Binding; ',')+ ','?
+	}
+
+	syntax RetTy
+	{
+		| RetTy1 = "->" '!'
+		| RetTy2 = "->" Ty
+	}
+
+	syntax GenericParams
+	{
+		| Generics1 = '<' Lifetimes ','? '>'
+		| Generics2 = '<' Lifetimes ','? '>'
+		| Generics3 = '<' Lifetimes ','? ">>"
+		| Generics4 = '<' Lifetimes ',' TyParams ','? '>'
+	}
+	
+//| '<' lifetimes ',' ty_params '>'     { $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params ',' '>' { $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params SHR     { push_back('>'); $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' lifetimes ',' ty_params ',' SHR { push_back('>'); $$ = mk_node("Generics", 2, $2, $4); }
+//| '<' ty_params '>'                   { $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params ',' '>'               { $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params SHR                   { push_back('>'); $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| '<' ty_params ',' SHR               { push_back('>'); $$ = mk_node("Generics", 2, mk_none(), $2); }
+//| %empty                              { $$ = mk_none(); }
+//;
+	syntax WhereClause = "where" (WherePredicate; ',')+ ','?;
+	
+	syntax WherePredicate
+	{
+		| WherePredicate1 = ForLifetimes? Lifetime ':' (Bound; '+')+;
+		| WherePredicate2 = ForLifetimes? Ty ':' TyParamBounds;
+	}
+
+	//TODO:
+	syntax TyParams {}
+
+	syntax ItemFn = "fn" Name GenericParams FnDecl WhereClause? InnerAttrsAndBlock;
+
+	//TODO:
+	syntax FnDecl {}
+  }
+}

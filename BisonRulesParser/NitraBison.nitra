@@ -1,0 +1,22 @@
+﻿language NitraBison
+{
+  //span class StringEx         { ForegroundColor=Maroon;     }
+  //span class Namespace        { ForegroundColor=Chocolate;  }
+  //span class Alias            { ForegroundColor=DarkViolet; }
+  //span class Constant         { ForegroundColor=Goldenrod;  }
+  //span class Field            { ForegroundColor=Goldenrod;  }
+  //span class Property         { ForegroundColor=Goldenrod;  }
+  //span class Method           { ForegroundColor=Goldenrod;  }
+  //span class Parameter        { ForegroundColor=Goldenrod;  }
+
+  extension = .y;
+
+  company     = IngenuiousSolution; // TODO: Проверять, что не содержит пробелов.
+  description = Incomplete Bison grammar parser (enough for parsing Rust grammar);
+  authors     = Alexander Stroykov, Alexander Stroykov;
+  copyright   = IngenuiousSolution;
+  license url = http://opensource.org/licenses/BSD-3-Clause;
+  // require license acceptance;
+
+  syntax module BisonRulesParser.Grammar.Main start rule GrammarFile;
+}

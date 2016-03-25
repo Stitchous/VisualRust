@@ -1,0 +1,98 @@
+﻿namespace BisonRulesParser.Grammar
+{
+  syntax module Main
+  {
+	using Nitra.Core;
+	using Nitra.CStyleComments;
+
+	using Identifiers;
+
+	regex DecDigit	= ['0'..'9'];
+
+	[StartRule]
+	syntax GrammarFile = Prologue Declaration* RulesSection Epilogue;
+
+	syntax Prologue = "%{" (!"%}" Any)* "%}";
+
+    syntax Declaration
+	{
+		| TokenDeclarationSyntax
+		| PrecedenceDeclaration
+		| DebugDirective
+		| ExpectDeclaration
+		| NonAssocDeclaration
+		| RightAssociativityDeclaration
+		| LeftAssociativityDeclaration
+		| StartRuleDeclaration
+	}
+
+	syntax TokenDeclarationSyntax = "%token" Name;
+
+	syntax PrecedenceDeclaration = "%precedence" PrecedenceAndAssocComponent+;
+
+	syntax PrecedenceAndAssocComponent
+	{  
+		| Reference 
+		| CharacterLiteral
+	}
+
+	token DebugDirective = "%debug";
+
+	syntax ExpectDeclaration = "%expect" DecDigit+;
+
+	syntax NonAssocDeclaration = "%nonassoc" Reference; 
+
+	syntax RightAssociativityDeclaration = "%right" PrecedenceAndAssocComponent+;
+
+	syntax LeftAssociativityDeclaration = "%left" PrecedenceAndAssocComponent+;
+
+	syntax StartRuleDeclaration = "%start" Reference;
+
+    syntax RulesSection = "%%" Rule+ "%%"?;
+
+	syntax Epilogue = Any*;
+
+	syntax Rule = Name ':' (RuleComponent; '|')+ ';'?;
+
+	token Epsilon = "%empty";
+
+	syntax Precedence = "%prec" Reference;
+
+	syntax RuleComponent 
+	{ 
+		| NotEmpty = Precedence? Symbol+ Precedence? Action?
+		| Empty = Precedence? Epsilon Precedence? Action?
+	}
+	
+	syntax Symbol
+	{
+		| Reference 
+		| CharacterLiteral
+	}
+
+	[SpanClass(String)] token StringLiteral = '"' (!'"' Any)* '"';
+	
+	syntax Action = '{' ActionElement* '}'
+	{
+		regex NotAllowedActionElementChar = ('}' | '"');
+		syntax ActionElement
+		{ 
+			| StringLiteral
+			| (!NotAllowedActionElementChar Any)*
+		}
+	}
+
+	[SpanClass(Char)] token CharacterLiteral = '\'' Character '\'';
+
+	token Character
+    {
+		| SimpleEscapeSequence
+		| SingleCharacter
+    }
+
+	token SingleCharacter   = !NotAllowedCharLiteralChar Any;
+
+	regex NotAllowedCharLiteralChar           = NewLineCharacter | "'" | "\\";
+	regex SimpleEscapeSequence                = "\\'" | "\\\"" | "\\\\" | "\\0" | "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v";
+   }
+}

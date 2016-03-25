@@ -5,7 +5,7 @@
 	using Nitra.Core;
 	using Nitra.CStyleComments;
 
-	using ModItems;
+	using Items;
 	using Attributes;
 
 	token ShebangLine = "#!" !'[' (!NewLine Any)* NewLine;

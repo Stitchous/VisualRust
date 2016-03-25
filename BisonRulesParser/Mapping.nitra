@@ -1,0 +1,148 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using BisonRulesParser.AstUtils;
+
+using BisonRulesParser.Grammar;
+
+using Nitra.Declarations;
+
+namespace BisonRulesParser
+{
+	abstract ast Symbol
+	{
+	stage 1:
+		in  ContainingTable : TableScope;
+		| Reference 
+		{
+			Reference : Nitra.Declarations.Reference;
+			Reference.Scope =  ContainingTable;
+		}
+		| CharacterLiteral
+		{
+			Value : string;
+		}
+	}
+
+	declaration TokenDeclaration {}
+
+	abstract ast Declaration
+	{
+		in  ContainingTable : TableScope;
+		| TokenDeclarationAst
+		{
+			Declaration : TokenDeclaration;
+			Declaration.ContainingTable = ContainingTable;
+		}
+		| OtherDeclaration 
+	}
+	
+	abstract ast RuleComponent
+	{
+		in  ContainingTable : TableScope;
+
+		| Empty
+		{
+			
+		}
+		| NotEmpty
+		{
+			Symbols : Symbol*;
+			Symbols.ContainingTable =  ContainingTable;
+		}
+	}
+
+	ast GrammarFile
+	{
+		out ContainingTable : TableScope = TableScope("Global", null);
+		
+		Declarations : Declaration*;
+		Rules : Rule*;
+
+		Declarations.ContainingTable = ContainingTable;
+		Rules.ContainingTable = ContainingTable;
+	}
+	
+	declaration Rule
+	{
+		RuleComponents : RuleComponent*;
+
+		out IsOptional : bool = RuleComponents.ContainsType(typeof(RuleComponent.Empty));
+		
+		RuleComponents.ContainingTable =  ContainingTable;
+
+		stage 1:
+
+		out HasDirectLeftRecursion : bool = RuleComponents.ContainsDirectRecursionTo(Name);
+
+	}
+
+	map syntax Main.GrammarFile -> GrammarFile
+	{
+		Declarations -> Declarations;
+		RulesSection -> Rules;
+	}
+
+	map syntax Main.TokenDeclarationSyntax -> TokenDeclaration
+	{
+		Name -> Name;
+	}
+
+	map syntax Main.Declaration-> Declaration
+	{
+
+		| TokenDeclarationSyntax					-> TokenDeclarationAst
+		{ 
+			TokenDeclarationSyntax -> Declaration; 
+		}
+		| PrecedenceDeclaration				-> OtherDeclaration {}
+		| DebugDirective					-> OtherDeclaration {}
+		| ExpectDeclaration					-> OtherDeclaration	{}
+		| NonAssocDeclaration				-> OtherDeclaration	{}
+		| RightAssociativityDeclaration		-> OtherDeclaration	{}
+		| LeftAssociativityDeclaration		-> OtherDeclaration	{}
+		| StartRuleDeclaration				-> OtherDeclaration	{}
+	}
+
+
+	map syntax Main.Symbol -> Symbol
+	{
+		| Reference -> Reference 
+		{
+			Reference -> Reference;
+		}
+		| CharacterLiteral -> Symbol.CharacterLiteral
+		{
+			 Value = Nitra.ParsedValue(CharacterLiteral.Character.Span, GetText(CharacterLiteral.Character.Span));
+		}
+	}
+
+	map syntax Main.RulesSection -> Rule*
+	{
+		Rules
+	}
+
+	map syntax Main.RuleComponent -> RuleComponent
+	{
+		| NotEmpty -> NotEmpty
+		{
+			Symbols -> Symbols;
+		}
+		| Empty -> Empty 
+		{
+		}
+	}
+
+	map syntax Main.Rule -> Rule
+	{
+		Name -> Name;
+		RuleComponents.Item1 -> RuleComponents;
+	}
+
+}

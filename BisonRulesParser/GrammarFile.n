@@ -1,0 +1,33 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nitra.Declarations;
+using Nitra.ProjectSystem;
+
+namespace BisonRulesParser
+{
+  public partial class GrammarFile : AstBase, IProjectSupport
+  {
+      public RefreshProject(project : Project) : void
+      {
+        def files   = project.Files.ToArray();
+        def scope   = TableScope("Variables", null);  
+
+        foreach (grammarFile in files.OfType.[GrammarFile]())
+        {
+            grammarFile.ContainingTable = scope; 
+        }
+        
+        def context = DependentPropertyEvalContext(); 
+
+        project.EvalProperties(context, "Collect variables", 0); 
+        project.EvalProperties(context, "Compute variables", 1); 
+      }
+  }
+}

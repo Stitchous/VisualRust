@@ -10,8 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VisualRust.Grammar</RootNamespace>
     <AssemblyName>VisualRust.Grammar</AssemblyName>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NoStdLib>true</NoStdLib>
     <NemerleVersion>Net-4.0</NemerleVersion>
@@ -38,7 +37,7 @@
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <MacroReference Include="Nitra.Compiler, Version=0.1.3208.0, Culture=neutral, PublicKeyToken=e080a9c724e2bfcd">
+    <MacroReference Include="Nitra.Compiler">
       <Name>Nitra.Compiler</Name>
       <AssemblyName>Nitra.Compiler.dll</AssemblyName>
       <HintPath>..\External\Nitra.Compiler.dll</HintPath>
@@ -80,7 +79,7 @@
       <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="Nitra.Runtime, Version=0.1.3208.0, Culture=neutral, PublicKeyToken=e080a9c724e2bfcd">
+    <Reference Include="Nitra.Runtime">
       <Name>Nitra.Runtime</Name>
       <AssemblyName>Nitra.Runtime.dll</AssemblyName>
       <HintPath>..\External\Nitra.Runtime.dll</HintPath>
@@ -126,6 +125,9 @@
     <Compile Include="Attributes.nitra">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Blocks.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Identifiers.nitra">
       <SubType>Code</SubType>
     </Compile>
@@ -145,18 +147,23 @@
     <Compile Include="Main.nitra">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ModItems.nitra">
+    <Compile Include="Items.nitra">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RustClassifier.n">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Types.nitra">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder1\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Key.snk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="packages.config">
       <SubType>Content</SubType>
     </Content>
@@ -165,9 +172,6 @@
     </Content>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
-  <!--   <Target Name="AfterBuild">
-  <AL ToolPath="$(SDKBin)" KeyFile="key.snk" />
-  </Target> -->
   <!--
 		To modify your build process, add your task inside one of the targets below and uncomment it. 
 		Other similar extension points exist, see Microsoft.Common.targets.

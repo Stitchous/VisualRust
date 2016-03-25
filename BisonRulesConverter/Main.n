@@ -1,0 +1,107 @@
+﻿using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Console;
+using System.Linq;
+
+using BisonRulesParser;
+
+using Nitra.Declarations;
+using Nitra.ProjectSystem;
+
+module Program
+{
+    Main() : void
+    {
+        def lang = NitraBison.Instance;
+        def file = FsFile("parser-lalr.y", lang);
+        def context = DependentPropertyEvalContext();
+        def propsEvalHost = ProjectEvalPropertiesHost([file]);
+        
+        propsEvalHost.EvalProperties(context, "Collect variables", 0); 
+        propsEvalHost.EvalProperties(context, "Compute variables", 1);
+        
+        WriteLine(GenerateNitraGrammar(file.Ast :> GrammarFile));
+        
+        /*
+        foreach(rule in (file.Ast :> GrammarFile).Rules.Where(_.HasDirectLeftRecursion))
+        {
+            def span = rule.Span;
+            WriteLine(file.GetSource().Text.Substring(span.StartPos, span.EndPos - span.StartPos));
+            WriteLine();
+        }
+        */
+        
+        WriteLine("Done!");
+        _ = ReadLine();
+    }
+    
+    GenerateNitraGrammar(grammarFile : GrammarFile) : string
+    {                
+        mutable result = "";
+        foreach (rule in grammarFile.Rules.Where(x => !x.HasDirectLeftRecursion))
+        {
+            def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
+            
+            if (rule.IsOptional)
+            {
+                if (components.Count() == 1 && components.First().Symbols.Count() == 1)
+                    result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols)) + "?";
+                else
+                    result += GenerateCompoundRule($"$(rule.Name) = Optional?", [GenerateRule("Optional", components.Map(x => x.Symbols), "\t")]);
+            }
+            else
+            {
+                result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols));
+            }
+            
+            result += "\n\n";
+        }
+        
+        result
+    }
+            
+    GenerateRule(name : string, components : IEnumerable[IEnumerable[Symbol]], ident = "") : string
+    {
+        def GenerateSymbols(symbols : IEnumerable[Symbol])
+        {            
+            def GenerateSymbol(symbol : Symbol)
+            {
+                match (symbol)
+                {
+                    | x is Symbol.Reference        => x.Reference.Text
+                    | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
+                }
+            }
+        
+            $<#..$(symbols; " "; GenerateSymbol)#>
+        }
+        
+        if (components.Count() == 1)
+        {
+            ident + $"syntax $name = " + GenerateSymbols(components.First())
+        }
+        else
+        {
+            mutable body = ident + $"syntax $name\n$ident{";
+                
+            foreach (component in components with index)
+                body += $"\n$ident\t| $name$index = " + GenerateSymbols(component);
+                
+            body + $"\n$ident}"
+        }
+    }
+        
+    GenerateCompoundRule(rule : string, subrules : IEnumerable[string], ident = "") : string
+    {
+        mutable result = ident + $"syntax $rule\n$ident{\n";
+            
+        foreach (subrule in subrules)
+            result += ident + subrule;
+                
+        result + $"\n$ident}"
+    }    
+}
