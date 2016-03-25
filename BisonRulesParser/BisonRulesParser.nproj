@@ -73,6 +73,9 @@
     <Compile Include="AstUtils.n">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="generated.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GrammarFile.n">
       <SubType>Code</SubType>
     </Compile>

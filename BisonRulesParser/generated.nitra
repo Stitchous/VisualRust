@@ -1,0 +1,1568 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nitra.Core;
+
+using Rulst.Tokesn;
+namespace BisonRulesParser
+{
+	syntax module RRules
+	{
+	syntax crate
+{
+        | crate0 = maybe_shebang inner_attrs maybe_mod_items
+        | crate1 = maybe_shebang maybe_mod_items
+}
+
+syntax maybe_shebang = SHEBANG_LINE?
+
+syntax maybe_inner_attrs = inner_attrs?
+
+syntax inner_attrs = (inner_attrs_heads inner_attrs_tails*)
+{
+        syntax inner_attrs_heads = inner_attr
+        syntax inner_attrs_tails = inner_attr
+}
+
+syntax inner_attr
+{
+        | inner_attr0 = SHEBANG "[" meta_item "]"
+        | inner_attr1 = INNER_DOC_COMMENT
+}
+
+syntax maybe_outer_attrs = outer_attrs?
+
+syntax outer_attrs = (outer_attrs_heads outer_attrs_tails*)
+{
+        syntax outer_attrs_heads = outer_attr
+        syntax outer_attrs_tails = outer_attr
+}
+
+syntax outer_attr
+{
+        | outer_attr0 = "#" "[" meta_item "]"
+        | outer_attr1 = OUTER_DOC_COMMENT
+}
+
+syntax meta_item
+{
+        | meta_item0 = ident
+        | meta_item1 = ident "=" lit
+        | meta_item2 = ident "(" meta_seq ")"
+        | meta_item3 = ident "(" meta_seq "," ")"
+}
+
+syntax meta_seq = (meta_seq_heads meta_seq_tails*)?
+{
+        syntax meta_seq_heads = meta_item
+        syntax meta_seq_tails = "," meta_item
+}
+
+syntax maybe_mod_items = mod_items?
+
+syntax mod_items = (mod_items_heads mod_items_tails*)
+{
+        syntax mod_items_heads = mod_item
+        syntax mod_items_tails = mod_item
+}
+
+syntax attrs_and_vis = maybe_outer_attrs visibility
+
+syntax mod_item = attrs_and_vis item
+
+syntax item
+{
+        | item0 = stmt_item
+        | item1 = item_macro
+}
+
+syntax stmt_item
+{
+        | stmt_item0 = item_static
+        | stmt_item1 = item_const
+        | stmt_item2 = item_type
+        | stmt_item3 = block_item
+        | stmt_item4 = view_item
+}
+
+syntax item_static
+{
+        | item_static0 = STATIC ident ":" ty "=" expr ";"
+        | item_static1 = STATIC MUT ident ":" ty "=" expr ";"
+}
+
+syntax item_const = CONST ident ":" ty "=" expr ";"
+
+syntax item_macro
+{
+        | item_macro0 = path_expr "!" maybe_ident parens_delimited_token_trees ";"
+        | item_macro1 = path_expr "!" maybe_ident braces_delimited_token_trees
+        | item_macro2 = path_expr "!" maybe_ident brackets_delimited_token_trees ";"
+}
+
+syntax view_item
+{
+        | view_item0 = use_item
+        | view_item1 = extern_fn_item
+        | view_item2 = EXTERN CRATE ident ";"
+        | view_item3 = EXTERN CRATE ident AS ident ";"
+}
+
+syntax extern_fn_item = EXTERN maybe_abi item_fn
+
+syntax use_item = USE view_path ";"
+
+syntax view_path
+{
+        | view_path0 = path_no_types_allowed
+        | view_path1 = path_no_types_allowed MOD_SEP "{" "}"
+        | view_path2 = MOD_SEP "{" "}"
+        | view_path3 = path_no_types_allowed MOD_SEP "{" idents_or_self "}"
+        | view_path4 = MOD_SEP "{" idents_or_self "}"
+        | view_path5 = path_no_types_allowed MOD_SEP "{" idents_or_self "," "}"
+        | view_path6 = MOD_SEP "{" idents_or_self "," "}"
+        | view_path7 = path_no_types_allowed MOD_SEP "*"
+        | view_path8 = "{" "}"
+        | view_path9 = "{" idents_or_self "}"
+        | view_path10 = "{" idents_or_self "," "}"
+        | view_path11 = path_no_types_allowed AS ident
+}
+
+syntax block_item
+{
+        | block_item0 = item_fn
+        | block_item1 = item_unsafe_fn
+        | block_item2 = item_mod
+        | block_item3 = item_foreign_mod
+        | block_item4 = item_struct
+        | block_item5 = item_enum
+        | block_item6 = item_trait
+        | block_item7 = item_impl
+}
+
+syntax maybe_ty_ascription = (":" ty_sum)?
+
+syntax maybe_init_expr = ("=" expr)?
+
+syntax item_struct
+{
+        | item_struct0 = STRUCT ident generic_params maybe_where_clause struct_decl_args
+        | item_struct1 = STRUCT ident generic_params struct_tuple_args maybe_where_clause ";"
+        | item_struct2 = STRUCT ident generic_params maybe_where_clause ";"
+}
+
+syntax struct_decl_args
+{
+        | struct_decl_args0 = "{" struct_decl_fields "}"
+        | struct_decl_args1 = "{" struct_decl_fields "," "}"
+}
+
+syntax struct_tuple_args
+{
+        | struct_tuple_args0 = "(" struct_tuple_fields ")"
+        | struct_tuple_args1 = "(" struct_tuple_fields "," ")"
+}
+
+syntax struct_decl_fields = (struct_decl_fields_heads struct_decl_fields_tails*)?
+{
+        syntax struct_decl_fields_heads = struct_decl_field
+        syntax struct_decl_fields_tails = "," struct_decl_field
+}
+
+syntax struct_decl_field = attrs_and_vis ident ":" ty_sum
+
+syntax struct_tuple_fields = (struct_tuple_fields_heads struct_tuple_fields_tails*)
+{
+        syntax struct_tuple_fields_heads = struct_tuple_field
+        syntax struct_tuple_fields_tails = "," struct_tuple_field
+}
+
+syntax struct_tuple_field = attrs_and_vis ty_sum
+
+syntax item_enum
+{
+        | item_enum0 = ENUM ident generic_params maybe_where_clause "{" enum_defs "}"
+        | item_enum1 = ENUM ident generic_params maybe_where_clause "{" enum_defs "," "}"
+}
+
+syntax enum_defs = (enum_defs_heads enum_defs_tails*)?
+{
+        syntax enum_defs_heads = enum_def
+        syntax enum_defs_tails = "," enum_def
+}
+
+syntax enum_def = attrs_and_vis ident enum_args
+
+syntax enum_args = enum_args_internal?
+{       syntax enum_args_internal
+        {
+                | enum_args_internal0 = "{" struct_decl_fields "}"
+                | enum_args_internal1 = "{" struct_decl_fields "," "}"
+                | enum_args_internal2 = "(" maybe_ty_sums ")"
+                | enum_args_internal3 = "=" expr
+        }
+}
+
+syntax item_mod
+{
+        | item_mod0 = MOD ident ";"
+        | item_mod1 = MOD ident "{" maybe_mod_items "}"
+        | item_mod2 = MOD ident "{" inner_attrs maybe_mod_items "}"
+}
+
+syntax item_foreign_mod
+{
+        | item_foreign_mod0 = EXTERN maybe_abi "{" maybe_foreign_items "}"
+        | item_foreign_mod1 = EXTERN maybe_abi "{" inner_attrs maybe_foreign_items "}"
+}
+
+syntax maybe_abi = str?
+
+syntax maybe_foreign_items = foreign_items?
+
+syntax foreign_items = (foreign_items_heads foreign_items_tails*)
+{
+        syntax foreign_items_heads = foreign_item
+        syntax foreign_items_tails = foreign_item
+}
+
+syntax foreign_item
+{
+        | foreign_item0 = attrs_and_vis STATIC item_foreign_static
+        | foreign_item1 = attrs_and_vis item_foreign_fn
+        | foreign_item2 = attrs_and_vis UNSAFE item_foreign_fn
+}
+
+syntax item_foreign_static = maybe_mut ident ":" ty ";"
+
+syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ";"
+
+syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty
+
+syntax fn_params_allow_variadic
+{
+        | fn_params_allow_variadic0 = "(" ")"
+        | fn_params_allow_variadic1 = "(" params ")"
+        | fn_params_allow_variadic2 = "(" params "," ")"
+        | fn_params_allow_variadic3 = "(" params "," DOTDOTDOT ")"
+}
+
+syntax visibility = PUB?
+
+syntax idents_or_self = (idents_or_self_heads idents_or_self_tails*)
+{
+        syntax idents_or_self_heads
+        {
+                | idents_or_self_heads0 = ident_or_self
+                | idents_or_self_heads1 = ident_or_self AS ident
+        }
+        syntax idents_or_self_tails = "," ident_or_self
+}
+
+syntax ident_or_self
+{
+        | ident_or_self0 = ident
+        | ident_or_self1 = SELF
+}
+
+syntax item_type = TYPE ident generic_params maybe_where_clause "=" ty_sum ";"
+
+syntax for_sized = for_sized_internal?
+{       syntax for_sized_internal
+        {
+                | for_sized_internal0 = FOR "?" ident
+                | for_sized_internal1 = FOR ident "?"
+        }
+}
+
+syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause "{" maybe_trait_items "}"
+
+syntax maybe_trait_items = trait_items?
+
+syntax trait_items = (trait_items_heads trait_items_tails*)
+{
+        syntax trait_items_heads = trait_item
+        syntax trait_items_tails = trait_item
+}
+
+syntax trait_item
+{
+        | trait_item0 = trait_const
+        | trait_item1 = trait_type
+        | trait_item2 = trait_method
+}
+
+syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ";"
+
+syntax maybe_const_default = ("=" expr)?
+
+syntax trait_type = maybe_outer_attrs TYPE ty_param ";"
+
+syntax maybe_unsafe = UNSAFE?
+
+syntax trait_method
+{
+        | trait_method0 = type_method
+        | trait_method1 = method
+}
+
+syntax type_method
+{
+        | type_method0 = attrs_and_vis maybe_unsafe FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ";"
+        | type_method1 = attrs_and_vis maybe_unsafe EXTERN maybe_abi FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ";"
+}
+
+syntax method
+{
+        | method0 = attrs_and_vis maybe_unsafe FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause inner_attrs_and_block
+        | method1 = attrs_and_vis maybe_unsafe EXTERN maybe_abi FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause inner_attrs_and_block
+}
+
+syntax impl_method
+{
+        | impl_method0 = attrs_and_vis maybe_unsafe FN ident generic_params fn_decl_with_self maybe_where_clause inner_attrs_and_block
+        | impl_method1 = attrs_and_vis maybe_unsafe EXTERN maybe_abi FN ident generic_params fn_decl_with_self maybe_where_clause inner_attrs_and_block
+}
+
+syntax item_impl
+{
+        | item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
+        | item_impl1 = maybe_unsafe IMPL generic_params "(" ty ")" maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
+        | item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
+        | item_impl3 = maybe_unsafe IMPL generic_params "!" trait_ref FOR ty_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
+        | item_impl4 = maybe_unsafe IMPL generic_params trait_ref FOR DOTDOT "{" "}"
+        | item_impl5 = maybe_unsafe IMPL generic_params "!" trait_ref FOR DOTDOT "{" "}"
+}
+
+syntax maybe_impl_items = impl_items?
+
+syntax impl_items
+{
+        | impl_items0 = impl_item
+        | impl_items1 = impl_item impl_items
+}
+
+syntax impl_item
+{
+        | impl_item0 = impl_method
+        | impl_item1 = attrs_and_vis item_macro
+        | impl_item2 = impl_const
+        | impl_item3 = impl_type
+}
+
+syntax impl_const = attrs_and_vis item_const
+
+syntax impl_type = attrs_and_vis TYPE ident generic_params "=" ty_sum ";"
+
+syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block
+
+syntax item_unsafe_fn
+{
+        | item_unsafe_fn0 = UNSAFE FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block
+        | item_unsafe_fn1 = UNSAFE EXTERN maybe_abi FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block
+}
+
+syntax fn_decl = fn_params ret_ty
+
+syntax fn_decl_with_self = fn_params_with_self ret_ty
+
+syntax fn_decl_with_self_allow_anon_params = fn_anon_params_with_self ret_ty
+
+syntax fn_params = "(" maybe_params ")"
+
+syntax fn_anon_params
+{
+        | fn_anon_params0 = "(" anon_param anon_params_allow_variadic_tail ")"
+        | fn_anon_params1 = "(" ")"
+}
+
+syntax fn_params_with_self
+{
+        | fn_params_with_self0 = "(" maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
+        | fn_params_with_self1 = "(" "&" maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
+        | fn_params_with_self2 = "(" "&" lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
+        | fn_params_with_self3 = "(" maybe_params ")"
+}
+
+syntax fn_anon_params_with_self
+{
+        | fn_anon_params_with_self0 = "(" maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
+        | fn_anon_params_with_self1 = "(" "&" maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
+        | fn_anon_params_with_self2 = "(" "&" lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
+        | fn_anon_params_with_self3 = "(" maybe_anon_params ")"
+}
+
+syntax maybe_params = maybe_params_internal?
+{       syntax maybe_params_internal
+        {
+                | maybe_params_internal0 = params
+                | maybe_params_internal1 = params ","
+        }
+}
+
+syntax params = (params_heads params_tails*)
+{
+        syntax params_heads = param
+        syntax params_tails = "," param
+}
+
+syntax param = pat ":" ty_sum
+
+syntax inferrable_params = (inferrable_params_heads inferrable_params_tails*)
+{
+        syntax inferrable_params_heads = inferrable_param
+        syntax inferrable_params_tails = "," inferrable_param
+}
+
+syntax inferrable_param = pat maybe_ty_ascription
+
+syntax maybe_unboxed_closure_kind = maybe_unboxed_closure_kind_internal?
+{       syntax maybe_unboxed_closure_kind_internal
+        {
+                | maybe_unboxed_closure_kind_internal0 = ":"
+                | maybe_unboxed_closure_kind_internal1 = "&" maybe_mut ":"
+        }
+}
+
+syntax maybe_comma_params = maybe_comma_params_internal?
+{       syntax maybe_comma_params_internal
+        {
+                | maybe_comma_params_internal0 = ","
+                | maybe_comma_params_internal1 = "," params
+                | maybe_comma_params_internal2 = "," params ","
+        }
+}
+
+syntax maybe_comma_anon_params = maybe_comma_anon_params_internal?
+{       syntax maybe_comma_anon_params_internal
+        {
+                | maybe_comma_anon_params_internal0 = ","
+                | maybe_comma_anon_params_internal1 = "," anon_params
+                | maybe_comma_anon_params_internal2 = "," anon_params ","
+        }
+}
+
+syntax maybe_anon_params = maybe_anon_params_internal?
+{       syntax maybe_anon_params_internal
+        {
+                | maybe_anon_params_internal0 = anon_params
+                | maybe_anon_params_internal1 = anon_params ","
+        }
+}
+
+syntax anon_params = (anon_params_heads anon_params_tails*)
+{
+        syntax anon_params_heads = anon_param
+        syntax anon_params_tails = "," anon_param
+}
+
+syntax anon_param
+{
+        | anon_param0 = named_arg ":" ty
+        | anon_param1 = ty
+}
+
+syntax anon_params_allow_variadic_tail = anon_params_allow_variadic_tail_internal?
+{       syntax anon_params_allow_variadic_tail_internal
+        {
+                | anon_params_allow_variadic_tail_internal0 = "," DOTDOTDOT
+                | anon_params_allow_variadic_tail_internal1 = "," anon_param anon_params_allow_variadic_tail
+        }
+}
+
+syntax named_arg
+{
+        | named_arg0 = ident
+        | named_arg1 = UNDERSCORE
+        | named_arg2 = "&" ident
+        | named_arg3 = "&" UNDERSCORE
+        | named_arg4 = ANDAND ident
+        | named_arg5 = ANDAND UNDERSCORE
+        | named_arg6 = MUT ident
+}
+
+syntax ret_ty = ret_ty_internal?
+{       syntax ret_ty_internal
+        {
+                | ret_ty_internal0 = RARROW "!"
+                | ret_ty_internal1 = RARROW ty
+        }
+}
+
+syntax generic_params = generic_params_internal?
+{       syntax generic_params_internal
+        {
+                | generic_params_internal0 = "<" lifetimes ">"
+                | generic_params_internal1 = "<" lifetimes "," ">"
+                | generic_params_internal2 = "<" lifetimes SHR
+                | generic_params_internal3 = "<" lifetimes "," SHR
+                | generic_params_internal4 = "<" lifetimes "," ty_params ">"
+                | generic_params_internal5 = "<" lifetimes "," ty_params "," ">"
+                | generic_params_internal6 = "<" lifetimes "," ty_params SHR
+                | generic_params_internal7 = "<" lifetimes "," ty_params "," SHR
+                | generic_params_internal8 = "<" ty_params ">"
+                | generic_params_internal9 = "<" ty_params "," ">"
+                | generic_params_internal10 = "<" ty_params SHR
+                | generic_params_internal11 = "<" ty_params "," SHR
+        }
+}
+
+syntax maybe_where_clause = where_clause?
+
+syntax where_clause
+{
+        | where_clause0 = WHERE where_predicates
+        | where_clause1 = WHERE where_predicates ","
+}
+
+syntax where_predicates = (where_predicates_heads where_predicates_tails*)
+{
+        syntax where_predicates_heads = where_predicate
+        syntax where_predicates_tails = "," where_predicate
+}
+
+syntax where_predicate
+{
+        | where_predicate0 = maybe_for_lifetimes lifetime ":" bounds
+        | where_predicate1 = maybe_for_lifetimes ty ":" ty_param_bounds
+}
+
+syntax maybe_for_lifetimes = (FOR "<" lifetimes ">")?
+
+syntax ty_params = (ty_params_heads ty_params_tails*)
+{
+        syntax ty_params_heads = ty_param
+        syntax ty_params_tails = "," ty_param
+}
+
+syntax path_no_types_allowed = (path_no_types_allowed_heads path_no_types_allowed_tails*)
+{
+        syntax path_no_types_allowed_heads
+        {
+                | path_no_types_allowed_heads0 = ident
+                | path_no_types_allowed_heads1 = MOD_SEP ident
+                | path_no_types_allowed_heads2 = SELF
+                | path_no_types_allowed_heads3 = MOD_SEP SELF
+        }
+        syntax path_no_types_allowed_tails = MOD_SEP ident
+}
+
+syntax path_generic_args_without_colons = (path_generic_args_without_colons_heads path_generic_args_without_colons_tails*)
+{
+        syntax path_generic_args_without_colons_heads
+        {
+                | path_generic_args_without_colons_heads0 = ident
+                | path_generic_args_without_colons_heads1 = ident generic_args
+                | path_generic_args_without_colons_heads2 = ident "(" maybe_ty_sums ")" ret_ty
+        }
+        syntax path_generic_args_without_colons_tails
+        {
+                | path_generic_args_without_colons_tails0 = MOD_SEP ident
+                | path_generic_args_without_colons_tails1 = MOD_SEP ident generic_args
+                | path_generic_args_without_colons_tails2 = MOD_SEP ident "(" maybe_ty_sums ")" ret_ty
+        }
+}
+
+syntax generic_args
+{
+        | generic_args0 = "<" generic_values ">"
+        | generic_args1 = "<" generic_values SHR
+        | generic_args2 = "<" generic_values GE
+        | generic_args3 = "<" generic_values SHREQ
+        | generic_args4 = SHL ty_qualified_path_and_generic_values ">"
+        | generic_args5 = SHL ty_qualified_path_and_generic_values SHR
+        | generic_args6 = SHL ty_qualified_path_and_generic_values GE
+        | generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ
+}
+
+syntax generic_values = maybe_lifetimes maybe_ty_sums_and_or_bindings
+
+syntax maybe_ty_sums_and_or_bindings = maybe_ty_sums_and_or_bindings_internal?
+{       syntax maybe_ty_sums_and_or_bindings_internal
+        {
+                | maybe_ty_sums_and_or_bindings_internal0 = ty_sums
+                | maybe_ty_sums_and_or_bindings_internal1 = ty_sums ","
+                | maybe_ty_sums_and_or_bindings_internal2 = ty_sums "," bindings
+                | maybe_ty_sums_and_or_bindings_internal3 = bindings
+                | maybe_ty_sums_and_or_bindings_internal4 = bindings ","
+        }
+}
+
+syntax maybe_bindings = ("," bindings)?
+
+syntax pat
+{
+        | pat0 = UNDERSCORE
+        | pat1 = "&" pat
+        | pat2 = "&" MUT pat
+        | pat3 = ANDAND pat
+        | pat4 = "(" ")"
+        | pat5 = "(" pat_tup ")"
+        | pat6 = "(" pat_tup "," ")"
+        | pat7 = "[" pat_vec "]"
+        | pat8 = lit_or_path
+        | pat9 = lit_or_path DOTDOTDOT lit_or_path
+        | pat10 = path_expr "{" pat_struct "}"
+        | pat11 = path_expr "(" DOTDOT ")"
+        | pat12 = path_expr "(" pat_tup ")"
+        | pat13 = path_expr "!" maybe_ident delimited_token_trees
+        | pat14 = binding_mode ident
+        | pat15 = ident "@" pat
+        | pat16 = binding_mode ident "@" pat
+        | pat17 = BOX pat
+        | pat18 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident
+        | pat19 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
+}
+
+syntax pats_or = (pats_or_heads pats_or_tails*)
+{
+        syntax pats_or_heads = pat
+        syntax pats_or_tails = "|" pat
+}
+
+syntax binding_mode
+{
+        | binding_mode0 = REF
+        | binding_mode1 = REF MUT
+        | binding_mode2 = MUT
+}
+
+syntax lit_or_path
+{
+        | lit_or_path0 = path_expr
+        | lit_or_path1 = lit
+        | lit_or_path2 = "-" lit
+}
+
+syntax pat_field
+{
+        | pat_field0 = ident
+        | pat_field1 = binding_mode ident
+        | pat_field2 = BOX ident
+        | pat_field3 = BOX binding_mode ident
+        | pat_field4 = ident ":" pat
+        | pat_field5 = binding_mode ident ":" pat
+}
+
+syntax pat_fields = (pat_fields_heads pat_fields_tails*)
+{
+        syntax pat_fields_heads = pat_field
+        syntax pat_fields_tails = "," pat_field
+}
+
+syntax pat_struct
+{
+        | pat_struct0 = pat_fields
+        | pat_struct1 = pat_fields ","
+        | pat_struct2 = pat_fields "," DOTDOT
+        | pat_struct3 = DOTDOT
+}
+
+syntax pat_tup = (pat_tup_heads pat_tup_tails*)
+{
+        syntax pat_tup_heads = pat
+        syntax pat_tup_tails = "," pat
+}
+
+syntax pat_vec = pat_vec_internal?
+{       syntax pat_vec_internal
+        {
+                | pat_vec_internal0 = pat_vec_elts
+                | pat_vec_internal1 = pat_vec_elts ","
+                | pat_vec_internal2 = pat_vec_elts DOTDOT
+                | pat_vec_internal3 = pat_vec_elts "," DOTDOT
+                | pat_vec_internal4 = pat_vec_elts DOTDOT "," pat_vec_elts
+                | pat_vec_internal5 = pat_vec_elts DOTDOT "," pat_vec_elts ","
+                | pat_vec_internal6 = pat_vec_elts "," DOTDOT "," pat_vec_elts
+                | pat_vec_internal7 = pat_vec_elts "," DOTDOT "," pat_vec_elts ","
+                | pat_vec_internal8 = DOTDOT "," pat_vec_elts
+                | pat_vec_internal9 = DOTDOT "," pat_vec_elts ","
+                | pat_vec_internal10 = DOTDOT
+        }
+}
+
+syntax pat_vec_elts = (pat_vec_elts_heads pat_vec_elts_tails*)
+{
+        syntax pat_vec_elts_heads = pat
+        syntax pat_vec_elts_tails = "," pat
+}
+
+syntax ty
+{
+        | ty0 = ty_prim
+        | ty1 = ty_closure
+        | ty2 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident
+        | ty3 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
+        | ty4 = "(" ty_sums ")"
+        | ty5 = "(" ty_sums "," ")"
+        | ty6 = "(" ")"
+}
+
+syntax ty_prim
+{
+        | ty_prim0 = path_generic_args_without_colons
+        | ty_prim1 = MOD_SEP path_generic_args_without_colons
+        | ty_prim2 = SELF MOD_SEP path_generic_args_without_colons
+        | ty_prim3 = BOX ty
+        | ty_prim4 = "*" maybe_mut_or_const ty
+        | ty_prim5 = "&" ty
+        | ty_prim6 = "&" MUT ty
+        | ty_prim7 = ANDAND ty
+        | ty_prim8 = ANDAND MUT ty
+        | ty_prim9 = "&" lifetime maybe_mut ty
+        | ty_prim10 = ANDAND lifetime maybe_mut ty
+        | ty_prim11 = "[" ty "]"
+        | ty_prim12 = "[" ty "," DOTDOT expr "]"
+        | ty_prim13 = "[" ty ";" expr "]"
+        | ty_prim14 = TYPEOF "(" expr ")"
+        | ty_prim15 = UNDERSCORE
+        | ty_prim16 = ty_bare_fn
+        | ty_prim17 = ty_proc
+        | ty_prim18 = for_in_type
+}
+
+syntax ty_bare_fn
+{
+        | ty_bare_fn0 = FN ty_fn_decl
+        | ty_bare_fn1 = UNSAFE FN ty_fn_decl
+        | ty_bare_fn2 = EXTERN maybe_abi FN ty_fn_decl
+        | ty_bare_fn3 = UNSAFE EXTERN maybe_abi FN ty_fn_decl
+}
+
+syntax ty_fn_decl = generic_params fn_anon_params ret_ty
+
+syntax ty_closure
+{
+        | ty_closure0 = UNSAFE "|" anon_params "|" maybe_bounds ret_ty
+        | ty_closure1 = "|" anon_params "|" maybe_bounds ret_ty
+        | ty_closure2 = UNSAFE OROR maybe_bounds ret_ty
+        | ty_closure3 = OROR maybe_bounds ret_ty
+}
+
+syntax ty_proc = PROC generic_params fn_params maybe_bounds ret_ty
+
+syntax for_in_type = FOR "<" maybe_lifetimes ">" for_in_type_suffix
+
+syntax for_in_type_suffix
+{
+        | for_in_type_suffix0 = ty_proc
+        | for_in_type_suffix1 = ty_bare_fn
+        | for_in_type_suffix2 = trait_ref
+        | for_in_type_suffix3 = ty_closure
+}
+
+syntax maybe_mut = MUT?
+
+syntax maybe_mut_or_const = maybe_mut_or_const_internal?
+{       syntax maybe_mut_or_const_internal
+        {
+                | maybe_mut_or_const_internal0 = MUT
+                | maybe_mut_or_const_internal1 = CONST
+        }
+}
+
+syntax ty_qualified_path_and_generic_values
+{
+        | ty_qualified_path_and_generic_values0 = ty_qualified_path maybe_bindings
+        | ty_qualified_path_and_generic_values1 = ty_qualified_path "," ty_sums maybe_bindings
+}
+
+syntax ty_qualified_path
+{
+        | ty_qualified_path0 = ty_sum AS trait_ref ">" MOD_SEP ident
+        | ty_qualified_path1 = ty_sum AS trait_ref ">" MOD_SEP ident "+" ty_param_bounds
+}
+
+syntax maybe_ty_sums = maybe_ty_sums_internal?
+{       syntax maybe_ty_sums_internal
+        {
+                | maybe_ty_sums_internal0 = ty_sums
+                | maybe_ty_sums_internal1 = ty_sums ","
+        }
+}
+
+syntax ty_sums = (ty_sums_heads ty_sums_tails*)
+{
+        syntax ty_sums_heads = ty_sum
+        syntax ty_sums_tails = "," ty_sum
+}
+
+syntax ty_sum
+{
+        | ty_sum0 = ty
+        | ty_sum1 = ty "+" ty_param_bounds
+}
+
+syntax ty_prim_sum
+{
+        | ty_prim_sum0 = ty_prim
+        | ty_prim_sum1 = ty_prim "+" ty_param_bounds
+}
+
+syntax maybe_ty_param_bounds = (":" ty_param_bounds)?
+
+syntax ty_param_bounds = boundseq?
+
+syntax boundseq = (boundseq_heads boundseq_tails*)
+{
+        syntax boundseq_heads = polybound
+        syntax boundseq_tails = "+" polybound
+}
+
+syntax polybound
+{
+        | polybound0 = FOR "<" maybe_lifetimes ">" bound
+        | polybound1 = bound
+        | polybound2 = "?" bound
+}
+
+syntax bindings = (bindings_heads bindings_tails*)
+{
+        syntax bindings_heads = binding
+        syntax bindings_tails = "," binding
+}
+
+syntax binding = ident "=" ty
+
+syntax ty_param
+{
+        | ty_param0 = ident maybe_ty_param_bounds maybe_ty_default
+        | ty_param1 = ident "?" ident maybe_ty_param_bounds maybe_ty_default
+}
+
+syntax maybe_bounds = (":" bounds)?
+
+syntax bounds = (bounds_heads bounds_tails*)
+{
+        syntax bounds_heads = bound
+        syntax bounds_tails = "+" bound
+}
+
+syntax bound
+{
+        | bound0 = lifetime
+        | bound1 = trait_ref
+}
+
+syntax maybe_ltbounds = (":" ltbounds)?
+
+syntax ltbounds = (ltbounds_heads ltbounds_tails*)
+{
+        syntax ltbounds_heads = lifetime
+        syntax ltbounds_tails = "+" lifetime
+}
+
+syntax maybe_ty_default = ("=" ty_sum)?
+
+syntax maybe_lifetimes = maybe_lifetimes_internal?
+{       syntax maybe_lifetimes_internal
+        {
+                | maybe_lifetimes_internal0 = lifetimes
+                | maybe_lifetimes_internal1 = lifetimes ","
+        }
+}
+
+syntax lifetimes = (lifetimes_heads lifetimes_tails*)
+{
+        syntax lifetimes_heads = lifetime_and_bounds
+        syntax lifetimes_tails = "," lifetime_and_bounds
+}
+
+syntax lifetime_and_bounds
+{
+        | lifetime_and_bounds0 = LIFETIME maybe_ltbounds
+        | lifetime_and_bounds1 = STATIC_LIFETIME
+}
+
+syntax lifetime
+{
+        | lifetime0 = LIFETIME
+        | lifetime1 = STATIC_LIFETIME
+}
+
+syntax trait_ref
+{
+        | trait_ref0 = path_generic_args_without_colons
+        | trait_ref1 = MOD_SEP path_generic_args_without_colons
+}
+
+syntax inner_attrs_and_block = "{" maybe_inner_attrs maybe_stmts "}"
+
+syntax block = "{" maybe_stmts "}"
+
+syntax maybe_stmts = maybe_stmts_internal?
+{       syntax maybe_stmts_internal
+        {
+                | maybe_stmts_internal0 = stmts
+                | maybe_stmts_internal1 = stmts nonblock_expr
+                | maybe_stmts_internal2 = nonblock_expr
+        }
+}
+
+syntax stmts = (stmts_heads stmts_tails*)
+{
+        syntax stmts_heads = stmt
+        syntax stmts_tails = stmt
+}
+
+syntax stmt
+{
+        | stmt0 = let
+        | stmt1 = stmt_item
+        | stmt2 = PUB stmt_item
+        | stmt3 = outer_attrs stmt_item
+        | stmt4 = outer_attrs PUB stmt_item
+        | stmt5 = full_block_expr
+        | stmt6 = block
+        | stmt7 = nonblock_expr ";"
+        | stmt8 = ";"
+}
+
+syntax maybe_exprs = maybe_exprs_internal?
+{       syntax maybe_exprs_internal
+        {
+                | maybe_exprs_internal0 = exprs
+                | maybe_exprs_internal1 = exprs ","
+        }
+}
+
+syntax maybe_expr = expr?
+
+syntax exprs = (exprs_heads exprs_tails*)
+{
+        syntax exprs_heads = expr
+        syntax exprs_tails = "," expr
+}
+
+syntax path_expr
+{
+        | path_expr0 = path_generic_args_with_colons
+        | path_expr1 = MOD_SEP path_generic_args_with_colons
+        | path_expr2 = SELF MOD_SEP path_generic_args_with_colons
+}
+
+syntax path_generic_args_with_colons = (path_generic_args_with_colons_heads path_generic_args_with_colons_tails*)
+{
+        syntax path_generic_args_with_colons_heads = ident
+        syntax path_generic_args_with_colons_tails
+        {
+                | path_generic_args_with_colons_tails0 = MOD_SEP ident
+                | path_generic_args_with_colons_tails1 = MOD_SEP generic_args
+        }
+}
+
+syntax macro_expr
+{
+        | macro_expr0 = path_expr "!" maybe_ident parens_delimited_token_trees
+        | macro_expr1 = path_expr "!" maybe_ident brackets_delimited_token_trees
+}
+
+syntax nonblock_expr = (nonblock_expr_heads nonblock_expr_tails*)
+{
+        syntax nonblock_expr_heads
+        {
+                | nonblock_expr_heads0 = lit
+                | nonblock_expr_heads1 = path_expr
+                | nonblock_expr_heads2 = SELF
+                | nonblock_expr_heads3 = macro_expr
+                | nonblock_expr_heads4 = path_expr "{" struct_expr_fields "}"
+                | nonblock_expr_heads5 = "[" vec_expr "]"
+                | nonblock_expr_heads6 = "(" maybe_exprs ")"
+                | nonblock_expr_heads7 = CONTINUE
+                | nonblock_expr_heads8 = CONTINUE lifetime
+                | nonblock_expr_heads9 = RETURN
+                | nonblock_expr_heads10 = RETURN expr
+                | nonblock_expr_heads11 = BREAK
+                | nonblock_expr_heads12 = BREAK lifetime
+                | nonblock_expr_heads13 = DOTDOT expr
+                | nonblock_expr_heads14 = DOTDOT
+                | nonblock_expr_heads15 = BOX nonparen_expr
+                | nonblock_expr_heads16 = BOX "(" maybe_expr ")" nonblock_expr
+                | nonblock_expr_heads17 = expr_qualified_path
+                | nonblock_expr_heads18 = nonblock_prefix_expr
+        }
+        syntax nonblock_expr_tails
+        {
+                | nonblock_expr_tails0 = "." path_generic_args_with_colons
+                | nonblock_expr_tails1 = "." LIT_INTEGER
+                | nonblock_expr_tails2 = "[" maybe_expr "]"
+                | nonblock_expr_tails3 = "(" maybe_exprs ")"
+                | nonblock_expr_tails4 = LARROW expr
+                | nonblock_expr_tails5 = "=" expr
+                | nonblock_expr_tails6 = SHLEQ expr
+                | nonblock_expr_tails7 = SHREQ expr
+                | nonblock_expr_tails8 = MINUSEQ expr
+                | nonblock_expr_tails9 = ANDEQ expr
+                | nonblock_expr_tails10 = OREQ expr
+                | nonblock_expr_tails11 = PLUSEQ expr
+                | nonblock_expr_tails12 = STAREQ expr
+                | nonblock_expr_tails13 = SLASHEQ expr
+                | nonblock_expr_tails14 = CARETEQ expr
+                | nonblock_expr_tails15 = PERCENTEQ expr
+                | nonblock_expr_tails16 = OROR expr
+                | nonblock_expr_tails17 = ANDAND expr
+                | nonblock_expr_tails18 = EQEQ expr
+                | nonblock_expr_tails19 = NE expr
+                | nonblock_expr_tails20 = "<" expr
+                | nonblock_expr_tails21 = ">" expr
+                | nonblock_expr_tails22 = LE expr
+                | nonblock_expr_tails23 = GE expr
+                | nonblock_expr_tails24 = "|" expr
+                | nonblock_expr_tails25 = "^" expr
+                | nonblock_expr_tails26 = "&" expr
+                | nonblock_expr_tails27 = SHL expr
+                | nonblock_expr_tails28 = SHR expr
+                | nonblock_expr_tails29 = "+" expr
+                | nonblock_expr_tails30 = "-" expr
+                | nonblock_expr_tails31 = "*" expr
+                | nonblock_expr_tails32 = "/" expr
+                | nonblock_expr_tails33 = "%" expr
+                | nonblock_expr_tails34 = DOTDOT
+                | nonblock_expr_tails35 = DOTDOT expr
+                | nonblock_expr_tails36 = AS ty
+        }
+}
+
+syntax expr = (expr_heads expr_tails*)
+{
+        syntax expr_heads
+        {
+                | expr_heads0 = lit
+                | expr_heads1 = path_expr
+                | expr_heads2 = SELF
+                | expr_heads3 = macro_expr
+                | expr_heads4 = path_expr "{" struct_expr_fields "}"
+                | expr_heads5 = "(" maybe_exprs ")"
+                | expr_heads6 = "[" vec_expr "]"
+                | expr_heads7 = CONTINUE
+                | expr_heads8 = CONTINUE ident
+                | expr_heads9 = RETURN
+                | expr_heads10 = RETURN expr
+                | expr_heads11 = BREAK
+                | expr_heads12 = BREAK ident
+                | expr_heads13 = DOTDOT expr
+                | expr_heads14 = DOTDOT
+                | expr_heads15 = BOX nonparen_expr
+                | expr_heads16 = BOX "(" maybe_expr ")" expr
+                | expr_heads17 = expr_qualified_path
+                | expr_heads18 = block_expr
+                | expr_heads19 = block
+                | expr_heads20 = nonblock_prefix_expr
+        }
+        syntax expr_tails
+        {
+                | expr_tails0 = "." path_generic_args_with_colons
+                | expr_tails1 = "." LIT_INTEGER
+                | expr_tails2 = "[" maybe_expr "]"
+                | expr_tails3 = "(" maybe_exprs ")"
+                | expr_tails4 = LARROW expr
+                | expr_tails5 = "=" expr
+                | expr_tails6 = SHLEQ expr
+                | expr_tails7 = SHREQ expr
+                | expr_tails8 = MINUSEQ expr
+                | expr_tails9 = ANDEQ expr
+                | expr_tails10 = OREQ expr
+                | expr_tails11 = PLUSEQ expr
+                | expr_tails12 = STAREQ expr
+                | expr_tails13 = SLASHEQ expr
+                | expr_tails14 = CARETEQ expr
+                | expr_tails15 = PERCENTEQ expr
+                | expr_tails16 = OROR expr
+                | expr_tails17 = ANDAND expr
+                | expr_tails18 = EQEQ expr
+                | expr_tails19 = NE expr
+                | expr_tails20 = "<" expr
+                | expr_tails21 = ">" expr
+                | expr_tails22 = LE expr
+                | expr_tails23 = GE expr
+                | expr_tails24 = "|" expr
+                | expr_tails25 = "^" expr
+                | expr_tails26 = "&" expr
+                | expr_tails27 = SHL expr
+                | expr_tails28 = SHR expr
+                | expr_tails29 = "+" expr
+                | expr_tails30 = "-" expr
+                | expr_tails31 = "*" expr
+                | expr_tails32 = "/" expr
+                | expr_tails33 = "%" expr
+                | expr_tails34 = DOTDOT
+                | expr_tails35 = DOTDOT expr
+                | expr_tails36 = AS ty
+        }
+}
+
+syntax nonparen_expr = (nonparen_expr_heads nonparen_expr_tails*)
+{
+        syntax nonparen_expr_heads
+        {
+                | nonparen_expr_heads0 = lit
+                | nonparen_expr_heads1 = path_expr
+                | nonparen_expr_heads2 = SELF
+                | nonparen_expr_heads3 = macro_expr
+                | nonparen_expr_heads4 = path_expr "{" struct_expr_fields "}"
+                | nonparen_expr_heads5 = "[" vec_expr "]"
+                | nonparen_expr_heads6 = CONTINUE
+                | nonparen_expr_heads7 = CONTINUE ident
+                | nonparen_expr_heads8 = RETURN
+                | nonparen_expr_heads9 = RETURN expr
+                | nonparen_expr_heads10 = BREAK
+                | nonparen_expr_heads11 = BREAK ident
+                | nonparen_expr_heads12 = DOTDOT nonparen_expr
+                | nonparen_expr_heads13 = DOTDOT
+                | nonparen_expr_heads14 = BOX nonparen_expr
+                | nonparen_expr_heads15 = BOX "(" maybe_expr ")" expr
+                | nonparen_expr_heads16 = expr_qualified_path
+                | nonparen_expr_heads17 = block_expr
+                | nonparen_expr_heads18 = block
+                | nonparen_expr_heads19 = nonblock_prefix_expr
+        }
+        syntax nonparen_expr_tails
+        {
+                | nonparen_expr_tails0 = "." path_generic_args_with_colons
+                | nonparen_expr_tails1 = "." LIT_INTEGER
+                | nonparen_expr_tails2 = "[" maybe_expr "]"
+                | nonparen_expr_tails3 = "(" maybe_exprs ")"
+                | nonparen_expr_tails4 = LARROW nonparen_expr
+                | nonparen_expr_tails5 = "=" nonparen_expr
+                | nonparen_expr_tails6 = SHLEQ nonparen_expr
+                | nonparen_expr_tails7 = SHREQ nonparen_expr
+                | nonparen_expr_tails8 = MINUSEQ nonparen_expr
+                | nonparen_expr_tails9 = ANDEQ nonparen_expr
+                | nonparen_expr_tails10 = OREQ nonparen_expr
+                | nonparen_expr_tails11 = PLUSEQ nonparen_expr
+                | nonparen_expr_tails12 = STAREQ nonparen_expr
+                | nonparen_expr_tails13 = SLASHEQ nonparen_expr
+                | nonparen_expr_tails14 = CARETEQ nonparen_expr
+                | nonparen_expr_tails15 = PERCENTEQ nonparen_expr
+                | nonparen_expr_tails16 = OROR nonparen_expr
+                | nonparen_expr_tails17 = ANDAND nonparen_expr
+                | nonparen_expr_tails18 = EQEQ nonparen_expr
+                | nonparen_expr_tails19 = NE nonparen_expr
+                | nonparen_expr_tails20 = "<" nonparen_expr
+                | nonparen_expr_tails21 = ">" nonparen_expr
+                | nonparen_expr_tails22 = LE nonparen_expr
+                | nonparen_expr_tails23 = GE nonparen_expr
+                | nonparen_expr_tails24 = "|" nonparen_expr
+                | nonparen_expr_tails25 = "^" nonparen_expr
+                | nonparen_expr_tails26 = "&" nonparen_expr
+                | nonparen_expr_tails27 = SHL nonparen_expr
+                | nonparen_expr_tails28 = SHR nonparen_expr
+                | nonparen_expr_tails29 = "+" nonparen_expr
+                | nonparen_expr_tails30 = "-" nonparen_expr
+                | nonparen_expr_tails31 = "*" nonparen_expr
+                | nonparen_expr_tails32 = "/" nonparen_expr
+                | nonparen_expr_tails33 = "%" nonparen_expr
+                | nonparen_expr_tails34 = DOTDOT
+                | nonparen_expr_tails35 = DOTDOT nonparen_expr
+                | nonparen_expr_tails36 = AS ty
+        }
+}
+
+syntax expr_nostruct = (expr_nostruct_heads expr_nostruct_tails*)
+{
+        syntax expr_nostruct_heads
+        {
+                | expr_nostruct_heads0 = lit
+                | expr_nostruct_heads1 = path_expr
+                | expr_nostruct_heads2 = SELF
+                | expr_nostruct_heads3 = macro_expr
+                | expr_nostruct_heads4 = "[" vec_expr "]"
+                | expr_nostruct_heads5 = "(" maybe_exprs ")"
+                | expr_nostruct_heads6 = CONTINUE
+                | expr_nostruct_heads7 = CONTINUE ident
+                | expr_nostruct_heads8 = RETURN
+                | expr_nostruct_heads9 = RETURN expr
+                | expr_nostruct_heads10 = BREAK
+                | expr_nostruct_heads11 = BREAK ident
+                | expr_nostruct_heads12 = DOTDOT expr_nostruct
+                | expr_nostruct_heads13 = DOTDOT
+                | expr_nostruct_heads14 = BOX nonparen_expr
+                | expr_nostruct_heads15 = BOX "(" maybe_expr ")" expr_nostruct
+                | expr_nostruct_heads16 = expr_qualified_path
+                | expr_nostruct_heads17 = block_expr
+                | expr_nostruct_heads18 = block
+                | expr_nostruct_heads19 = nonblock_prefix_expr_nostruct
+        }
+        syntax expr_nostruct_tails
+        {
+                | expr_nostruct_tails0 = "." path_generic_args_with_colons
+                | expr_nostruct_tails1 = "." LIT_INTEGER
+                | expr_nostruct_tails2 = "[" maybe_expr "]"
+                | expr_nostruct_tails3 = "(" maybe_exprs ")"
+                | expr_nostruct_tails4 = LARROW expr_nostruct
+                | expr_nostruct_tails5 = "=" expr_nostruct
+                | expr_nostruct_tails6 = SHLEQ expr_nostruct
+                | expr_nostruct_tails7 = SHREQ expr_nostruct
+                | expr_nostruct_tails8 = MINUSEQ expr_nostruct
+                | expr_nostruct_tails9 = ANDEQ expr_nostruct
+                | expr_nostruct_tails10 = OREQ expr_nostruct
+                | expr_nostruct_tails11 = PLUSEQ expr_nostruct
+                | expr_nostruct_tails12 = STAREQ expr_nostruct
+                | expr_nostruct_tails13 = SLASHEQ expr_nostruct
+                | expr_nostruct_tails14 = CARETEQ expr_nostruct
+                | expr_nostruct_tails15 = PERCENTEQ expr_nostruct
+                | expr_nostruct_tails16 = OROR expr_nostruct
+                | expr_nostruct_tails17 = ANDAND expr_nostruct
+                | expr_nostruct_tails18 = EQEQ expr_nostruct
+                | expr_nostruct_tails19 = NE expr_nostruct
+                | expr_nostruct_tails20 = "<" expr_nostruct
+                | expr_nostruct_tails21 = ">" expr_nostruct
+                | expr_nostruct_tails22 = LE expr_nostruct
+                | expr_nostruct_tails23 = GE expr_nostruct
+                | expr_nostruct_tails24 = "|" expr_nostruct
+                | expr_nostruct_tails25 = "^" expr_nostruct
+                | expr_nostruct_tails26 = "&" expr_nostruct
+                | expr_nostruct_tails27 = SHL expr_nostruct
+                | expr_nostruct_tails28 = SHR expr_nostruct
+                | expr_nostruct_tails29 = "+" expr_nostruct
+                | expr_nostruct_tails30 = "-" expr_nostruct
+                | expr_nostruct_tails31 = "*" expr_nostruct
+                | expr_nostruct_tails32 = "/" expr_nostruct
+                | expr_nostruct_tails33 = "%" expr_nostruct
+                | expr_nostruct_tails34 = DOTDOT
+                | expr_nostruct_tails35 = DOTDOT expr_nostruct
+                | expr_nostruct_tails36 = AS ty
+        }
+}
+
+syntax nonblock_prefix_expr_nostruct
+{
+        | nonblock_prefix_expr_nostruct0 = "-" expr_nostruct
+        | nonblock_prefix_expr_nostruct1 = "!" expr_nostruct
+        | nonblock_prefix_expr_nostruct2 = "*" expr_nostruct
+        | nonblock_prefix_expr_nostruct3 = "&" maybe_mut expr_nostruct
+        | nonblock_prefix_expr_nostruct4 = ANDAND maybe_mut expr_nostruct
+        | nonblock_prefix_expr_nostruct5 = lambda_expr_nostruct
+        | nonblock_prefix_expr_nostruct6 = MOVE lambda_expr_nostruct
+        | nonblock_prefix_expr_nostruct7 = proc_expr_nostruct
+}
+
+syntax nonblock_prefix_expr
+{
+        | nonblock_prefix_expr0 = "-" expr
+        | nonblock_prefix_expr1 = "!" expr
+        | nonblock_prefix_expr2 = "*" expr
+        | nonblock_prefix_expr3 = "&" maybe_mut expr
+        | nonblock_prefix_expr4 = ANDAND maybe_mut expr
+        | nonblock_prefix_expr5 = lambda_expr
+        | nonblock_prefix_expr6 = MOVE lambda_expr
+        | nonblock_prefix_expr7 = proc_expr
+}
+
+syntax expr_qualified_path
+{
+        | expr_qualified_path0 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_qpath_params
+        | expr_qualified_path1 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
+        | expr_qualified_path2 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident generic_args maybe_as_trait_ref ">" MOD_SEP ident
+        | expr_qualified_path3 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident generic_args
+        | expr_qualified_path4 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident generic_args maybe_as_trait_ref ">" MOD_SEP ident generic_args
+}
+
+syntax maybe_qpath_params = (MOD_SEP generic_args)?
+
+syntax maybe_as_trait_ref = (AS trait_ref)?
+
+syntax lambda_expr
+{
+        | lambda_expr0 = OROR ret_ty expr
+        | lambda_expr1 = "|" maybe_unboxed_closure_kind "|" ret_ty expr
+        | lambda_expr2 = "|" inferrable_params "|" ret_ty expr
+        | lambda_expr3 = "|" "&" maybe_mut ":" inferrable_params "|" ret_ty expr
+        | lambda_expr4 = "|" ":" inferrable_params "|" ret_ty expr
+}
+
+syntax lambda_expr_nostruct
+{
+        | lambda_expr_nostruct0 = OROR expr_nostruct
+        | lambda_expr_nostruct1 = "|" maybe_unboxed_closure_kind "|" expr_nostruct
+        | lambda_expr_nostruct2 = "|" inferrable_params "|" expr_nostruct
+        | lambda_expr_nostruct3 = "|" "&" maybe_mut ":" inferrable_params "|" expr_nostruct
+        | lambda_expr_nostruct4 = "|" ":" inferrable_params "|" expr_nostruct
+}
+
+syntax proc_expr
+{
+        | proc_expr0 = PROC "(" ")" expr
+        | proc_expr1 = PROC "(" inferrable_params ")" expr
+}
+
+syntax proc_expr_nostruct
+{
+        | proc_expr_nostruct0 = PROC "(" ")" expr_nostruct
+        | proc_expr_nostruct1 = PROC "(" inferrable_params ")" expr_nostruct
+}
+
+syntax vec_expr
+{
+        | vec_expr0 = maybe_exprs
+        | vec_expr1 = exprs ";" expr
+}
+
+syntax struct_expr_fields
+{
+        | struct_expr_fields0 = field_inits
+        | struct_expr_fields1 = field_inits ","
+        | struct_expr_fields2 = maybe_field_inits default_field_init
+}
+
+syntax maybe_field_inits = maybe_field_inits_internal?
+{       syntax maybe_field_inits_internal
+        {
+                | maybe_field_inits_internal0 = field_inits
+                | maybe_field_inits_internal1 = field_inits ","
+        }
+}
+
+syntax field_inits = (field_inits_heads field_inits_tails*)
+{
+        syntax field_inits_heads = field_init
+        syntax field_inits_tails = "," field_init
+}
+
+syntax field_init = ident ":" expr
+
+syntax default_field_init = DOTDOT expr
+
+syntax block_expr
+{
+        | block_expr0 = expr_match
+        | block_expr1 = expr_if
+        | block_expr2 = expr_if_let
+        | block_expr3 = expr_while
+        | block_expr4 = expr_while_let
+        | block_expr5 = expr_loop
+        | block_expr6 = expr_for
+        | block_expr7 = UNSAFE block
+        | block_expr8 = path_expr "!" maybe_ident braces_delimited_token_trees
+}
+
+syntax full_block_expr = (full_block_expr_heads full_block_expr_tails*)
+{
+        syntax full_block_expr_heads = block_expr
+        syntax full_block_expr_tails
+        {
+                | full_block_expr_tails0 = "." path_generic_args_with_colons
+                | full_block_expr_tails1 = "." path_generic_args_with_colons "[" maybe_expr "]"
+                | full_block_expr_tails2 = "." path_generic_args_with_colons "(" maybe_exprs ")"
+                | full_block_expr_tails3 = "." LIT_INTEGER
+        }
+}
+
+syntax expr_match
+{
+        | expr_match0 = MATCH expr_nostruct "{" "}"
+        | expr_match1 = MATCH expr_nostruct "{" match_clauses "}"
+        | expr_match2 = MATCH expr_nostruct "{" match_clauses nonblock_match_clause "}"
+        | expr_match3 = MATCH expr_nostruct "{" nonblock_match_clause "}"
+}
+
+syntax match_clauses = (match_clauses_heads match_clauses_tails*)
+{
+        syntax match_clauses_heads = match_clause
+        syntax match_clauses_tails = match_clause
+}
+
+syntax match_clause
+{
+        | match_clause0 = nonblock_match_clause ","
+        | match_clause1 = block_match_clause
+        | match_clause2 = block_match_clause ","
+}
+
+syntax nonblock_match_clause
+{
+        | nonblock_match_clause0 = maybe_outer_attrs pats_or maybe_guard FAT_ARROW nonblock_expr
+        | nonblock_match_clause1 = maybe_outer_attrs pats_or maybe_guard FAT_ARROW full_block_expr
+}
+
+syntax block_match_clause = maybe_outer_attrs pats_or maybe_guard FAT_ARROW block
+
+syntax maybe_guard = (IF expr_nostruct)?
+
+syntax expr_if
+{
+        | expr_if0 = IF expr_nostruct block
+        | expr_if1 = IF expr_nostruct block ELSE block_or_if
+}
+
+syntax expr_if_let
+{
+        | expr_if_let0 = IF LET pat "=" expr_nostruct block
+        | expr_if_let1 = IF LET pat "=" expr_nostruct block ELSE block_or_if
+}
+
+syntax block_or_if
+{
+        | block_or_if0 = block
+        | block_or_if1 = expr_if
+        | block_or_if2 = expr_if_let
+}
+
+syntax expr_while = maybe_label WHILE expr_nostruct block
+
+syntax expr_while_let = maybe_label WHILE LET pat "=" expr_nostruct block
+
+syntax expr_loop = maybe_label LOOP block
+
+syntax expr_for = maybe_label FOR pat IN expr_nostruct block
+
+syntax maybe_label = (lifetime ":")?
+
+syntax let = LET pat maybe_ty_ascription maybe_init_expr ";"
+
+syntax lit
+{
+        | lit0 = LIT_BYTE
+        | lit1 = LIT_CHAR
+        | lit2 = LIT_INTEGER
+        | lit3 = LIT_FLOAT
+        | lit4 = TRUE
+        | lit5 = FALSE
+        | lit6 = str
+}
+
+syntax str
+{
+        | str0 = LIT_STR
+        | str1 = LIT_STR_RAW
+        | str2 = LIT_BYTE_STR
+        | str3 = LIT_BYTE_STR_RAW
+}
+
+syntax maybe_ident = ident?
+
+syntax ident = IDENT
+
+syntax unpaired_token
+{
+        | unpaired_token0 = SHL
+        | unpaired_token1 = SHR
+        | unpaired_token2 = LE
+        | unpaired_token3 = EQEQ
+        | unpaired_token4 = NE
+        | unpaired_token5 = GE
+        | unpaired_token6 = ANDAND
+        | unpaired_token7 = OROR
+        | unpaired_token8 = LARROW
+        | unpaired_token9 = SHLEQ
+        | unpaired_token10 = SHREQ
+        | unpaired_token11 = MINUSEQ
+        | unpaired_token12 = ANDEQ
+        | unpaired_token13 = OREQ
+        | unpaired_token14 = PLUSEQ
+        | unpaired_token15 = STAREQ
+        | unpaired_token16 = SLASHEQ
+        | unpaired_token17 = CARETEQ
+        | unpaired_token18 = PERCENTEQ
+        | unpaired_token19 = DOTDOT
+        | unpaired_token20 = DOTDOTDOT
+        | unpaired_token21 = MOD_SEP
+        | unpaired_token22 = RARROW
+        | unpaired_token23 = FAT_ARROW
+        | unpaired_token24 = LIT_BYTE
+        | unpaired_token25 = LIT_CHAR
+        | unpaired_token26 = LIT_INTEGER
+        | unpaired_token27 = LIT_FLOAT
+        | unpaired_token28 = LIT_STR
+        | unpaired_token29 = LIT_STR_RAW
+        | unpaired_token30 = LIT_BYTE_STR
+        | unpaired_token31 = LIT_BYTE_STR_RAW
+        | unpaired_token32 = IDENT
+        | unpaired_token33 = UNDERSCORE
+        | unpaired_token34 = LIFETIME
+        | unpaired_token35 = SELF
+        | unpaired_token36 = STATIC
+        | unpaired_token37 = AS
+        | unpaired_token38 = BREAK
+        | unpaired_token39 = CRATE
+        | unpaired_token40 = ELSE
+        | unpaired_token41 = ENUM
+        | unpaired_token42 = EXTERN
+        | unpaired_token43 = FALSE
+        | unpaired_token44 = FN
+        | unpaired_token45 = FOR
+        | unpaired_token46 = IF
+        | unpaired_token47 = IMPL
+        | unpaired_token48 = IN
+        | unpaired_token49 = LET
+        | unpaired_token50 = LOOP
+        | unpaired_token51 = MATCH
+        | unpaired_token52 = MOD
+        | unpaired_token53 = MOVE
+        | unpaired_token54 = MUT
+        | unpaired_token55 = PRIV
+        | unpaired_token56 = PUB
+        | unpaired_token57 = REF
+        | unpaired_token58 = RETURN
+        | unpaired_token59 = STRUCT
+        | unpaired_token60 = TRUE
+        | unpaired_token61 = TRAIT
+        | unpaired_token62 = TYPE
+        | unpaired_token63 = UNSAFE
+        | unpaired_token64 = USE
+        | unpaired_token65 = WHILE
+        | unpaired_token66 = CONTINUE
+        | unpaired_token67 = PROC
+        | unpaired_token68 = BOX
+        | unpaired_token69 = CONST
+        | unpaired_token70 = WHERE
+        | unpaired_token71 = TYPEOF
+        | unpaired_token72 = INNER_DOC_COMMENT
+        | unpaired_token73 = OUTER_DOC_COMMENT
+        | unpaired_token74 = SHEBANG
+        | unpaired_token75 = STATIC_LIFETIME
+        | unpaired_token76 = ";"
+        | unpaired_token77 = ","
+        | unpaired_token78 = "."
+        | unpaired_token79 = "@"
+        | unpaired_token80 = "#"
+        | unpaired_token81 = "~"
+        | unpaired_token82 = ":"
+        | unpaired_token83 = "$"
+        | unpaired_token84 = "="
+        | unpaired_token85 = "?"
+        | unpaired_token86 = "!"
+        | unpaired_token87 = "<"
+        | unpaired_token88 = ">"
+        | unpaired_token89 = "-"
+        | unpaired_token90 = "&"
+        | unpaired_token91 = "|"
+        | unpaired_token92 = "+"
+        | unpaired_token93 = "*"
+        | unpaired_token94 = "/"
+        | unpaired_token95 = "^"
+        | unpaired_token96 = "%"
+}
+
+syntax token_trees = token_tree*
+
+syntax token_tree
+{
+        | token_tree0 = delimited_token_trees
+        | token_tree1 = unpaired_token
+}
+
+syntax delimited_token_trees
+{
+        | delimited_token_trees0 = parens_delimited_token_trees
+        | delimited_token_trees1 = braces_delimited_token_trees
+        | delimited_token_trees2 = brackets_delimited_token_trees
+}
+
+syntax parens_delimited_token_trees = "(" token_trees ")"
+
+syntax braces_delimited_token_trees = "{" token_trees "}"
+
+syntax brackets_delimited_token_trees = "[" token_trees "]"
+
+
+
+
+	}
+}
