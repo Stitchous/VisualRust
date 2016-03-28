@@ -31,7 +31,7 @@ namespace Nitrust.Rust.Grammar
 
 		syntax inner_attr
 		{
-			| inner_attr0 = SHEBANG "[" meta_item "]"
+			| inner_attr0 = SHEBANG '[' meta_item ']'
 			| inner_attr1 = INNER_DOC_COMMENT
 		}
 
@@ -41,22 +41,22 @@ namespace Nitrust.Rust.Grammar
 
 		syntax outer_attr
 		{
-			| outer_attr0 = "#" "[" meta_item "]"
+			| outer_attr0 = '#' '[' meta_item ']'
 			| outer_attr1 = OUTER_DOC_COMMENT
 		}
 
 		syntax meta_item
 		{
 			| meta_item0 = ident
-			| meta_item1 = ident "=" lit
-			| meta_item2 = ident "(" meta_seq ")"
-			| meta_item3 = ident "(" meta_seq "," ")"
+			| meta_item1 = ident '=' lit
+			| meta_item2 = ident '(' meta_seq ')'
+			| meta_item3 = ident '(' meta_seq ',' ')'
 		}
 
 		syntax meta_seq = (heads tails*)?
 		{
 			syntax heads = meta_item;
-			syntax tails = "," meta_item;
+			syntax tails = ',' meta_item;
 		}
 
 		syntax maybe_mod_items = mod_items?;
@@ -84,44 +84,44 @@ namespace Nitrust.Rust.Grammar
 
 		syntax item_static
 		{
-			| item_static0 = STATIC ident ":" ty "=" expr ";"
-			| item_static1 = STATIC MUT ident ":" ty "=" expr ";"
+			| item_static0 = STATIC ident ':' ty '=' expr ';'
+			| item_static1 = STATIC MUT ident ':' ty '=' expr ';'
 		}
 
-		syntax item_const = CONST ident ":" ty "=" expr ";";
+		syntax item_const = CONST ident ':' ty '=' expr ';';
 
 		syntax item_macro
 		{
-			| item_macro0 = path_expr "!" maybe_ident parens_delimited_token_trees ";"
-			| item_macro1 = path_expr "!" maybe_ident braces_delimited_token_trees
-			| item_macro2 = path_expr "!" maybe_ident brackets_delimited_token_trees ";"
+			| item_macro0 = path_expr '!' maybe_ident parens_delimited_token_trees ';'
+			| item_macro1 = path_expr '!' maybe_ident braces_delimited_token_trees
+			| item_macro2 = path_expr '!' maybe_ident brackets_delimited_token_trees ';'
 		}
 
 		syntax view_item
 		{
 			| view_item0 = use_item
 			| view_item1 = extern_fn_item
-			| view_item2 = EXTERN CRATE ident ";"
-			| view_item3 = EXTERN CRATE ident AS ident ";"
+			| view_item2 = EXTERN CRATE ident ';'
+			| view_item3 = EXTERN CRATE ident AS ident ';'
 		}
 
 		syntax extern_fn_item = EXTERN maybe_abi item_fn;
 
-		syntax use_item = USE view_path ";";
+		syntax use_item = USE view_path ';';
 
 		syntax view_path
 		{
 			| view_path0 = path_no_types_allowed
-			| view_path1 = path_no_types_allowed MOD_SEP "{" "}"
-			| view_path2 = MOD_SEP "{" "}"
-			| view_path3 = path_no_types_allowed MOD_SEP "{" idents_or_self "}"
-			| view_path4 = MOD_SEP "{" idents_or_self "}"
-			| view_path5 = path_no_types_allowed MOD_SEP "{" idents_or_self "," "}"
-			| view_path6 = MOD_SEP "{" idents_or_self "," "}"
-			| view_path7 = path_no_types_allowed MOD_SEP "*"
-			| view_path8 = "{" "}"
-			| view_path9 = "{" idents_or_self "}"
-			| view_path10 = "{" idents_or_self "," "}"
+			| view_path1 = path_no_types_allowed MOD_SEP '{' '}'
+			| view_path2 = MOD_SEP '{' '}'
+			| view_path3 = path_no_types_allowed MOD_SEP '{' idents_or_self '}'
+			| view_path4 = MOD_SEP '{' idents_or_self '}'
+			| view_path5 = path_no_types_allowed MOD_SEP '{' idents_or_self ',' '}'
+			| view_path6 = MOD_SEP '{' idents_or_self ',' '}'
+			| view_path7 = path_no_types_allowed MOD_SEP '*'
+			| view_path8 = '{' '}'
+			| view_path9 = '{' idents_or_self '}'
+			| view_path10 = '{' idents_or_self ',' '}'
 			| view_path11 = path_no_types_allowed AS ident
 		}
 
@@ -137,55 +137,55 @@ namespace Nitrust.Rust.Grammar
 			| block_item7 = item_impl
 		}
 
-		syntax maybe_ty_ascription = (":" ty_sum)?;
+		syntax maybe_ty_ascription = (':' ty_sum)?;
 
-		syntax maybe_init_expr = ("=" expr)?;
+		syntax maybe_init_expr = ('=' expr)?;
 
 		syntax item_struct
 		{
 			| item_struct0 = STRUCT ident generic_params maybe_where_clause struct_decl_args
-			| item_struct1 = STRUCT ident generic_params struct_tuple_args maybe_where_clause ";"
-			| item_struct2 = STRUCT ident generic_params maybe_where_clause ";"
+			| item_struct1 = STRUCT ident generic_params struct_tuple_args maybe_where_clause ';'
+			| item_struct2 = STRUCT ident generic_params maybe_where_clause ';'
 		}
 
 		syntax struct_decl_args
 		{
-			| struct_decl_args0 = "{" struct_decl_fields "}"
-			| struct_decl_args1 = "{" struct_decl_fields "," "}"
+			| struct_decl_args0 = '{' struct_decl_fields '}'
+			| struct_decl_args1 = '{' struct_decl_fields ',' '}'
 		}
 
 		syntax struct_tuple_args
 		{
-			| struct_tuple_args0 = "(" struct_tuple_fields ")"
-			| struct_tuple_args1 = "(" struct_tuple_fields "," ")"
+			| struct_tuple_args0 = '(' struct_tuple_fields ')'
+			| struct_tuple_args1 = '(' struct_tuple_fields ',' ')'
 		}
 
 		syntax struct_decl_fields = (heads tails*)?
 		{
 			syntax heads = struct_decl_field;
-			syntax tails = "," struct_decl_field;
+			syntax tails = ',' struct_decl_field;
 		}
 
-		syntax struct_decl_field = attrs_and_vis ident ":" ty_sum;
+		syntax struct_decl_field = attrs_and_vis ident ':' ty_sum;
 
 		syntax struct_tuple_fields = heads tails*
 		{
 			syntax heads = struct_tuple_field;
-			syntax tails = "," struct_tuple_field;
+			syntax tails = ',' struct_tuple_field;
 		}
 
 		syntax struct_tuple_field = attrs_and_vis ty_sum;
 
 		syntax item_enum
 		{
-			| item_enum0 = ENUM ident generic_params maybe_where_clause "{" enum_defs "}"
-			| item_enum1 = ENUM ident generic_params maybe_where_clause "{" enum_defs "," "}"
+			| item_enum0 = ENUM ident generic_params maybe_where_clause '{' enum_defs '}'
+			| item_enum1 = ENUM ident generic_params maybe_where_clause '{' enum_defs ',' '}'
 		}
 
 		syntax enum_defs = (heads tails*)?
 		{
 			syntax heads = enum_def;
-			syntax tails = "," enum_def;
+			syntax tails = ',' enum_def;
 		}
 
 		syntax enum_def = attrs_and_vis ident enum_args;
@@ -194,24 +194,24 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = "{" struct_decl_fields "}"
-				| internal1 = "{" struct_decl_fields "," "}"
-				| internal2 = "(" maybe_ty_sums ")"
-				| internal3 = "=" expr
+				| internal0 = '{' struct_decl_fields '}'
+				| internal1 = '{' struct_decl_fields ',' '}'
+				| internal2 = '(' maybe_ty_sums ')'
+				| internal3 = '=' expr
 			}
 		}
 
 		syntax item_mod
 		{
-			| item_mod0 = MOD ident ";"
-			| item_mod1 = MOD ident "{" maybe_mod_items "}"
-			| item_mod2 = MOD ident "{" inner_attrs maybe_mod_items "}"
+			| item_mod0 = MOD ident ';'
+			| item_mod1 = MOD ident '{' maybe_mod_items '}'
+			| item_mod2 = MOD ident '{' inner_attrs maybe_mod_items '}'
 		}
 
 		syntax item_foreign_mod
 		{
-			| item_foreign_mod0 = EXTERN maybe_abi "{" maybe_foreign_items "}"
-			| item_foreign_mod1 = EXTERN maybe_abi "{" inner_attrs maybe_foreign_items "}"
+			| item_foreign_mod0 = EXTERN maybe_abi '{' maybe_foreign_items '}'
+			| item_foreign_mod1 = EXTERN maybe_abi '{' inner_attrs maybe_foreign_items '}'
 		}
 
 		syntax maybe_abi = str?;
@@ -227,18 +227,18 @@ namespace Nitrust.Rust.Grammar
 			| foreign_item2 = attrs_and_vis UNSAFE item_foreign_fn
 		}
 
-		syntax item_foreign_static = maybe_mut ident ":" ty ";";
+		syntax item_foreign_static = maybe_mut ident ':' ty ';';
 
-		syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ";";
+		syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ';';
 
 		syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty;
 
 		syntax fn_params_allow_variadic
 		{
-			| fn_params_allow_variadic0 = "(" ")"
-			| fn_params_allow_variadic1 = "(" params ")"
-			| fn_params_allow_variadic2 = "(" params "," ")"
-			| fn_params_allow_variadic3 = "(" params "," DOTDOTDOT ")"
+			| fn_params_allow_variadic0 = '(' ')'
+			| fn_params_allow_variadic1 = '(' params ')'
+			| fn_params_allow_variadic2 = '(' params ',' ')'
+			| fn_params_allow_variadic3 = '(' params ',' DOTDOTDOT ')'
 		}
 
 		syntax visibility = PUB?;
@@ -250,7 +250,7 @@ namespace Nitrust.Rust.Grammar
 				| heads0 = ident_or_self
 				| heads1 = ident_or_self AS ident
 			}
-			syntax tails = "," ident_or_self;
+			syntax tails = ',' ident_or_self;
 		}
 
 		syntax ident_or_self
@@ -259,18 +259,18 @@ namespace Nitrust.Rust.Grammar
 			| ident_or_self1 = SELF
 		}
 
-		syntax item_type = TYPE ident generic_params maybe_where_clause "=" ty_sum ";";
+		syntax item_type = TYPE ident generic_params maybe_where_clause '=' ty_sum ';';
 
 		syntax for_sized = internal?
 		{
 			syntax internal
 			{
-				| internal0 = FOR "?" ident
-				| internal1 = FOR ident "?"
+				| internal0 = FOR '?' ident
+				| internal1 = FOR ident '?'
 			}
 		}
 
-		syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause "{" maybe_trait_items "}";
+		syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause '{' maybe_trait_items '}';
 
 		syntax maybe_trait_items = trait_items?;
 
@@ -283,11 +283,11 @@ namespace Nitrust.Rust.Grammar
 			| trait_item2 = trait_method
 		}
 
-		syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ";";
+		syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ';';
 
-		syntax maybe_const_default = ("=" expr)?;
+		syntax maybe_const_default = ('=' expr)?;
 
-		syntax trait_type = maybe_outer_attrs TYPE ty_param ";";
+		syntax trait_type = maybe_outer_attrs TYPE ty_param ';';
 
 		syntax maybe_unsafe = UNSAFE?;
 
@@ -299,8 +299,8 @@ namespace Nitrust.Rust.Grammar
 
 		syntax type_method
 		{
-			| type_method0 = attrs_and_vis maybe_unsafe FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ";"
-			| type_method1 = attrs_and_vis maybe_unsafe EXTERN maybe_abi FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ";"
+			| type_method0 = attrs_and_vis maybe_unsafe FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ';'
+			| type_method1 = attrs_and_vis maybe_unsafe EXTERN maybe_abi FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ';'
 		}
 
 		syntax method
@@ -317,12 +317,12 @@ namespace Nitrust.Rust.Grammar
 
 		syntax item_impl
 		{
-			| item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
-			| item_impl1 = maybe_unsafe IMPL generic_params "(" ty ")" maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
-			| item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
-			| item_impl3 = maybe_unsafe IMPL generic_params "!" trait_ref FOR ty_sum maybe_where_clause "{" maybe_inner_attrs maybe_impl_items "}"
-			| item_impl4 = maybe_unsafe IMPL generic_params trait_ref FOR DOTDOT "{" "}"
-			| item_impl5 = maybe_unsafe IMPL generic_params "!" trait_ref FOR DOTDOT "{" "}"
+			| item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
+			| item_impl1 = maybe_unsafe IMPL generic_params '(' ty ')' maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
+			| item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
+			| item_impl3 = maybe_unsafe IMPL generic_params '!' trait_ref FOR ty_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
+			| item_impl4 = maybe_unsafe IMPL generic_params trait_ref FOR DOTDOT '{' '}'
+			| item_impl5 = maybe_unsafe IMPL generic_params '!' trait_ref FOR DOTDOT '{' '}'
 		}
 
 		syntax maybe_impl_items = impl_items?;
@@ -343,7 +343,7 @@ namespace Nitrust.Rust.Grammar
 
 		syntax impl_const = attrs_and_vis item_const;
 
-		syntax impl_type = attrs_and_vis TYPE ident generic_params "=" ty_sum ";";
+		syntax impl_type = attrs_and_vis TYPE ident generic_params '=' ty_sum ';';
 
 		syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
 
@@ -359,28 +359,28 @@ namespace Nitrust.Rust.Grammar
 
 		syntax fn_decl_with_self_allow_anon_params = fn_anon_params_with_self ret_ty;
 
-		syntax fn_params = "(" maybe_params ")";
+		syntax fn_params = '(' maybe_params ')';
 
 		syntax fn_anon_params
 		{
-			| fn_anon_params0 = "(" anon_param anon_params_allow_variadic_tail ")"
-			| fn_anon_params1 = "(" ")"
+			| fn_anon_params0 = '(' anon_param anon_params_allow_variadic_tail ')'
+			| fn_anon_params1 = '(' ')'
 		}
 
 		syntax fn_params_with_self
 		{
-			| fn_params_with_self0 = "(" maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
-			| fn_params_with_self1 = "(" "&" maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
-			| fn_params_with_self2 = "(" "&" lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_params ")"
-			| fn_params_with_self3 = "(" maybe_params ")"
+			| fn_params_with_self0 = '(' maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self1 = '(' '&' maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self2 = '(' '&' lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self3 = '(' maybe_params ')'
 		}
 
 		syntax fn_anon_params_with_self
 		{
-			| fn_anon_params_with_self0 = "(" maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
-			| fn_anon_params_with_self1 = "(" "&" maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
-			| fn_anon_params_with_self2 = "(" "&" lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ")"
-			| fn_anon_params_with_self3 = "(" maybe_anon_params ")"
+			| fn_anon_params_with_self0 = '(' maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self1 = '(' '&' maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self2 = '(' '&' lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self3 = '(' maybe_anon_params ')'
 		}
 
 		syntax maybe_params = internal?
@@ -388,22 +388,22 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = params
-				| internal1 = params ","
+				| internal1 = params ','
 			}
 		}
 
 		syntax params = heads tails*
 		{
 			syntax heads = param;
-			syntax tails = "," param;
+			syntax tails = ',' param;
 		}
 
-		syntax param = pat ":" ty_sum;
+		syntax param = pat ':' ty_sum;
 
 		syntax inferrable_params = heads tails*
 		{
 			syntax heads = inferrable_param;
-			syntax tails = "," inferrable_param;
+			syntax tails = ',' inferrable_param;
 		}
 
 		syntax inferrable_param = pat maybe_ty_ascription;
@@ -412,8 +412,8 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = ":"
-				| internal1 = "&" maybe_mut ":"
+				| internal0 = ':'
+				| internal1 = '&' maybe_mut ':'
 			}
 		}
 
@@ -421,9 +421,9 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = ","
-				| internal1 = "," params
-				| internal2 = "," params ","
+				| internal0 = ','
+				| internal1 = ',' params
+				| internal2 = ',' params ','
 			}
 		}
 
@@ -431,9 +431,9 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = ","
-				| internal1 = "," anon_params
-				| internal2 = "," anon_params ","
+				| internal0 = ','
+				| internal1 = ',' anon_params
+				| internal2 = ',' anon_params ','
 			}
 		}
 
@@ -442,19 +442,19 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = anon_params
-				| internal1 = anon_params ","
+				| internal1 = anon_params ','
 			}
 		}
 
 		syntax anon_params = heads tails*
 		{
 			syntax heads = anon_param;
-			syntax tails = "," anon_param;
+			syntax tails = ',' anon_param;
 		}
 
 		syntax anon_param
 		{
-			| anon_param0 = named_arg ":" ty
+			| anon_param0 = named_arg ':' ty
 			| anon_param1 = ty
 		}
 
@@ -462,8 +462,8 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = "," DOTDOTDOT
-				| internal1 = "," anon_param anon_params_allow_variadic_tail
+				| internal0 = ',' DOTDOTDOT
+				| internal1 = ',' anon_param anon_params_allow_variadic_tail
 			}
 		}
 
@@ -471,8 +471,8 @@ namespace Nitrust.Rust.Grammar
 		{
 			| named_arg0 = ident
 			| named_arg1 = UNDERSCORE
-			| named_arg2 = "&" ident
-			| named_arg3 = "&" UNDERSCORE
+			| named_arg2 = '&' ident
+			| named_arg3 = '&' UNDERSCORE
 			| named_arg4 = ANDAND ident
 			| named_arg5 = ANDAND UNDERSCORE
 			| named_arg6 = MUT ident
@@ -482,7 +482,7 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = RARROW "!"
+				| internal0 = RARROW '!'
 				| internal1 = RARROW ty
 			}
 		}
@@ -491,18 +491,18 @@ namespace Nitrust.Rust.Grammar
 		{
 			syntax internal
 			{
-				| internal0 = "<" lifetimes ">"
-				| internal1 = "<" lifetimes "," ">"
-				| internal2 = "<" lifetimes SHR
-				| internal3 = "<" lifetimes "," SHR
-				| internal4 = "<" lifetimes "," ty_params ">"
-				| internal5 = "<" lifetimes "," ty_params "," ">"
-				| internal6 = "<" lifetimes "," ty_params SHR
-				| internal7 = "<" lifetimes "," ty_params "," SHR
-				| internal8 = "<" ty_params ">"
-				| internal9 = "<" ty_params "," ">"
-				| internal10 = "<" ty_params SHR
-				| internal11 = "<" ty_params "," SHR
+				| internal0 = '<' lifetimes '>'
+				| internal1 = '<' lifetimes ',' '>'
+				| internal2 = '<' lifetimes SHR
+				| internal3 = '<' lifetimes ',' SHR
+				| internal4 = '<' lifetimes ',' ty_params '>'
+				| internal5 = '<' lifetimes ',' ty_params ',' '>'
+				| internal6 = '<' lifetimes ',' ty_params SHR
+				| internal7 = '<' lifetimes ',' ty_params ',' SHR
+				| internal8 = '<' ty_params '>'
+				| internal9 = '<' ty_params ',' '>'
+				| internal10 = '<' ty_params SHR
+				| internal11 = '<' ty_params ',' SHR
 			}
 		}
 
@@ -511,27 +511,27 @@ namespace Nitrust.Rust.Grammar
 		syntax where_clause
 		{
 			| where_clause0 = WHERE where_predicates
-			| where_clause1 = WHERE where_predicates ","
+			| where_clause1 = WHERE where_predicates ','
 		}
 
 		syntax where_predicates = heads tails*
 		{
 			syntax heads = where_predicate;
-			syntax tails = "," where_predicate;
+			syntax tails = ',' where_predicate;
 		}
 
 		syntax where_predicate
 		{
-			| where_predicate0 = maybe_for_lifetimes lifetime ":" bounds
-			| where_predicate1 = maybe_for_lifetimes ty ":" ty_param_bounds
+			| where_predicate0 = maybe_for_lifetimes lifetime ':' bounds
+			| where_predicate1 = maybe_for_lifetimes ty ':' ty_param_bounds
 		}
 
-		syntax maybe_for_lifetimes = (FOR "<" lifetimes ">")?;
+		syntax maybe_for_lifetimes = (FOR '<' lifetimes '>')?;
 
 		syntax ty_params = heads tails*
 		{
 			syntax heads = ty_param;
-			syntax tails = "," ty_param;
+			syntax tails = ',' ty_param;
 		}
 
 		syntax path_no_types_allowed = heads tails*
@@ -552,23 +552,23 @@ namespace Nitrust.Rust.Grammar
 			{
 				| heads0 = ident
 				| heads1 = ident generic_args
-				| heads2 = ident "(" maybe_ty_sums ")" ret_ty
+				| heads2 = ident '(' maybe_ty_sums ')' ret_ty
 			}
 			syntax tails
 			{
 				| tails0 = MOD_SEP ident
 				| tails1 = MOD_SEP ident generic_args
-				| tails2 = MOD_SEP ident "(" maybe_ty_sums ")" ret_ty
+				| tails2 = MOD_SEP ident '(' maybe_ty_sums ')' ret_ty
 			}
 		}
 
 		syntax generic_args
 		{
-			| generic_args0 = "<" generic_values ">"
-			| generic_args1 = "<" generic_values SHR
-			| generic_args2 = "<" generic_values GE
-			| generic_args3 = "<" generic_values SHREQ
-			| generic_args4 = SHL ty_qualified_path_and_generic_values ">"
+			| generic_args0 = '<' generic_values '>'
+			| generic_args1 = '<' generic_values SHR
+			| generic_args2 = '<' generic_values GE
+			| generic_args3 = '<' generic_values SHREQ
+			| generic_args4 = SHL ty_qualified_path_and_generic_values '>'
 			| generic_args5 = SHL ty_qualified_path_and_generic_values SHR
 			| generic_args6 = SHL ty_qualified_path_and_generic_values GE
 			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ
@@ -581,43 +581,43 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = ty_sums
-				| internal1 = ty_sums ","
-				| internal2 = ty_sums "," bindings
+				| internal1 = ty_sums ','
+				| internal2 = ty_sums ',' bindings
 				| internal3 = bindings
-				| internal4 = bindings ","
+				| internal4 = bindings ','
 			}
 		}
 
-		syntax maybe_bindings = ("," bindings)?;
+		syntax maybe_bindings = (',' bindings)?;
 
 		syntax pat
 		{
 			| pat0 = UNDERSCORE
-			| pat1 = "&" pat
-			| pat2 = "&" MUT pat
+			| pat1 = '&' pat
+			| pat2 = '&' MUT pat
 			| pat3 = ANDAND pat
-			| pat4 = "(" ")"
-			| pat5 = "(" pat_tup ")"
-			| pat6 = "(" pat_tup "," ")"
-			| pat7 = "[" pat_vec "]"
+			| pat4 = '(' ')'
+			| pat5 = '(' pat_tup ')'
+			| pat6 = '(' pat_tup ',' ')'
+			| pat7 = '[' pat_vec ']'
 			| pat8 = lit_or_path
 			| pat9 = lit_or_path DOTDOTDOT lit_or_path
-			| pat10 = path_expr "{" pat_struct "}"
-			| pat11 = path_expr "(" DOTDOT ")"
-			| pat12 = path_expr "(" pat_tup ")"
-			| pat13 = path_expr "!" maybe_ident delimited_token_trees
+			| pat10 = path_expr '{' pat_struct '}'
+			| pat11 = path_expr '(' DOTDOT ')'
+			| pat12 = path_expr '(' pat_tup ')'
+			| pat13 = path_expr '!' maybe_ident delimited_token_trees
 			| pat14 = binding_mode ident
-			| pat15 = ident "@" pat
-			| pat16 = binding_mode ident "@" pat
+			| pat15 = ident '@' pat
+			| pat16 = binding_mode ident '@' pat
 			| pat17 = BOX pat
-			| pat18 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident
-			| pat19 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
+			| pat18 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
+			| pat19 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
 		}
 
 		syntax pats_or = heads tails*
 		{
 			syntax heads = pat;
-			syntax tails = "|" pat;
+			syntax tails = '|' pat;
 		}
 
 		syntax binding_mode
@@ -631,7 +631,7 @@ namespace Nitrust.Rust.Grammar
 		{
 			| lit_or_path0 = path_expr
 			| lit_or_path1 = lit
-			| lit_or_path2 = "-" lit
+			| lit_or_path2 = '-' lit
 		}
 
 		syntax pat_field
@@ -640,28 +640,28 @@ namespace Nitrust.Rust.Grammar
 			| pat_field1 = binding_mode ident
 			| pat_field2 = BOX ident
 			| pat_field3 = BOX binding_mode ident
-			| pat_field4 = ident ":" pat
-			| pat_field5 = binding_mode ident ":" pat
+			| pat_field4 = ident ':' pat
+			| pat_field5 = binding_mode ident ':' pat
 		}
 
 		syntax pat_fields = heads tails*
 		{
 			syntax heads = pat_field;
-			syntax tails = "," pat_field;
+			syntax tails = ',' pat_field;
 		}
 
 		syntax pat_struct
 		{
 			| pat_struct0 = pat_fields
-			| pat_struct1 = pat_fields ","
-			| pat_struct2 = pat_fields "," DOTDOT
+			| pat_struct1 = pat_fields ','
+			| pat_struct2 = pat_fields ',' DOTDOT
 			| pat_struct3 = DOTDOT
 		}
 
 		syntax pat_tup = heads tails*
 		{
 			syntax heads = pat;
-			syntax tails = "," pat;
+			syntax tails = ',' pat;
 		}
 
 		syntax pat_vec = internal?
@@ -669,15 +669,15 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = pat_vec_elts
-				| internal1 = pat_vec_elts ","
+				| internal1 = pat_vec_elts ','
 				| internal2 = pat_vec_elts DOTDOT
-				| internal3 = pat_vec_elts "," DOTDOT
-				| internal4 = pat_vec_elts DOTDOT "," pat_vec_elts
-				| internal5 = pat_vec_elts DOTDOT "," pat_vec_elts ","
-				| internal6 = pat_vec_elts "," DOTDOT "," pat_vec_elts
-				| internal7 = pat_vec_elts "," DOTDOT "," pat_vec_elts ","
-				| internal8 = DOTDOT "," pat_vec_elts
-				| internal9 = DOTDOT "," pat_vec_elts ","
+				| internal3 = pat_vec_elts ',' DOTDOT
+				| internal4 = pat_vec_elts DOTDOT ',' pat_vec_elts
+				| internal5 = pat_vec_elts DOTDOT ',' pat_vec_elts ','
+				| internal6 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts
+				| internal7 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts ','
+				| internal8 = DOTDOT ',' pat_vec_elts
+				| internal9 = DOTDOT ',' pat_vec_elts ','
 				| internal10 = DOTDOT
 			}
 		}
@@ -685,18 +685,18 @@ namespace Nitrust.Rust.Grammar
 		syntax pat_vec_elts = heads tails*
 		{
 			syntax heads = pat;
-			syntax tails = "," pat;
+			syntax tails = ',' pat;
 		}
 
 		syntax ty
 		{
 			| ty0 = ty_prim
 			| ty1 = ty_closure
-			| ty2 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident
-			| ty3 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
-			| ty4 = "(" ty_sums ")"
-			| ty5 = "(" ty_sums "," ")"
-			| ty6 = "(" ")"
+			| ty2 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
+			| ty3 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
+			| ty4 = '(' ty_sums ')'
+			| ty5 = '(' ty_sums ',' ')'
+			| ty6 = '(' ')'
 		}
 
 		syntax ty_prim
@@ -705,17 +705,17 @@ namespace Nitrust.Rust.Grammar
 			| ty_prim1 = MOD_SEP path_generic_args_without_colons
 			| ty_prim2 = SELF MOD_SEP path_generic_args_without_colons
 			| ty_prim3 = BOX ty
-			| ty_prim4 = "*" maybe_mut_or_const ty
-			| ty_prim5 = "&" ty
-			| ty_prim6 = "&" MUT ty
+			| ty_prim4 = '*' maybe_mut_or_const ty
+			| ty_prim5 = '&' ty
+			| ty_prim6 = '&' MUT ty
 			| ty_prim7 = ANDAND ty
 			| ty_prim8 = ANDAND MUT ty
-			| ty_prim9 = "&" lifetime maybe_mut ty
+			| ty_prim9 = '&' lifetime maybe_mut ty
 			| ty_prim10 = ANDAND lifetime maybe_mut ty
-			| ty_prim11 = "[" ty "]"
-			| ty_prim12 = "[" ty "," DOTDOT expr "]"
-			| ty_prim13 = "[" ty ";" expr "]"
-			| ty_prim14 = TYPEOF "(" expr ")"
+			| ty_prim11 = '[' ty ']'
+			| ty_prim12 = '[' ty ',' DOTDOT expr ']'
+			| ty_prim13 = '[' ty ';' expr ']'
+			| ty_prim14 = TYPEOF '(' expr ')'
 			| ty_prim15 = UNDERSCORE
 			| ty_prim16 = ty_bare_fn
 			| ty_prim17 = ty_proc
@@ -734,15 +734,15 @@ namespace Nitrust.Rust.Grammar
 
 		syntax ty_closure
 		{
-			| ty_closure0 = UNSAFE "|" anon_params "|" maybe_bounds ret_ty
-			| ty_closure1 = "|" anon_params "|" maybe_bounds ret_ty
+			| ty_closure0 = UNSAFE '|' anon_params '|' maybe_bounds ret_ty
+			| ty_closure1 = '|' anon_params '|' maybe_bounds ret_ty
 			| ty_closure2 = UNSAFE OROR maybe_bounds ret_ty
 			| ty_closure3 = OROR maybe_bounds ret_ty
 		}
 
 		syntax ty_proc = PROC generic_params fn_params maybe_bounds ret_ty;
 
-		syntax for_in_type = FOR "<" maybe_lifetimes ">" for_in_type_suffix;
+		syntax for_in_type = FOR '<' maybe_lifetimes '>' for_in_type_suffix;
 
 		syntax for_in_type_suffix
 		{
@@ -766,13 +766,13 @@ namespace Nitrust.Rust.Grammar
 		syntax ty_qualified_path_and_generic_values
 		{
 			| ty_qualified_path_and_generic_values0 = ty_qualified_path maybe_bindings
-			| ty_qualified_path_and_generic_values1 = ty_qualified_path "," ty_sums maybe_bindings
+			| ty_qualified_path_and_generic_values1 = ty_qualified_path ',' ty_sums maybe_bindings
 		}
 
 		syntax ty_qualified_path
 		{
-			| ty_qualified_path0 = ty_sum AS trait_ref ">" MOD_SEP ident
-			| ty_qualified_path1 = ty_sum AS trait_ref ">" MOD_SEP ident "+" ty_param_bounds
+			| ty_qualified_path0 = ty_sum AS trait_ref '>' MOD_SEP ident
+			| ty_qualified_path1 = ty_sum AS trait_ref '>' MOD_SEP ident '+' ty_param_bounds
 		}
 
 		syntax maybe_ty_sums = internal?
@@ -780,65 +780,65 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = ty_sums
-				| internal1 = ty_sums ","
+				| internal1 = ty_sums ','
 			}
 		}
 
 		syntax ty_sums = heads tails*
 		{
 			syntax heads = ty_sum;
-			syntax tails = "," ty_sum;
+			syntax tails = ',' ty_sum;
 		}
 
 		syntax ty_sum
 		{
 			| ty_sum0 = ty
-			| ty_sum1 = ty "+" ty_param_bounds
+			| ty_sum1 = ty '+' ty_param_bounds
 		}
 
 		syntax ty_prim_sum
 		{
 			| ty_prim_sum0 = ty_prim
-			| ty_prim_sum1 = ty_prim "+" ty_param_bounds
+			| ty_prim_sum1 = ty_prim '+' ty_param_bounds
 		}
 
-		syntax maybe_ty_param_bounds = (":" ty_param_bounds)?;
+		syntax maybe_ty_param_bounds = (':' ty_param_bounds)?;
 
 		syntax ty_param_bounds = boundseq?;
 
 		syntax boundseq = heads tails*
 		{
 			syntax heads = polybound;
-			syntax tails = "+" polybound;
+			syntax tails = '+' polybound;
 		}
 
 		syntax polybound
 		{
-			| polybound0 = FOR "<" maybe_lifetimes ">" bound
+			| polybound0 = FOR '<' maybe_lifetimes '>' bound
 			| polybound1 = bound
-			| polybound2 = "?" bound
+			| polybound2 = '?' bound
 		}
 
 		syntax bindings = heads tails*
 		{
 			syntax heads = binding;
-			syntax tails = "," binding;
+			syntax tails = ',' binding;
 		}
 
-		syntax binding = ident "=" ty;
+		syntax binding = ident '=' ty;
 
 		syntax ty_param
 		{
 			| ty_param0 = ident maybe_ty_param_bounds maybe_ty_default
-			| ty_param1 = ident "?" ident maybe_ty_param_bounds maybe_ty_default
+			| ty_param1 = ident '?' ident maybe_ty_param_bounds maybe_ty_default
 		}
 
-		syntax maybe_bounds = (":" bounds)?;
+		syntax maybe_bounds = (':' bounds)?;
 
 		syntax bounds = heads tails*
 		{
 			syntax heads = bound;
-			syntax tails = "+" bound;
+			syntax tails = '+' bound;
 		}
 
 		syntax bound
@@ -847,29 +847,29 @@ namespace Nitrust.Rust.Grammar
 			| bound1 = trait_ref
 		}
 
-		syntax maybe_ltbounds = (":" ltbounds)?;
+		syntax maybe_ltbounds = (':' ltbounds)?;
 
 		syntax ltbounds = heads tails*
 		{
 			syntax heads = lifetime;
-			syntax tails = "+" lifetime;
+			syntax tails = '+' lifetime;
 		}
 
-		syntax maybe_ty_default = ("=" ty_sum)?;
+		syntax maybe_ty_default = ('=' ty_sum)?;
 
 		syntax maybe_lifetimes = internal?
 		{
 			syntax internal
 			{
 				| internal0 = lifetimes
-				| internal1 = lifetimes ","
+				| internal1 = lifetimes ','
 			}
 		}
 
 		syntax lifetimes = heads tails*
 		{
 			syntax heads = lifetime_and_bounds;
-			syntax tails = "," lifetime_and_bounds;
+			syntax tails = ',' lifetime_and_bounds;
 		}
 
 		syntax lifetime_and_bounds
@@ -890,9 +890,9 @@ namespace Nitrust.Rust.Grammar
 			| trait_ref1 = MOD_SEP path_generic_args_without_colons
 		}
 
-		syntax inner_attrs_and_block = "{" maybe_inner_attrs maybe_stmts "}";
+		syntax inner_attrs_and_block = '{' maybe_inner_attrs maybe_stmts '}';
 
-		syntax block = "{" maybe_stmts "}";
+		syntax block = '{' maybe_stmts '}';
 
 		syntax maybe_stmts = internal?
 		{
@@ -915,8 +915,8 @@ namespace Nitrust.Rust.Grammar
 			| stmt4 = outer_attrs PUB stmt_item
 			| stmt5 = full_block_expr
 			| stmt6 = block
-			| stmt7 = nonblock_expr ";"
-			| stmt8 = ";"
+			| stmt7 = nonblock_expr ';'
+			| stmt8 = ';'
 		}
 
 		syntax maybe_exprs = internal?
@@ -924,7 +924,7 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = exprs
-				| internal1 = exprs ","
+				| internal1 = exprs ','
 			}
 		}
 
@@ -933,7 +933,7 @@ namespace Nitrust.Rust.Grammar
 		syntax exprs = heads tails*
 		{
 			syntax heads = expr;
-			syntax tails = "," expr;
+			syntax tails = ',' expr;
 		}
 
 		syntax path_expr
@@ -955,8 +955,8 @@ namespace Nitrust.Rust.Grammar
 
 		syntax macro_expr
 		{
-			| macro_expr0 = path_expr "!" maybe_ident parens_delimited_token_trees
-			| macro_expr1 = path_expr "!" maybe_ident brackets_delimited_token_trees
+			| macro_expr0 = path_expr '!' maybe_ident parens_delimited_token_trees
+			| macro_expr1 = path_expr '!' maybe_ident brackets_delimited_token_trees
 		}
 
 		syntax nonblock_expr = heads tails*
@@ -967,9 +967,9 @@ namespace Nitrust.Rust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr "{" struct_expr_fields "}"
-				| heads5 = "[" vec_expr "]"
-				| heads6 = "(" maybe_exprs ")"
+				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads5 = '[' vec_expr ']'
+				| heads6 = '(' maybe_exprs ')'
 				| heads7 = CONTINUE
 				| heads8 = CONTINUE lifetime
 				| heads9 = RETURN
@@ -979,18 +979,18 @@ namespace Nitrust.Rust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX "(" maybe_expr ")" nonblock_expr
+				| heads16 = BOX '(' maybe_expr ')' nonblock_expr
 				| heads17 = expr_qualified_path
 				| heads18 = nonblock_prefix_expr
 			}
 			syntax tails
 			{
-				| tails0 = "." path_generic_args_with_colons
-				| tails1 = "." LIT_INTEGER
-				| tails2 = "[" maybe_expr "]"
-				| tails3 = "(" maybe_exprs ")"
+				| tails0 = '.' path_generic_args_with_colons
+				| tails1 = '.' LIT_INTEGER
+				| tails2 = '[' maybe_expr ']'
+				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr
-				| tails5 = "=" expr
+				| tails5 = '=' expr
 				| tails6 = SHLEQ expr
 				| tails7 = SHREQ expr
 				| tails8 = MINUSEQ expr
@@ -1005,20 +1005,20 @@ namespace Nitrust.Rust.Grammar
 				| tails17 = ANDAND expr
 				| tails18 = EQEQ expr
 				| tails19 = NE expr
-				| tails20 = "<" expr
-				| tails21 = ">" expr
+				| tails20 = '<' expr
+				| tails21 = '>' expr
 				| tails22 = LE expr
 				| tails23 = GE expr
-				| tails24 = "|" expr
-				| tails25 = "^" expr
-				| tails26 = "&" expr
+				| tails24 = '|' expr
+				| tails25 = '^' expr
+				| tails26 = '&' expr
 				| tails27 = SHL expr
 				| tails28 = SHR expr
-				| tails29 = "+" expr
-				| tails30 = "-" expr
-				| tails31 = "*" expr
-				| tails32 = "/" expr
-				| tails33 = "%" expr
+				| tails29 = '+' expr
+				| tails30 = '-' expr
+				| tails31 = '*' expr
+				| tails32 = '/' expr
+				| tails33 = '%' expr
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
@@ -1033,9 +1033,9 @@ namespace Nitrust.Rust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr "{" struct_expr_fields "}"
-				| heads5 = "(" maybe_exprs ")"
-				| heads6 = "[" vec_expr "]"
+				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads5 = '(' maybe_exprs ')'
+				| heads6 = '[' vec_expr ']'
 				| heads7 = CONTINUE
 				| heads8 = CONTINUE ident
 				| heads9 = RETURN
@@ -1045,7 +1045,7 @@ namespace Nitrust.Rust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX "(" maybe_expr ")" expr
+				| heads16 = BOX '(' maybe_expr ')' expr
 				| heads17 = expr_qualified_path
 				| heads18 = block_expr
 				| heads19 = block
@@ -1053,12 +1053,12 @@ namespace Nitrust.Rust.Grammar
 			}
 			syntax tails
 			{
-				| tails0 = "." path_generic_args_with_colons
-				| tails1 = "." LIT_INTEGER
-				| tails2 = "[" maybe_expr "]"
-				| tails3 = "(" maybe_exprs ")"
+				| tails0 = '.' path_generic_args_with_colons
+				| tails1 = '.' LIT_INTEGER
+				| tails2 = '[' maybe_expr ']'
+				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr
-				| tails5 = "=" expr
+				| tails5 = '=' expr
 				| tails6 = SHLEQ expr
 				| tails7 = SHREQ expr
 				| tails8 = MINUSEQ expr
@@ -1073,20 +1073,20 @@ namespace Nitrust.Rust.Grammar
 				| tails17 = ANDAND expr
 				| tails18 = EQEQ expr
 				| tails19 = NE expr
-				| tails20 = "<" expr
-				| tails21 = ">" expr
+				| tails20 = '<' expr
+				| tails21 = '>' expr
 				| tails22 = LE expr
 				| tails23 = GE expr
-				| tails24 = "|" expr
-				| tails25 = "^" expr
-				| tails26 = "&" expr
+				| tails24 = '|' expr
+				| tails25 = '^' expr
+				| tails26 = '&' expr
 				| tails27 = SHL expr
 				| tails28 = SHR expr
-				| tails29 = "+" expr
-				| tails30 = "-" expr
-				| tails31 = "*" expr
-				| tails32 = "/" expr
-				| tails33 = "%" expr
+				| tails29 = '+' expr
+				| tails30 = '-' expr
+				| tails31 = '*' expr
+				| tails32 = '/' expr
+				| tails33 = '%' expr
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
@@ -1101,8 +1101,8 @@ namespace Nitrust.Rust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr "{" struct_expr_fields "}"
-				| heads5 = "[" vec_expr "]"
+				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads5 = '[' vec_expr ']'
 				| heads6 = CONTINUE
 				| heads7 = CONTINUE ident
 				| heads8 = RETURN
@@ -1112,7 +1112,7 @@ namespace Nitrust.Rust.Grammar
 				| heads12 = DOTDOT nonparen_expr
 				| heads13 = DOTDOT
 				| heads14 = BOX nonparen_expr
-				| heads15 = BOX "(" maybe_expr ")" expr
+				| heads15 = BOX '(' maybe_expr ')' expr
 				| heads16 = expr_qualified_path
 				| heads17 = block_expr
 				| heads18 = block
@@ -1120,12 +1120,12 @@ namespace Nitrust.Rust.Grammar
 			}
 			syntax tails
 			{
-				| tails0 = "." path_generic_args_with_colons
-				| tails1 = "." LIT_INTEGER
-				| tails2 = "[" maybe_expr "]"
-				| tails3 = "(" maybe_exprs ")"
+				| tails0 = '.' path_generic_args_with_colons
+				| tails1 = '.' LIT_INTEGER
+				| tails2 = '[' maybe_expr ']'
+				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW nonparen_expr
-				| tails5 = "=" nonparen_expr
+				| tails5 = '=' nonparen_expr
 				| tails6 = SHLEQ nonparen_expr
 				| tails7 = SHREQ nonparen_expr
 				| tails8 = MINUSEQ nonparen_expr
@@ -1140,20 +1140,20 @@ namespace Nitrust.Rust.Grammar
 				| tails17 = ANDAND nonparen_expr
 				| tails18 = EQEQ nonparen_expr
 				| tails19 = NE nonparen_expr
-				| tails20 = "<" nonparen_expr
-				| tails21 = ">" nonparen_expr
+				| tails20 = '<' nonparen_expr
+				| tails21 = '>' nonparen_expr
 				| tails22 = LE nonparen_expr
 				| tails23 = GE nonparen_expr
-				| tails24 = "|" nonparen_expr
-				| tails25 = "^" nonparen_expr
-				| tails26 = "&" nonparen_expr
+				| tails24 = '|' nonparen_expr
+				| tails25 = '^' nonparen_expr
+				| tails26 = '&' nonparen_expr
 				| tails27 = SHL nonparen_expr
 				| tails28 = SHR nonparen_expr
-				| tails29 = "+" nonparen_expr
-				| tails30 = "-" nonparen_expr
-				| tails31 = "*" nonparen_expr
-				| tails32 = "/" nonparen_expr
-				| tails33 = "%" nonparen_expr
+				| tails29 = '+' nonparen_expr
+				| tails30 = '-' nonparen_expr
+				| tails31 = '*' nonparen_expr
+				| tails32 = '/' nonparen_expr
+				| tails33 = '%' nonparen_expr
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT nonparen_expr
 				| tails36 = AS ty
@@ -1168,8 +1168,8 @@ namespace Nitrust.Rust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = "[" vec_expr "]"
-				| heads5 = "(" maybe_exprs ")"
+				| heads4 = '[' vec_expr ']'
+				| heads5 = '(' maybe_exprs ')'
 				| heads6 = CONTINUE
 				| heads7 = CONTINUE ident
 				| heads8 = RETURN
@@ -1179,7 +1179,7 @@ namespace Nitrust.Rust.Grammar
 				| heads12 = DOTDOT expr_nostruct
 				| heads13 = DOTDOT
 				| heads14 = BOX nonparen_expr
-				| heads15 = BOX "(" maybe_expr ")" expr_nostruct
+				| heads15 = BOX '(' maybe_expr ')' expr_nostruct
 				| heads16 = expr_qualified_path
 				| heads17 = block_expr
 				| heads18 = block
@@ -1187,12 +1187,12 @@ namespace Nitrust.Rust.Grammar
 			}
 			syntax tails
 			{
-				| tails0 = "." path_generic_args_with_colons
-				| tails1 = "." LIT_INTEGER
-				| tails2 = "[" maybe_expr "]"
-				| tails3 = "(" maybe_exprs ")"
+				| tails0 = '.' path_generic_args_with_colons
+				| tails1 = '.' LIT_INTEGER
+				| tails2 = '[' maybe_expr ']'
+				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr_nostruct
-				| tails5 = "=" expr_nostruct
+				| tails5 = '=' expr_nostruct
 				| tails6 = SHLEQ expr_nostruct
 				| tails7 = SHREQ expr_nostruct
 				| tails8 = MINUSEQ expr_nostruct
@@ -1207,20 +1207,20 @@ namespace Nitrust.Rust.Grammar
 				| tails17 = ANDAND expr_nostruct
 				| tails18 = EQEQ expr_nostruct
 				| tails19 = NE expr_nostruct
-				| tails20 = "<" expr_nostruct
-				| tails21 = ">" expr_nostruct
+				| tails20 = '<' expr_nostruct
+				| tails21 = '>' expr_nostruct
 				| tails22 = LE expr_nostruct
 				| tails23 = GE expr_nostruct
-				| tails24 = "|" expr_nostruct
-				| tails25 = "^" expr_nostruct
-				| tails26 = "&" expr_nostruct
+				| tails24 = '|' expr_nostruct
+				| tails25 = '^' expr_nostruct
+				| tails26 = '&' expr_nostruct
 				| tails27 = SHL expr_nostruct
 				| tails28 = SHR expr_nostruct
-				| tails29 = "+" expr_nostruct
-				| tails30 = "-" expr_nostruct
-				| tails31 = "*" expr_nostruct
-				| tails32 = "/" expr_nostruct
-				| tails33 = "%" expr_nostruct
+				| tails29 = '+' expr_nostruct
+				| tails30 = '-' expr_nostruct
+				| tails31 = '*' expr_nostruct
+				| tails32 = '/' expr_nostruct
+				| tails33 = '%' expr_nostruct
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr_nostruct
 				| tails36 = AS ty
@@ -1229,10 +1229,10 @@ namespace Nitrust.Rust.Grammar
 
 		syntax nonblock_prefix_expr_nostruct
 		{
-			| nonblock_prefix_expr_nostruct0 = "-" expr_nostruct
-			| nonblock_prefix_expr_nostruct1 = "!" expr_nostruct
-			| nonblock_prefix_expr_nostruct2 = "*" expr_nostruct
-			| nonblock_prefix_expr_nostruct3 = "&" maybe_mut expr_nostruct
+			| nonblock_prefix_expr_nostruct0 = '-' expr_nostruct
+			| nonblock_prefix_expr_nostruct1 = '!' expr_nostruct
+			| nonblock_prefix_expr_nostruct2 = '*' expr_nostruct
+			| nonblock_prefix_expr_nostruct3 = '&' maybe_mut expr_nostruct
 			| nonblock_prefix_expr_nostruct4 = ANDAND maybe_mut expr_nostruct
 			| nonblock_prefix_expr_nostruct5 = lambda_expr_nostruct
 			| nonblock_prefix_expr_nostruct6 = MOVE lambda_expr_nostruct
@@ -1241,10 +1241,10 @@ namespace Nitrust.Rust.Grammar
 
 		syntax nonblock_prefix_expr
 		{
-			| nonblock_prefix_expr0 = "-" expr
-			| nonblock_prefix_expr1 = "!" expr
-			| nonblock_prefix_expr2 = "*" expr
-			| nonblock_prefix_expr3 = "&" maybe_mut expr
+			| nonblock_prefix_expr0 = '-' expr
+			| nonblock_prefix_expr1 = '!' expr
+			| nonblock_prefix_expr2 = '*' expr
+			| nonblock_prefix_expr3 = '&' maybe_mut expr
 			| nonblock_prefix_expr4 = ANDAND maybe_mut expr
 			| nonblock_prefix_expr5 = lambda_expr
 			| nonblock_prefix_expr6 = MOVE lambda_expr
@@ -1253,11 +1253,11 @@ namespace Nitrust.Rust.Grammar
 
 		syntax expr_qualified_path
 		{
-			| expr_qualified_path0 = "<" ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_qpath_params
-			| expr_qualified_path1 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident
-			| expr_qualified_path2 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident generic_args maybe_as_trait_ref ">" MOD_SEP ident
-			| expr_qualified_path3 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident maybe_as_trait_ref ">" MOD_SEP ident generic_args
-			| expr_qualified_path4 = SHL ty_sum maybe_as_trait_ref ">" MOD_SEP ident generic_args maybe_as_trait_ref ">" MOD_SEP ident generic_args
+			| expr_qualified_path0 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_qpath_params
+			| expr_qualified_path1 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
+			| expr_qualified_path2 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident generic_args maybe_as_trait_ref '>' MOD_SEP ident
+			| expr_qualified_path3 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident generic_args
+			| expr_qualified_path4 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident generic_args maybe_as_trait_ref '>' MOD_SEP ident generic_args
 		}
 
 		syntax maybe_qpath_params = (MOD_SEP generic_args)?;
@@ -1267,43 +1267,43 @@ namespace Nitrust.Rust.Grammar
 		syntax lambda_expr
 		{
 			| lambda_expr0 = OROR ret_ty expr
-			| lambda_expr1 = "|" maybe_unboxed_closure_kind "|" ret_ty expr
-			| lambda_expr2 = "|" inferrable_params "|" ret_ty expr
-			| lambda_expr3 = "|" "&" maybe_mut ":" inferrable_params "|" ret_ty expr
-			| lambda_expr4 = "|" ":" inferrable_params "|" ret_ty expr
+			| lambda_expr1 = '|' maybe_unboxed_closure_kind '|' ret_ty expr
+			| lambda_expr2 = '|' inferrable_params '|' ret_ty expr
+			| lambda_expr3 = '|' '&' maybe_mut ':' inferrable_params '|' ret_ty expr
+			| lambda_expr4 = '|' ':' inferrable_params '|' ret_ty expr
 		}
 
 		syntax lambda_expr_nostruct
 		{
 			| lambda_expr_nostruct0 = OROR expr_nostruct
-			| lambda_expr_nostruct1 = "|" maybe_unboxed_closure_kind "|" expr_nostruct
-			| lambda_expr_nostruct2 = "|" inferrable_params "|" expr_nostruct
-			| lambda_expr_nostruct3 = "|" "&" maybe_mut ":" inferrable_params "|" expr_nostruct
-			| lambda_expr_nostruct4 = "|" ":" inferrable_params "|" expr_nostruct
+			| lambda_expr_nostruct1 = '|' maybe_unboxed_closure_kind '|' expr_nostruct
+			| lambda_expr_nostruct2 = '|' inferrable_params '|' expr_nostruct
+			| lambda_expr_nostruct3 = '|' '&' maybe_mut ':' inferrable_params '|' expr_nostruct
+			| lambda_expr_nostruct4 = '|' ':' inferrable_params '|' expr_nostruct
 		}
 
 		syntax proc_expr
 		{
-			| proc_expr0 = PROC "(" ")" expr
-			| proc_expr1 = PROC "(" inferrable_params ")" expr
+			| proc_expr0 = PROC '(' ')' expr
+			| proc_expr1 = PROC '(' inferrable_params ')' expr
 		}
 
 		syntax proc_expr_nostruct
 		{
-			| proc_expr_nostruct0 = PROC "(" ")" expr_nostruct
-			| proc_expr_nostruct1 = PROC "(" inferrable_params ")" expr_nostruct
+			| proc_expr_nostruct0 = PROC '(' ')' expr_nostruct
+			| proc_expr_nostruct1 = PROC '(' inferrable_params ')' expr_nostruct
 		}
 
 		syntax vec_expr
 		{
 			| vec_expr0 = maybe_exprs
-			| vec_expr1 = exprs ";" expr
+			| vec_expr1 = exprs ';' expr
 		}
 
 		syntax struct_expr_fields
 		{
 			| struct_expr_fields0 = field_inits
-			| struct_expr_fields1 = field_inits ","
+			| struct_expr_fields1 = field_inits ','
 			| struct_expr_fields2 = maybe_field_inits default_field_init
 		}
 
@@ -1312,17 +1312,17 @@ namespace Nitrust.Rust.Grammar
 			syntax internal
 			{
 				| internal0 = field_inits
-				| internal1 = field_inits ","
+				| internal1 = field_inits ','
 			}
 		}
 
 		syntax field_inits = heads tails*
 		{
 			syntax heads = field_init;
-			syntax tails = "," field_init;
+			syntax tails = ',' field_init;
 		}
 
-		syntax field_init = ident ":" expr;
+		syntax field_init = ident ':' expr;
 
 		syntax default_field_init = DOTDOT expr;
 
@@ -1336,7 +1336,7 @@ namespace Nitrust.Rust.Grammar
 			| block_expr5 = expr_loop
 			| block_expr6 = expr_for
 			| block_expr7 = UNSAFE block
-			| block_expr8 = path_expr "!" maybe_ident braces_delimited_token_trees
+			| block_expr8 = path_expr '!' maybe_ident braces_delimited_token_trees
 		}
 
 		syntax full_block_expr = heads tails*
@@ -1344,28 +1344,28 @@ namespace Nitrust.Rust.Grammar
 			syntax heads = block_expr;
 			syntax tails
 			{
-				| tails0 = "." path_generic_args_with_colons
-				| tails1 = "." path_generic_args_with_colons "[" maybe_expr "]"
-				| tails2 = "." path_generic_args_with_colons "(" maybe_exprs ")"
-				| tails3 = "." LIT_INTEGER
+				| tails0 = '.' path_generic_args_with_colons
+				| tails1 = '.' path_generic_args_with_colons '[' maybe_expr ']'
+				| tails2 = '.' path_generic_args_with_colons '(' maybe_exprs ')'
+				| tails3 = '.' LIT_INTEGER
 			}
 		}
 
 		syntax expr_match
 		{
-			| expr_match0 = MATCH expr_nostruct "{" "}"
-			| expr_match1 = MATCH expr_nostruct "{" match_clauses "}"
-			| expr_match2 = MATCH expr_nostruct "{" match_clauses nonblock_match_clause "}"
-			| expr_match3 = MATCH expr_nostruct "{" nonblock_match_clause "}"
+			| expr_match0 = MATCH expr_nostruct '{' '}'
+			| expr_match1 = MATCH expr_nostruct '{' match_clauses '}'
+			| expr_match2 = MATCH expr_nostruct '{' match_clauses nonblock_match_clause '}'
+			| expr_match3 = MATCH expr_nostruct '{' nonblock_match_clause '}'
 		}
 
 		syntax match_clauses = match_clause+;
 
 		syntax match_clause
 		{
-			| match_clause0 = nonblock_match_clause ","
+			| match_clause0 = nonblock_match_clause ','
 			| match_clause1 = block_match_clause
-			| match_clause2 = block_match_clause ","
+			| match_clause2 = block_match_clause ','
 		}
 
 		syntax nonblock_match_clause
@@ -1386,8 +1386,8 @@ namespace Nitrust.Rust.Grammar
 
 		syntax expr_if_let
 		{
-			| expr_if_let0 = IF LET pat "=" expr_nostruct block
-			| expr_if_let1 = IF LET pat "=" expr_nostruct block ELSE block_or_if
+			| expr_if_let0 = IF LET pat '=' expr_nostruct block
+			| expr_if_let1 = IF LET pat '=' expr_nostruct block ELSE block_or_if
 		}
 
 		syntax block_or_if
@@ -1399,15 +1399,15 @@ namespace Nitrust.Rust.Grammar
 
 		syntax expr_while = maybe_label WHILE expr_nostruct block;
 
-		syntax expr_while_let = maybe_label WHILE LET pat "=" expr_nostruct block;
+		syntax expr_while_let = maybe_label WHILE LET pat '=' expr_nostruct block;
 
 		syntax expr_loop = maybe_label LOOP block;
 
 		syntax expr_for = maybe_label FOR pat IN expr_nostruct block;
 
-		syntax maybe_label = (lifetime ":")?;
+		syntax maybe_label = (lifetime ':')?;
 
-		syntax let = LET pat maybe_ty_ascription maybe_init_expr ";";
+		syntax let = LET pat maybe_ty_ascription maybe_init_expr ';';
 
 		syntax lit
 		{
@@ -1510,27 +1510,27 @@ namespace Nitrust.Rust.Grammar
 			| unpaired_token73 = OUTER_DOC_COMMENT
 			| unpaired_token74 = SHEBANG
 			| unpaired_token75 = STATIC_LIFETIME
-			| unpaired_token76 = ";"
-			| unpaired_token77 = ","
-			| unpaired_token78 = "."
-			| unpaired_token79 = "@"
-			| unpaired_token80 = "#"
-			| unpaired_token81 = "~"
-			| unpaired_token82 = ":"
-			| unpaired_token83 = "$"
-			| unpaired_token84 = "="
-			| unpaired_token85 = "?"
-			| unpaired_token86 = "!"
-			| unpaired_token87 = "<"
-			| unpaired_token88 = ">"
-			| unpaired_token89 = "-"
-			| unpaired_token90 = "&"
-			| unpaired_token91 = "|"
-			| unpaired_token92 = "+"
-			| unpaired_token93 = "*"
-			| unpaired_token94 = "/"
-			| unpaired_token95 = "^"
-			| unpaired_token96 = "%"
+			| unpaired_token76 = ';'
+			| unpaired_token77 = ','
+			| unpaired_token78 = '.'
+			| unpaired_token79 = '@'
+			| unpaired_token80 = '#'
+			| unpaired_token81 = '~'
+			| unpaired_token82 = ':'
+			| unpaired_token83 = '$'
+			| unpaired_token84 = '='
+			| unpaired_token85 = '?'
+			| unpaired_token86 = '!'
+			| unpaired_token87 = '<'
+			| unpaired_token88 = '>'
+			| unpaired_token89 = '-'
+			| unpaired_token90 = '&'
+			| unpaired_token91 = '|'
+			| unpaired_token92 = '+'
+			| unpaired_token93 = '*'
+			| unpaired_token94 = '/'
+			| unpaired_token95 = '^'
+			| unpaired_token96 = '%'
 		}
 
 		syntax token_trees = token_tree*;
@@ -1548,10 +1548,10 @@ namespace Nitrust.Rust.Grammar
 			| delimited_token_trees2 = brackets_delimited_token_trees
 		}
 
-		syntax parens_delimited_token_trees = "(" token_trees ")";
+		syntax parens_delimited_token_trees = '(' token_trees ')';
 
-		syntax braces_delimited_token_trees = "{" token_trees "}";
+		syntax braces_delimited_token_trees = '{' token_trees '}';
 
-		syntax brackets_delimited_token_trees = "[" token_trees "]";
+		syntax brackets_delimited_token_trees = '[' token_trees ']';
 	}
 }
