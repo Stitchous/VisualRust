@@ -9,7 +9,7 @@ using System.Linq;
 
 using Nitra.Core;
 
-using Rulst.Tokesn;
+using Rust.Tokens;
 namespace BisonRulesParser
 {
 	syntax module RRules
