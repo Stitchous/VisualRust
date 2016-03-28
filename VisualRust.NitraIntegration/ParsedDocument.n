@@ -8,11 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VisualRust.Grammar
+namespace VisualRust.NitraIntegration
 {
     public class ParsedDocument
     {
-        public Update(snapshot : ITextSnapshot) : void
+        public Update(_: ITextSnapshot) : void
         {
             
         }

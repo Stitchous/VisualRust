@@ -1,4 +1,4 @@
-﻿using VisualRust.Grammar;
+﻿using VisualRust.NitraIntegration;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;

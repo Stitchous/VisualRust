@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using System;
-using VisualRust.Grammar;
+using VisualRust.NitraIntegration;
 
 namespace VisualRust
 {

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Language.StandardClassification;
 
-namespace VisualRust.Grammar
+namespace VisualRust.NitraIntegration
 {
     public class RustClassifier : IClassifier
     {

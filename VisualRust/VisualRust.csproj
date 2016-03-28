@@ -340,9 +340,9 @@
       <Project>{e983e989-f83a-4643-896a-ad496bf647d0}</Project>
       <Name>RustLexer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VisualRust.Grammar\VisualRust.Grammar.nproj">
-      <Project>{e7655a81-9f8d-4826-9ca6-f7fcafd4d76a}</Project>
-      <Name>VisualRust.Grammar</Name>
+    <ProjectReference Include="..\VisualRust.NitraIntegration\VisualRust.NitraIntegration.nproj">
+      <Project>{daf0e950-79c6-4e28-821a-aef1abc44c17}</Project>
+      <Name>VisualRust.NitraIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\VisualRust.Templates\VisualRust.Templates.csproj">
       <Project>{59D94B96-1AF7-46F2-8790-AAB6DFAE8D9A}</Project>
