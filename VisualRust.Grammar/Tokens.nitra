@@ -32,10 +32,10 @@
 		token LARROW								= "<-";
 		token FAT_ARROW								= "=>";
 		token LIT_BYTE								= ByteLiteral;
-		token LIT_CHAR								= CharacterLiteral;
+		[SpanClass(Char)] token LIT_CHAR			= CharacterLiteral;
 		syntax LIT_INTEGER							= IntegerLiteral;
 		token LIT_FLOAT								= FloatingPointLiteral;
-		token LIT_STR								= RegularStringLiteral;
+		[SpanClass(String)] token LIT_STR			= RegularStringLiteral;
 		syntax LIT_STR_RAW							= RawStringLiteral;
 		token LIT_BYTE_STR							= RegularByteStringLiteral;
 		syntax LIT_BYTE_STR_RAW						= RawByteStringLiteral;
@@ -79,8 +79,8 @@
 		token CONST									= "const";
 		token WHERE									= "where";
 		token TYPEOF								= "typeof";
-		token INNER_DOC_COMMENT						= "TODO"; //TODO
-		token OUTER_DOC_COMMENT						= "TODO"; //TODO
+		token INNER_DOC_COMMENT						= ""; 
+		token OUTER_DOC_COMMENT						= ""; 
 		token SHEBANG								= "#!";
 		token SHEBANG_LINE							= "#!" !'[' (!NewLine Any)* NewLine;
 		token STATIC_LIFETIME						= "static";

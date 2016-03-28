@@ -9,7 +9,7 @@
   //span class Method           { ForegroundColor=Goldenrod;  }
   //span class Parameter        { ForegroundColor=Goldenrod;  }
 
-  extension = .nrst;
+  extension = .rs;
 
   company     = IngenuiousSolution; // TODO: Проверять, что не содержит пробелов.
   description = Nitra driven Rust plugin for Visual Studio;

@@ -25,7 +25,7 @@
       | SingleCharacterChar = SingleCharacter;
     }
 
-    [SpanClass(Char)] token CharacterLiteral = '\'' Character '\'';
+    token CharacterLiteral = '\'' Character '\'';
 
 	regex NotAllowedRegularStringLiteralChar = '"' | '\\';
 
@@ -102,7 +102,7 @@
       | SingleByteChar		= Ascii;
     }
 
-	[SpanClass(Char)] token ByteLiteral = 'b' '\'' ByteCharacter '\'';
+	token ByteLiteral = 'b' '\'' ByteCharacter '\'';
 
 	token RegularByteStringLiteralPart
     {
@@ -155,7 +155,6 @@
 	  regex Close  = '"' Sharps;
 	}
 
-	[SpanClass(String)]
 	syntax RawByteStringLiteral 
 	{ 
 		| RawByteStringLiteral0;
@@ -191,7 +190,6 @@
 
 	regex BooleanLiteral = "true" | "false";
 
-	[SpanClass(String)]
 	syntax Str
 	{
 		| RegularStringLiteral
