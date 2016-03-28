@@ -12,8 +12,8 @@
   extension = .y;
 
   company     = IngenuiousSolution; // TODO: Проверять, что не содержит пробелов.
-  description = Incomplete Bison grammar parser (enough for parsing Rust grammar);
-  authors     = Alexander Stroykov, Alexander Stroykov;
+  description = Incomplete Bison grammar parser (enough for Rust grammar);
+  authors     = Alexander Stroykov, Alexey Subbotin, Alexander Amrilloev;
   copyright   = IngenuiousSolution;
   license url = http://opensource.org/licenses/BSD-3-Clause;
   // require license acceptance;

@@ -122,10 +122,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Blocks.nitra">
+    <Compile Include="generated.nitra">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Identifiers.nitra">
@@ -138,16 +135,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
-    <Compile Include="Main.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Items.nitra">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Tokens.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Types.nitra">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

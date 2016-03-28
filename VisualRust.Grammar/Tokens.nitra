@@ -33,12 +33,12 @@
 		token FAT_ARROW								= "=>";
 		token LIT_BYTE								= ByteLiteral;
 		token LIT_CHAR								= CharacterLiteral;
-		alias LIT_INTEGER							= IntegerLiteral;
+		syntax LIT_INTEGER							= IntegerLiteral;
 		token LIT_FLOAT								= FloatingPointLiteral;
 		token LIT_STR								= RegularStringLiteral;
-		alias LIT_STR_RAW							= RawStringLiteral;
+		syntax LIT_STR_RAW							= RawStringLiteral;
 		token LIT_BYTE_STR							= RegularByteStringLiteral;
-		alias LIT_BYTE_STR_RAW						= RawByteStringLiteral;
+		syntax LIT_BYTE_STR_RAW						= RawByteStringLiteral;
 		token IDENT									= !Keyword IdentifierBody;
 		token UNDERSCORE							= "_";
 		token LIFETIME								= "{" IDENT "}";
