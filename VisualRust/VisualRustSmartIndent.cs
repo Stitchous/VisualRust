@@ -32,6 +32,9 @@ namespace VisualRust
 
         int? ISmartIndent.GetDesiredIndentation(ITextSnapshotLine currentSnapshotLine)
         {
+			// TODO:
+			return null;
+
             var textSnapshot = textView.TextSnapshot;
             var position = textView.Caret.Position.BufferPosition.Position;
 
