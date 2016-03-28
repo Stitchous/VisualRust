@@ -6,6 +6,7 @@
 
 	using Identifiers;
 	using Attributes;
+	using Outline;
 
 	syntax Visibility = "pub" sm;
 	
@@ -46,7 +47,7 @@
 	syntax ItemMod
 	{
 		| ItemMod1 = "mod" Name ';'
-		| ItemMod2 = "mod" Name '{' InnerAttr* ModItem* '}'
+		| ItemMod2 = "mod" Name outline_begin_before '{' InnerAttr* ModItem*  '}' outline_end_before
 	}
 
 	//TODO:

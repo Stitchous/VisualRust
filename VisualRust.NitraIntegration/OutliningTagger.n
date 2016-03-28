@@ -23,12 +23,38 @@ namespace VisualRust.NitraIntegration
         
         public event TagsChanged : EventHandler[SnapshotSpanEventArgs];
         
-        public GetTags(_: NormalizedSnapshotSpanCollection) : IEnumerable[ITagSpan[IOutliningRegionTag]]
+        public GetTags(spans: NormalizedSnapshotSpanCollection) : IEnumerable[ITagSpan[IOutliningRegionTag]]
         {
-            []
+            def document = ParsedDocument.Get(_buffer);
+            
+            
+            def snapshot = document.CurrentSnapshot;
+            
+            def entire = 
+                SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(snapshot, SpanTrackingMode.EdgeExclusive);
+            
+            def start = entire.Start;
+            def end = entire.End;
+
+
+            def outlining = List();
+            document.ParseResult.GetOutlining(outlining);
+            
+            def mapRegion(region : Nitra.OutliningInfo)
+            {
+                def span = region.Span;
+                def tag = OutliningRegionTag(region.IsDefaultCollapsed, region.IsImplementation, "...", "...");
+                def snapshotSpan = SnapshotSpan(snapshot, Span(span.StartPos, span.Length));
+                def tagSpan = TagSpan.[IOutliningRegionTag](snapshotSpan, tag);
+                tagSpan
+            }
+            
+            
+            outlining
+                .Where(r => r.Span.StartPos <= end && r.Span.EndPos >= start)
+                .Select(mapRegion);
+          
         }
-        
-        
         
         private BufferChanged() : void
         {
