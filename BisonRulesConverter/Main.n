@@ -118,7 +118,8 @@ $(indent)}#>
     GenerateSymbol(symbol : Symbol) : string
     {
         | x is Symbol.Reference => x.Reference.Text
-        | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
+        | x is Symbol.CharacterLiteral when x.Value.Value.Length  > 1 => $<#"$(x.Value.Value)"#>
+        | x is Symbol.CharacterLiteral when x.Value.Value.Length == 1 => $<#'$(x.Value.Value)'#>
     }
     
     Equals(left : list[list[Symbol]], right : list[list[Symbol]]) : bool
