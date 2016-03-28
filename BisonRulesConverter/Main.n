@@ -29,99 +29,100 @@ module Program
     }
     
     GenerateNitraGrammar(grammarFile : GrammarFile) : string
-    {                
-        mutable result = "";
-        
-        foreach (rule in grammarFile.Rules)
-        {
-            def components = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]();
-            
-            if (rule.HasDirectLeftRecursion)
-            {
-                def (heads, tails) = components.NToList().Partition(c => 
-                        match (c.Symbols.First())
-                        {
-                            | c is Symbol.Reference => c.Reference.Id != rule.Name.Id
-                            | _ => true
-                        });
-                        
-                if (heads.Any())
-                {
-                    result += GenerateCompoundRule(
-                        $"$(rule.Name) = ($(rule.Name)_heads $(rule.Name)_tails*)" + if (rule.IsOptional) "?" else "",
-                        [GenerateRule(rule.Name + "_heads", heads.Map(x => x.Symbols), "", "\t"),
-                         GenerateRule(rule.Name + "_tails", tails.Map(x => x.Symbols.Skip(1)), "", "\t")]);                     
-                }
-                else
-                {
-                    result += GenerateRule(rule.Name.Text, tails.Map(x => x.Symbols.Skip(1)), "*");
-                }
-            }
-            else
-            {
-                result += GenerateRule(rule.Name.Text, components.Map(x => x.Symbols), if (rule.IsOptional) "?" else "");
-            }
-            
-            result += "\n\n";
-        }
-        
-        result
+    {   
+        $<#..$(grammarFile.Rules;"\n\n";GenerateRule)#>
     }
-            
-    GenerateRule(name : string, components : IEnumerable[IEnumerable[Symbol]], optional = "", ident = "") : string
+    
+    GenerateRule(rule : Rule) : string
     {
-        def GenerateSymbols(symbols : IEnumerable[Symbol])
-        {            
-            def GenerateSymbol(symbol : Symbol)
-            {
-                match (symbol)
-                {
-                    | x is Symbol.Reference        => x.Reference.Text
-                    | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
-                }
-            }
-        
-            $<#..$(symbols; " "; GenerateSymbol)#>
-        }
-        
-        if (components.Count() == 1)
+        def components    = rule.RuleComponents.OfType.[RuleComponent.NotEmpty]().Map(x => x.Symbols.NToList()).NToList();
+        def suffix        = if (rule.IsOptional) "?" else "";
+        def currentIndent = "";
+        def subruleIndent = "    ";
+            
+        if (!rule.HasDirectLeftRecursion)
         {
-            if (!optional.IsEmpty())
-            {
-                if (components.First().Count() > 1)
-                    ident + $"syntax $name = (" + GenerateSymbols(components.First()) + ")" + optional + ";"
-                 else
-                    ident + $"syntax $name = " + GenerateSymbols(components.First()) + optional + ";"
-            }
-            else
-                ident + $"syntax $name = " + GenerateSymbols(components.First()) + ";"
+            GenerateRule(rule.Name.Text, components, [], suffix)
         }
         else
         {
-            mutable body = ident;
+            def (heads, tails) = components.Partition(c => 
+                    match (c.First())
+                    {
+                        | c is Symbol.Reference => c.Reference.Id != rule.Name.Id
+                        | _ => true
+                    });
+                    
+            def ruleWithoutLeftRecursion = (heads, tails.Map(symbols => symbols.Skip(1).NToList()));
             
-            if (!optional.IsEmpty())
+            match (ruleWithoutLeftRecursion)
             {
-                body += $"syntax $name = $(name)_internal$optional\n$ident{" + GenerateRule(name + "_internal", components, "", ident + "\t");
+                | ([], tails)                              => GenerateRule(rule.Name.Text, tails, [], "*", currentIndent)
+                | (heads, tails) when Equals(heads, tails) => GenerateRule(rule.Name.Text, tails, [], "+", currentIndent)
+                | (heads, tails)                           => GenerateRule(rule.Name.Text,
+                                                                    [["heads", "tails*"]],
+                                                                    [
+                                                                        GenerateRule("heads", heads, [], currentIndent, subruleIndent),
+                                                                        GenerateRule("tails", tails, [], currentIndent, subruleIndent)
+                                                                    ],
+                                                                    suffix)
             }
-            else
-            {
-                body += $"syntax $name\n$ident{";                
-                foreach (component in components with index)
-                    body += $"\n$ident\t| $name$index = " + GenerateSymbols(component);
-            }
-                
-            body + $"\n$ident}"
         }
     }
-        
-    GenerateCompoundRule(rule : string, subrules : IEnumerable[string], ident = "") : string
+    
+    GenerateRule(
+        name       : string,
+        components : list[list[Symbol]],
+        subrules   : list[string],
+        suffix = "",
+        indent = "") : string
     {
-        mutable result = ident + $"syntax $rule\n$ident{\n";
+        GenerateRule(name, components.Map(_.Map(GenerateSymbol)), subrules, suffix, indent) 
+    }
             
-        foreach (subrule in subrules)
-            result += ident + subrule + "\n";
-                
-        result + $"$ident}"
-    }    
+    GenerateRule(
+        name       : string,
+        components : list[list[string]],
+        subrules   : list[string],
+        suffix = "",
+        indent = "") : string
+    {        
+        match ((components, suffix))
+        {
+            | ([[symbol]],  _) => GenerateRule(name, [$"$(symbol)$(suffix)"], subrules, indent)
+            | ([symbols], "")  => GenerateRule(name, [$<#..$(symbols;" ")#>], subrules, indent)
+            | ([symbols], _)   => GenerateRule(name, [$<#(..$(symbols;" "))$(suffix)#>], subrules, indent)
+            | (_, "")          => GenerateRule(name, components.MapI((index, symbols) => $<#$(indent)    | $(name)$(index) = ..$(symbols;" ")#>), subrules, indent)
+            | _                => GenerateRule(name, [[$"internal$(suffix)"]], [GenerateRule("internal", components, subrules, "", "    ")], "", indent)
+        }
+    }
+    
+    GenerateRule(name : string, components : list[string], subrules : list[string], indent = "") : string
+    {
+        | (_,[component],[],_) =>
+$<#$(indent)syntax $(name) = $(component);#>
+
+        | (_,[component],_,_)  =>
+$<#$(indent)syntax $(name) = $(component)
+$(indent){
+..$(subrules;"\n")
+$(indent)}#>
+
+        | _ =>
+$<#$(indent)syntax $(name)
+$(indent){
+..$(components;"\n")..$(subrules;"\n")
+$(indent)}#>
+    }
+    
+    GenerateSymbol(symbol : Symbol) : string
+    {
+        | x is Symbol.Reference => x.Reference.Text
+        | x is Symbol.CharacterLiteral => $<#"$(x.Value)"#>
+    }
+    
+    Equals(left : list[list[Symbol]], right : list[list[Symbol]]) : bool
+    {
+        left.Map(_.Map(GenerateSymbol)) == right.Map(_.Map(GenerateSymbol))
+    }
 }
