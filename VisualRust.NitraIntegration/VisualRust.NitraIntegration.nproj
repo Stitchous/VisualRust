@@ -73,7 +73,7 @@
       <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="Nitra.Runtime, Version=0.1.3208.0, Culture=neutral, PublicKeyToken=e080a9c724e2bfcd">
+    <Reference Include="Nitra.Runtime">
       <Name>Nitra.Runtime</Name>
       <AssemblyName>Nitra.Runtime.dll</AssemblyName>
       <HintPath>..\External\Nitra.Runtime.dll</HintPath>
