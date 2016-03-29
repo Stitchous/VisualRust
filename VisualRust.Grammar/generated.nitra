@@ -17,11 +17,7 @@ namespace Nitrust.Rust.Grammar
 	syntax module Rules
 	{
 		[StartRule]
-		syntax crate
-		{
-			| crate0 = maybe_shebang inner_attrs maybe_mod_items
-			| crate1 = maybe_shebang maybe_mod_items
-		}
+		syntax crate = maybe_shebang inner_attrs? maybe_mod_items;
 
 		syntax maybe_shebang = SHEBANG_LINE?;
 
