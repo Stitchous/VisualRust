@@ -130,8 +130,8 @@ module Program
             {
                 | (suffix, [[], [body]], prefix) => GenerateRule(name, [suffix + [$"$(body)?"] + prefix], subrules, ruleSuffix, indent)                
                 | (suffix, [[], body], prefix) => GenerateRule(name, [suffix + [$<#(..$(body;" "))?#>] + prefix], subrules, ruleSuffix, indent)         
-                | (suffix, [] :: body, prefix) => GenerateRule(name, [suffix + [$"$(name)_alts?"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
-                | (suffix, body, prefix) when body.Any() && (suffix.Any() || prefix.Any()) => GenerateRule(name, [suffix + [$"$(name)_alts"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
+//                | (suffix, [] :: body, prefix) => GenerateRule(name, [suffix + [$"$(name)_alts?"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
+//                | (suffix, body, prefix) when body.Any() && (suffix.Any() || prefix.Any()) => GenerateRule(name, [suffix + [$"$(name)_alts"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
                 | _ => GenerateRule(name, components, subrules, ruleSuffix, indent)
             }
         }
