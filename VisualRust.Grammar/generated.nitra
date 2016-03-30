@@ -657,7 +657,7 @@ namespace Nitrust.Rust.Grammar
 
 		syntax binding = ident '=' ty;
 
-		syntax ty_param = ident '?'? ident maybe_ty_param_bounds maybe_ty_default;
+		syntax ty_param = ident ('?' ident)? maybe_ty_param_bounds maybe_ty_default;
 
 		syntax maybe_bounds = (':' bounds)?;
 

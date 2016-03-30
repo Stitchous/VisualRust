@@ -123,9 +123,9 @@ module Program
         else
         {
             def compSuffix = FindPrefix(components);
-            def compPrefix = FindSuffix(components);
+            def compPrefix = FindSuffix(components.Map(symbols => symbols.Skip(compSuffix.Count()).NToList()));
             def compBody   = components.Map(symbols => symbols.Skip(compSuffix.Count()).Take(symbols.Count() - compPrefix.Count() - compSuffix.Count()).NToList()).OrderBy(x => x.Length).NToList();
-        
+            
             match ((compSuffix, compBody, compPrefix))
             {
                 | (suffix, [[], [body]], prefix) => GenerateRule(name, [suffix + [$"$(body)?"] + prefix], subrules, ruleSuffix, indent)                
