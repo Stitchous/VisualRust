@@ -18,10 +18,12 @@
 				"unsafe"	| "unsized"	| "use"			| "virtual"		| "where"	|
 				"while"		| "yield";
 
+	regex Identifier = (LetterCharacter IdentifierPartCharacters*) | ("_" IdentifierPartCharacters+);
+
 	[Keyword] token Keyword = Name=KeywordToken !IdentifierPartCharacters;
 
-	[Reference] token Reference = !Keyword IdentifierBody;
+	[Reference] token Reference = !Keyword Identifier;
   
-	[Name] token Name = !Keyword IdentifierBody;
+	[Name] token Name = !Keyword Identifier;
   }
 }
