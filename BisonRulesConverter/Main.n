@@ -59,34 +59,91 @@ module Program
             {
                 | ([], tails)                              => GenerateRule(rule.Name.Text, tails, [], "*", currentIndent)
                 | (heads, tails) when Equals(heads, tails) => GenerateRule(rule.Name.Text, tails, [], "+", currentIndent)
-                | (heads, tails)                           => GenerateRule(rule.Name.Text,
-                                                                    [["heads", "tails*"]],
-                                                                    [
-                                                                        GenerateRule("heads", heads, [], currentIndent, subruleIndent),
-                                                                        GenerateRule("tails", tails, [], currentIndent, subruleIndent)
-                                                                    ],
-                                                                    suffix)
+                | ([[head]], [[delim, tail]]) when Equals(head, tail) =>
+                {
+                        def recursionType = if (rule.IsOptional) "*" else "+";
+                        GenerateRule(rule.Name.Text,
+                                [[$<#($(GenerateSymbol(head));$(GenerateSymbol(delim)))$recursionType#>]],
+                                [
+                                ],
+                                "")
+                }
+                | ([head], [tail]) =>
+                {
+                        GenerateRule(rule.Name.Text,
+                                [[$<#..$(head;" ";GenerateSymbol)#>, $<#(..$(tail;" ";GenerateSymbol))*#>]],
+                                [
+                                ],
+                                suffix)
+                }
+                | ([head], tails) =>
+                {
+                        GenerateRule(rule.Name.Text,
+                                [[$<#..$(head;" ";GenerateSymbol)#>, "tails*"]],
+                                [
+                                    GenerateRule("tails", tails, [], currentIndent, subruleIndent)
+                                ],
+                                suffix)
+                }
+                | (heads, [tail]) =>
+                {
+                        GenerateRule(rule.Name.Text,
+                                [["heads", $<#(..$(tail;" ";GenerateSymbol))*#>]],
+                                [
+                                    GenerateRule("heads", heads, [], currentIndent, subruleIndent),
+                                ],
+                                suffix)
+                }
+                | (heads, tails) => 
+                {
+                        GenerateRule(rule.Name.Text,
+                                [["heads", "tails*"]],
+                                [
+                                    GenerateRule("heads", heads, [], currentIndent, subruleIndent),
+                                    GenerateRule("tails", tails, [], currentIndent, subruleIndent)
+                                ],
+                                suffix)
+                }
             }
         }
     }
-    
+                
     GenerateRule(
         name       : string,
         components : list[list[Symbol]],
         subrules   : list[string],
-        suffix = "",
+        ruleSuffix = "",
         indent = "") : string
     {
-        GenerateRule(name, components.Map(_.Map(GenerateSymbol)), subrules, suffix, indent) 
+        def components = components.Map(_.Map(GenerateSymbol));
+        if (components.Count() == 1)
+        {
+            GenerateRule(name, components, subrules, ruleSuffix, indent)
+        }
+        else
+        {
+            def compSuffix = FindPrefix(components);
+            def compPrefix = FindSuffix(components);
+            def compBody   = components.Map(symbols => symbols.Skip(compSuffix.Count()).Take(symbols.Count() - compPrefix.Count() - compSuffix.Count()).NToList()).OrderBy(x => x.Length).NToList();
+        
+            match ((compSuffix, compBody, compPrefix))
+            {
+                | (suffix, [[], [body]], prefix) => GenerateRule(name, [suffix + [$"$(body)?"] + prefix], subrules, ruleSuffix, indent)                
+                | (suffix, [[], body], prefix) => GenerateRule(name, [suffix + [$<#(..$(body;" "))?#>] + prefix], subrules, ruleSuffix, indent)         
+                | (suffix, [] :: body, prefix) => GenerateRule(name, [suffix + [$"$(name)_alts?"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
+                | (suffix, body, prefix) when body.Any() && (suffix.Any() || prefix.Any()) => GenerateRule(name, [suffix + [$"$(name)_alts"] + prefix], [GenerateRule($"$(name)_alts", body, subrules, indent, indent + "    ")], ruleSuffix, indent)
+                | _ => GenerateRule(name, components, subrules, ruleSuffix, indent)
+            }
+        }
     }
-            
+                
     GenerateRule(
         name       : string,
         components : list[list[string]],
         subrules   : list[string],
         suffix = "",
         indent = "") : string
-    {        
+    {
         match ((components, suffix))
         {
             | ([[symbol]],  _) => GenerateRule(name, [$"$(symbol)$(suffix)"], subrules, indent)
@@ -122,8 +179,36 @@ $(indent)}#>
         | x is Symbol.CharacterLiteral when x.Value.Value.Length == 1 => $<#'$(x.Value.Value)'#>
     }
     
+    FindPrefix(components : list[list[string]]) : list[string]
+    {
+        def FindPrefix(sample, components)
+        {
+            | ([], _)                => []
+            | (sample, [])           => sample
+            | (sample, head :: tail) => FindPrefix(sample.Zip(head, tuple => tuple).TakeWhile(((sample, head), _) => sample == head).Map((sample, _) => sample), tail)
+        }
+        
+        match (components)
+        {
+            | []           => []
+            | head :: []   => head
+            | head :: tail => FindPrefix(head, tail)
+        }
+    }
+    
+    FindSuffix(components : list[list[string]]) : list[string]
+    {
+        FindPrefix(components.Map(_.Rev())).Rev()
+    }    
+    
     Equals(left : list[list[Symbol]], right : list[list[Symbol]]) : bool
     {
         left.Map(_.Map(GenerateSymbol)) == right.Map(_.Map(GenerateSymbol))
     }
+
+    Equals(left : Symbol, right : Symbol) : bool
+    {
+        GenerateSymbol(left) == GenerateSymbol(right)
+    }
+
 }
