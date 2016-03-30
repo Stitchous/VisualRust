@@ -184,7 +184,12 @@
 
 	regex FloatingPointSuffix	= "f32" | "f64";
 	regex ExponentPart			= ('E' | 'e') ('-' | '+')? DecLiteral;
-	regex FloatingPointLiteral	= (DecLiteral ('.' DecLiteral)? ExponentPart? FloatingPointSuffix?) | (DecLiteral '.');
+	regex FloatingPointLiteral	= 
+		(DecLiteral '.') |
+		(DecLiteral ExponentPart FloatingPointSuffix?) |
+		(DecLiteral FloatingPointSuffix) |
+		(DecLiteral '.' DecLiteral ExponentPart? FloatingPointSuffix?);
+		
 
 	// Boolean literals (https://doc.rust-lang.org/reference.html#boolean-literals)
 

@@ -39,7 +39,7 @@
 		syntax LIT_STR_RAW							= RawStringLiteral;
 		token LIT_BYTE_STR							= RegularByteStringLiteral;
 		syntax LIT_BYTE_STR_RAW						= RawByteStringLiteral;
-		token IDENT									= !Keyword IdentifierBody;
+		token IDENT									= !Keyword Identifier;
 		token UNDERSCORE							= "_";
 		token LIFETIME								= "{" IDENT "}";
 		token SELF									= "self";
