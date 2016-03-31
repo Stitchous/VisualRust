@@ -83,6 +83,6 @@
 		token OUTER_DOC_COMMENT						= "//" (!NewLine Any)*;
 		token SHEBANG								= "#!";
 		token SHEBANG_LINE							= "#!" !'[' (!NewLine Any)* NewLine;
-		token STATIC_LIFETIME						= "static";
+		token STATIC_LIFETIME						= "'static";
 	}
 }
