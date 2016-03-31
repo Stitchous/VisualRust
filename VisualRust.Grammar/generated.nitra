@@ -446,13 +446,13 @@ namespace Nitrust.Rust.Grammar
 		syntax generic_args
 		{
 			| generic_args0 = '<' generic_values '>'
-			| generic_args1 = '<' generic_values SHR
+/*			| generic_args1 = '<' generic_values SHR
 			| generic_args2 = '<' generic_values GE
-			| generic_args3 = '<' generic_values SHREQ
+			| generic_args3 = '<' generic_values SHREQ */
 			| generic_args4 = SHL ty_qualified_path_and_generic_values '>'
-			| generic_args5 = SHL ty_qualified_path_and_generic_values SHR
+/*			| generic_args5 = SHL ty_qualified_path_and_generic_values SHR
 			| generic_args6 = SHL ty_qualified_path_and_generic_values GE
-			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ
+			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ*/
 		}
 
 		syntax generic_values = maybe_lifetimes maybe_ty_sums_and_or_bindings;
