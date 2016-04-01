@@ -1,0 +1,61 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace VisualRust.Grammar
+{
+
+/*
+	ast Crate
+	{
+		ModItems : ModItem*;
+		InnerAttrs : InnerAttr*;
+	}
+
+	ast ModItem
+	{}
+
+	ast MetaItem
+	{}
+
+	abstract ast InnerAttr
+	{
+		| Meta
+		{
+			MetaItem : MetaItem;
+		}
+		| InnerDocComment
+	}
+
+	map syntax Rules.mod_item -> ModItem
+	{
+		
+	}
+
+	map syntax Rules.meta_item -> MetaItem
+	{}
+
+	map syntax Rules.inner_attr -> InnerAttr
+	{
+		| inner_attr0 -> Meta
+		{
+			Meta_item -> MetaItem;
+		}
+
+		| inner_attr1 -> InnerDocComment
+	}
+
+	map syntax Rules.crate -> Crate
+	{
+		Mod_items -> ModItems;
+		Inner_attrs -> InnerAttrs;
+
+	}
+
+	*/
+}

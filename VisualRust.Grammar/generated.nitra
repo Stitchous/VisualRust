@@ -10,14 +10,14 @@ using System.Linq;
 using Nitra.Core;
 using Nitra.CStyleComments;
 
-namespace Nitrust.Rust.Grammar
+namespace VisualRust.Grammar
 {
 	using Tokens;
 
 	syntax module Rules
 	{
 		[StartRule]
-		syntax crate = maybe_shebang inner_attrs? maybe_mod_items;
+		syntax crate = maybe_shebang inner_attr* mod_item*;
 
 		syntax maybe_shebang = SHEBANG_LINE?;
 

@@ -1,4 +1,4 @@
-﻿namespace Nitrust.Rust.Grammar
+﻿namespace VisualRust.Grammar
 {
   syntax module Identifiers
   {
