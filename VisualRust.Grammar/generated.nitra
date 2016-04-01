@@ -452,7 +452,7 @@ namespace Nitrust.Rust.Grammar
 			| generic_args4 = SHL ty_qualified_path_and_generic_values '>'
 /*			| generic_args5 = SHL ty_qualified_path_and_generic_values SHR
 			| generic_args6 = SHL ty_qualified_path_and_generic_values GE
-			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ*/
+			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ */
 		}
 
 		syntax generic_values = maybe_lifetimes maybe_ty_sums_and_or_bindings;
@@ -750,7 +750,7 @@ namespace Nitrust.Rust.Grammar
 			| macro_expr1 = path_expr '!' maybe_ident brackets_delimited_token_trees
 		}
 
-		syntax nonblock_expr = heads tails*
+		syntax nonblock_expr = heads tails* 
 		{
 			syntax heads
 			{
@@ -813,10 +813,11 @@ namespace Nitrust.Rust.Grammar
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
+				| tails37 = '?'
 			}
 		}
 
-		syntax expr = heads tails*
+		syntax expr = heads tails* 
 		{
 			syntax heads
 			{
@@ -881,6 +882,7 @@ namespace Nitrust.Rust.Grammar
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
+				| tails37 = '?'
 			}
 		}
 
@@ -948,10 +950,11 @@ namespace Nitrust.Rust.Grammar
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT nonparen_expr
 				| tails36 = AS ty
+				| tails37 = '?'
 			}
 		}
 
-		syntax expr_nostruct = heads tails*
+		syntax expr_nostruct = heads tails* 
 		{
 			syntax heads
 			{
@@ -1015,6 +1018,7 @@ namespace Nitrust.Rust.Grammar
 				| tails34 = DOTDOT
 				| tails35 = DOTDOT expr_nostruct
 				| tails36 = AS ty
+				| tails37 = '?'
 			}
 		}
 
