@@ -10,6 +10,27 @@ using System.Linq;
 namespace VisualRust.Grammar
 {
 
+	ast Crate
+	{
+		
+	}
+
+	ast InnerAttr
+	{
+	}
+
+	ast 
+
+	map syntax Rules.inner_attr -> InnerAttr
+	{}
+
+	map syntax Rules.crate -> Crate
+	{
+	}
+
+
+
+
 /*
 	ast Crate
 	{

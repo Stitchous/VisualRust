@@ -17,23 +17,13 @@ namespace VisualRust.Grammar
 	syntax module Rules
 	{
 		[StartRule]
-		syntax crate = maybe_shebang inner_attr* mod_item*;
-
-		syntax maybe_shebang = SHEBANG_LINE?;
-
-		syntax maybe_inner_attrs = inner_attrs?;
-
-		syntax inner_attrs = inner_attr+;
+		syntax crate = SHEBANG_LINE? inner_attr* mod_item*;
 
 		syntax inner_attr
 		{
 			| inner_attr0 = SHEBANG '[' meta_item ']'
 			| inner_attr1 = INNER_DOC_COMMENT
 		}
-
-		syntax maybe_outer_attrs = outer_attrs?;
-
-		syntax outer_attrs = outer_attr+;
 
 		syntax outer_attr
 		{
@@ -51,11 +41,7 @@ namespace VisualRust.Grammar
 
 		syntax meta_seq = (meta_item;',')*;
 
-		syntax maybe_mod_items = mod_items?;
-
-		syntax mod_items = mod_item+;
-
-		syntax attrs_and_vis = maybe_outer_attrs visibility;
+		syntax attrs_and_vis = outer_attr* visibility;
 
 		syntax mod_item = attrs_and_vis item;
 
@@ -168,11 +154,11 @@ namespace VisualRust.Grammar
 		syntax item_mod
 		{
 			| item_mod0 = MOD ident ';'
-			| item_mod1 = MOD ident '{' maybe_mod_items '}'
-			| item_mod2 = MOD ident '{' inner_attrs maybe_mod_items '}'
+			| item_mod1 = MOD ident '{' mod_item* '}'
+			| item_mod2 = MOD ident '{' inner_attr+ mod_item* '}'
 		}
 
-		syntax item_foreign_mod = EXTERN maybe_abi '{' inner_attrs? maybe_foreign_items '}';
+		syntax item_foreign_mod = EXTERN maybe_abi '{' inner_attr* maybe_foreign_items '}';
 
 		syntax maybe_abi = str?;
 
@@ -238,11 +224,11 @@ namespace VisualRust.Grammar
 			| trait_item2 = trait_method
 		}
 
-		syntax trait_const = maybe_outer_attrs CONST ident maybe_ty_ascription maybe_const_default ';';
+		syntax trait_const = outer_attr* CONST ident maybe_ty_ascription maybe_const_default ';';
 
 		syntax maybe_const_default = ('=' expr)?;
 
-		syntax trait_type = maybe_outer_attrs TYPE ty_param ';';
+		syntax trait_type = outer_attr* TYPE ty_param ';';
 
 		syntax maybe_unsafe = UNSAFE?;
 
@@ -260,10 +246,10 @@ namespace VisualRust.Grammar
 
 		syntax item_impl
 		{
-			| item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
-			| item_impl1 = maybe_unsafe IMPL generic_params '(' ty ')' maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
-			| item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
-			| item_impl3 = maybe_unsafe IMPL generic_params '!' trait_ref FOR ty_sum maybe_where_clause '{' maybe_inner_attrs maybe_impl_items '}'
+			| item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
+			| item_impl1 = maybe_unsafe IMPL generic_params '(' ty ')' maybe_where_clause '{' inner_attr* maybe_impl_items '}'
+			| item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
+			| item_impl3 = maybe_unsafe IMPL generic_params '!' trait_ref FOR ty_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
 			| item_impl4 = maybe_unsafe IMPL generic_params trait_ref FOR DOTDOT '{' '}'
 			| item_impl5 = maybe_unsafe IMPL generic_params '!' trait_ref FOR DOTDOT '{' '}'
 		}
@@ -693,7 +679,7 @@ namespace VisualRust.Grammar
 
 		syntax trait_ref = MOD_SEP? path_generic_args_without_colons;
 
-		syntax inner_attrs_and_block = '{' maybe_inner_attrs maybe_stmts '}';
+		syntax inner_attrs_and_block = '{' inner_attr* maybe_stmts '}';
 
 		syntax block = '{' maybe_stmts '}';
 
@@ -714,8 +700,8 @@ namespace VisualRust.Grammar
 			| stmt0 = let
 			| stmt1 = stmt_item
 			| stmt2 = PUB stmt_item
-			| stmt3 = outer_attrs stmt_item
-			| stmt4 = outer_attrs PUB stmt_item
+			| stmt3 = outer_attr+ stmt_item
+			| stmt4 = outer_attr+ PUB stmt_item
 			| stmt5 = full_block_expr
 			| stmt6 = block
 			| stmt7 = nonblock_expr ';'
@@ -1145,11 +1131,11 @@ namespace VisualRust.Grammar
 
 		syntax nonblock_match_clause
 		{
-			| nonblock_match_clause0 = maybe_outer_attrs pats_or maybe_guard FAT_ARROW nonblock_expr
-			| nonblock_match_clause1 = maybe_outer_attrs pats_or maybe_guard FAT_ARROW full_block_expr
+			| nonblock_match_clause0 = outer_attr* pats_or maybe_guard FAT_ARROW nonblock_expr
+			| nonblock_match_clause1 = outer_attr* pats_or maybe_guard FAT_ARROW full_block_expr
 		}
 
-		syntax block_match_clause = maybe_outer_attrs pats_or maybe_guard FAT_ARROW block;
+		syntax block_match_clause = outer_attr* pats_or maybe_guard FAT_ARROW block;
 
 		syntax maybe_guard = (IF expr_nostruct)?;
 
