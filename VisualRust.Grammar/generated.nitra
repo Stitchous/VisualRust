@@ -35,11 +35,8 @@ namespace VisualRust.Grammar
 		{
 			| meta_item0 = ident
 			| meta_item1 = ident '=' lit
-			| meta_item2 = ident '(' meta_seq ')'
-			| meta_item3 = ident '(' meta_seq ',' ')'
+			| meta_item2 = ident '(' (meta_item;',')* ','? ')'
 		}
-
-		syntax meta_seq = (meta_item;',')*;
 
 		syntax attrs_and_vis = outer_attr* visibility;
 

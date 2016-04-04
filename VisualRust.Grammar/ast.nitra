@@ -7,76 +7,80 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Nitra.Declarations;
+using Nitra;
+
 namespace VisualRust.Grammar
 {
 
 	ast Crate
 	{
-		
+		out ContainingTable : TableScope = TableScope("Global", null);
+
+		Attributes : Attribute*;
 	}
-
-	ast InnerAttr
-	{
-	}
-
-	ast 
-
-	map syntax Rules.inner_attr -> InnerAttr
-	{}
 
 	map syntax Rules.crate -> Crate
 	{
+		Inner_attrs -> Attributes;
 	}
 
-
-
-
-/*
-	ast Crate
+	abstract ast Attribute
 	{
-		ModItems : ModItem*;
-		InnerAttrs : InnerAttr*;
-	}
-
-	ast ModItem
-	{}
-
-	ast MetaItem
-	{}
-
-	abstract ast InnerAttr
-	{
-		| Meta
+		| Empty
+		| NotEmpty
 		{
-			MetaItem : MetaItem;
+			MetaItem : MetaItemAst;
 		}
-		| InnerDocComment
 	}
 
-	map syntax Rules.mod_item -> ModItem
+	map syntax Rules.inner_attr -> Attribute
 	{
-		
-	}
-
-	map syntax Rules.meta_item -> MetaItem
-	{}
-
-	map syntax Rules.inner_attr -> InnerAttr
-	{
-		| inner_attr0 -> Meta
+		| inner_attr0 -> Attribute.NotEmpty 
 		{
 			Meta_item -> MetaItem;
 		}
-
-		| inner_attr1 -> InnerDocComment
+		| inner_attr1 -> Attribute.Empty {}
 	}
 
-	map syntax Rules.crate -> Crate
+	map syntax Rules.outer_attr -> Attribute
 	{
-		Mod_items -> ModItems;
-		Inner_attrs -> InnerAttrs;
-
+		| outer_attr0 -> Attribute.NotEmpty 
+		{
+			Meta_item -> MetaItem;
+		}
+		| outer_attr1 -> Attribute.Empty {}
 	}
 
-	*/
+	abstract ast MetaItemAst
+	{
+		| MetaWord
+		| MetaNameValue	  
+		| MetaList { MetaItems : MetaItemAst*; }
+	}
+
+	map syntax Rules.meta_item -> MetaItemAst
+	{
+		| meta_item0 -> MetaWord {}
+		| meta_item1 -> MetaNameValue {}
+		| meta_item2 -> MetaList { Meta_items.Item1 -> MetaItems; }
+	}
+
+	ast AttrsAndVisibility
+	{
+		Attributes : Attribute*;
+
+		IsVisible : bool;
+	}
+
+	map syntax Rules.attrs_and_vis -> AttrsAndVisibility
+	{ 
+		Outer_attrs -> Attributes;
+		
+		IsVisible = ParsedValue(Visibility.Span, Visibility.PUBOpt.HasValue);
+	}
+
+
+
+
 }
