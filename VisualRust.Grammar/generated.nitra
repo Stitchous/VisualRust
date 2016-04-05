@@ -13,6 +13,7 @@ using Nitra.CStyleComments;
 namespace VisualRust.Grammar
 {
 	using Tokens;
+	using Identifiers;
 
 	syntax module Rules
 	{
@@ -33,8 +34,8 @@ namespace VisualRust.Grammar
 
 		syntax meta_item
 		{
-			| meta_item0 = ident
-			| meta_item1 = ident '=' lit
+			| meta_item0 = Name
+			| meta_item1 = Name '=' lit
 			| meta_item2 = ident '(' (meta_item;',')* ','? ')'
 		}
 

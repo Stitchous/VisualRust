@@ -18,19 +18,29 @@ namespace VisualRust.Grammar
 		out ContainingTable : TableScope = TableScope("Global", null);
 
 		Attributes : Attribute*;
+
+		ModItems : ModItem*;
+
+		Attributes.ContainingTable = ContainingTable;
 	}
 
 	map syntax Rules.crate -> Crate
 	{
 		Inner_attrs -> Attributes;
+
+		Mod_items -> ModItems;
 	}
 
 	abstract ast Attribute
 	{
+		in  ContainingTable : TableScope;
+
 		| Empty
 		| NotEmpty
 		{
 			MetaItem : MetaItemAst;
+			MetaItem.ContainingTable = ContainingTable;
+			
 		}
 	}
 
@@ -54,15 +64,22 @@ namespace VisualRust.Grammar
 
 	abstract ast MetaItemAst
 	{
-		| MetaWord
-		| MetaNameValue	  
+		in  ContainingTable : TableScope;
+		| MetaWord { Name : Name; }
+		| MetaNameValue	{ Name : Name; }  
 		| MetaList { MetaItems : MetaItemAst*; }
 	}
 
 	map syntax Rules.meta_item -> MetaItemAst
 	{
-		| meta_item0 -> MetaWord {}
-		| meta_item1 -> MetaNameValue {}
+		| meta_item0 -> MetaWord 
+			{ 
+				Name -> Name;
+			}
+		| meta_item1 -> MetaNameValue 
+			{
+				Name -> Name;
+			}
 		| meta_item2 -> MetaList { Meta_items.Item1 -> MetaItems; }
 	}
 
@@ -80,7 +97,33 @@ namespace VisualRust.Grammar
 		IsVisible = ParsedValue(Visibility.Span, Visibility.PUBOpt.HasValue);
 	}
 
+	abstract ast ModItem
+	{
+		| ViewItem
+		| Other
+	}
 
+	map syntax Rules.mod_item -> ModItem
+	{
+		Item
+	}
+
+	map syntax Rules.item -> ModItem
+	{
+		| item0 -> this.Stmt_item
+		| item1 -> Other {}
+
+
+	}
+
+	map syntax Rules.stmt_item -> ModItem
+	{
+		| stmt_item0  -> Other {}
+		| stmt_item1  -> Other {}
+		| stmt_item2  -> Other {}
+		| stmt_item3  -> Other {}
+		| stmt_item4  -> Other {}
+	}
 
 
 }
