@@ -17,6 +17,8 @@ namespace VisualRust.Grammar
 
 	syntax module Rules
 	{
+		alias abi = str;
+
 		[StartRule]
 		syntax crate = SHEBANG_LINE? inner_attr* mod_item*;
 
@@ -39,7 +41,7 @@ namespace VisualRust.Grammar
 			| meta_item2 = ident '(' (meta_item;',')* ','? ')'
 		}
 
-		syntax attrs_and_vis = outer_attr* visibility;
+		syntax attrs_and_vis = outer_attr* PUB?;
 
 		syntax mod_item = attrs_and_vis item;
 
@@ -77,7 +79,7 @@ namespace VisualRust.Grammar
 			| view_item3 = EXTERN CRATE ident AS ident ';'
 		}
 
-		syntax extern_fn_item = EXTERN maybe_abi item_fn;
+		syntax extern_fn_item = EXTERN abi? item_fn;
 
 		syntax use_item = USE view_path ';';
 
@@ -156,13 +158,7 @@ namespace VisualRust.Grammar
 			| item_mod2 = MOD ident '{' inner_attr+ mod_item* '}'
 		}
 
-		syntax item_foreign_mod = EXTERN maybe_abi '{' inner_attr* maybe_foreign_items '}';
-
-		syntax maybe_abi = str?;
-
-		syntax maybe_foreign_items = foreign_items?;
-
-		syntax foreign_items = foreign_item+;
+		syntax item_foreign_mod = EXTERN abi? '{' inner_attr* foreign_item* '}';
 
 		syntax foreign_item
 		{
@@ -184,8 +180,6 @@ namespace VisualRust.Grammar
 			| fn_params_allow_variadic2 = '(' params ',' ')'
 			| fn_params_allow_variadic3 = '(' params ',' DOTDOTDOT ')'
 		}
-
-		syntax visibility = PUB?;
 
 		syntax idents_or_self = heads (',' ident_or_self)*
 		{
@@ -236,11 +230,11 @@ namespace VisualRust.Grammar
 			| trait_method1 = method
 		}
 
-		syntax type_method = attrs_and_vis maybe_unsafe (EXTERN maybe_abi)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ';';
+		syntax type_method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ';';
 
-		syntax method = attrs_and_vis maybe_unsafe (EXTERN maybe_abi)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause inner_attrs_and_block;
+		syntax method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause inner_attrs_and_block;
 
-		syntax impl_method = attrs_and_vis maybe_unsafe (EXTERN maybe_abi)? FN ident generic_params fn_decl_with_self maybe_where_clause inner_attrs_and_block;
+		syntax impl_method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self maybe_where_clause inner_attrs_and_block;
 
 		syntax item_impl
 		{
@@ -270,7 +264,7 @@ namespace VisualRust.Grammar
 
 		syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
 
-		syntax item_unsafe_fn = UNSAFE (EXTERN maybe_abi)? FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
+		syntax item_unsafe_fn = UNSAFE (EXTERN abi?)? FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
 
 		syntax fn_decl = fn_params ret_ty;
 
@@ -575,8 +569,8 @@ namespace VisualRust.Grammar
 		{
 			| ty_bare_fn0 = FN ty_fn_decl
 			| ty_bare_fn1 = UNSAFE FN ty_fn_decl
-			| ty_bare_fn2 = EXTERN maybe_abi FN ty_fn_decl
-			| ty_bare_fn3 = UNSAFE EXTERN maybe_abi FN ty_fn_decl
+			| ty_bare_fn2 = EXTERN abi? FN ty_fn_decl
+			| ty_bare_fn3 = UNSAFE EXTERN abi? FN ty_fn_decl
 		}
 
 		syntax ty_fn_decl = generic_params fn_anon_params ret_ty;

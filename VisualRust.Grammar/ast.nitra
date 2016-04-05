@@ -94,7 +94,7 @@ namespace VisualRust.Grammar
 	{ 
 		Outer_attrs -> Attributes;
 		
-		IsVisible = ParsedValue(Visibility.Span, Visibility.PUBOpt.HasValue);
+		IsVisible = ParsedValue(PUBOpt.Span, PUBOpt.HasValue);
 	}
 
 	abstract ast ModItem
