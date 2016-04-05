@@ -99,7 +99,7 @@ namespace VisualRust.Grammar
 
 	abstract ast ModItem
 	{
-		| ViewItem
+		| UseItem
 		| Other
 	}
 
@@ -122,8 +122,20 @@ namespace VisualRust.Grammar
 		| stmt_item1  -> Other {}
 		| stmt_item2  -> Other {}
 		| stmt_item3  -> Other {}
-		| stmt_item4  -> Other {}
+		| stmt_item4  -> this.View_item
 	}
+
+	map syntax Rules.view_item -> ModItem
+	{
+		| view_item0  -> ModItem.UseItem
+			{
+				
+			}
+		| view_item1  -> Other {}
+		| view_item2  -> Other {}
+		| view_item3  -> Other {}
+	}   
+
 
 
 }
