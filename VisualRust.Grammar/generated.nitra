@@ -17,7 +17,8 @@ namespace VisualRust.Grammar
 
 	syntax module Rules
 	{
-		alias abi = str;
+		alias abi	= str;
+		alias ident = IDENT;
 
 		[StartRule]
 		syntax crate = SHEBANG_LINE? inner_attr* mod_item*;
@@ -66,9 +67,9 @@ namespace VisualRust.Grammar
 
 		syntax item_macro
 		{
-			| item_macro0 = path_expr '!' maybe_ident parens_delimited_token_trees ';'
-			| item_macro1 = path_expr '!' maybe_ident braces_delimited_token_trees
-			| item_macro2 = path_expr '!' maybe_ident brackets_delimited_token_trees ';'
+			| item_macro0 = path_expr '!' ident? parens_delimited_token_trees ';'
+			| item_macro1 = path_expr '!' ident? braces_delimited_token_trees
+			| item_macro2 = path_expr '!' ident? brackets_delimited_token_trees ';'
 		}
 
 		syntax view_item
@@ -117,9 +118,9 @@ namespace VisualRust.Grammar
 
 		syntax item_struct
 		{
-			| item_struct0 = STRUCT ident generic_params maybe_where_clause struct_decl_args
-			| item_struct1 = STRUCT ident generic_params struct_tuple_args maybe_where_clause ';'
-			| item_struct2 = STRUCT ident generic_params maybe_where_clause ';'
+			| item_struct0 = STRUCT ident generic_params where_clause? struct_decl_args
+			| item_struct1 = STRUCT ident generic_params struct_tuple_args where_clause? ';'
+			| item_struct2 = STRUCT ident generic_params where_clause? ';'
 		}
 
 		syntax struct_decl_args = '{' struct_decl_fields ','? '}';
@@ -134,7 +135,7 @@ namespace VisualRust.Grammar
 
 		syntax struct_tuple_field = attrs_and_vis ty_sum;
 
-		syntax item_enum = ENUM ident generic_params maybe_where_clause '{' enum_defs ','? '}';
+		syntax item_enum = ENUM ident generic_params where_clause? '{' enum_defs ','? '}';
 
 		syntax enum_defs = (enum_def;',')*;
 
@@ -167,9 +168,9 @@ namespace VisualRust.Grammar
 			| foreign_item2 = attrs_and_vis UNSAFE item_foreign_fn
 		}
 
-		syntax item_foreign_static = maybe_mut ident ':' ty ';';
+		syntax item_foreign_static = MUT? ident ':' ty ';';
 
-		syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic maybe_where_clause ';';
+		syntax item_foreign_fn = FN ident generic_params fn_decl_allow_variadic where_clause? ';';
 
 		syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty;
 
@@ -192,7 +193,7 @@ namespace VisualRust.Grammar
 			| ident_or_self1 = SELF
 		}
 
-		syntax item_type = TYPE ident generic_params maybe_where_clause '=' ty_sum ';';
+		syntax item_type = TYPE ident generic_params where_clause? '=' ty_sum ';';
 
 		syntax for_sized = internal?
 		{
@@ -203,11 +204,7 @@ namespace VisualRust.Grammar
 			}
 		}
 
-		syntax item_trait = maybe_unsafe TRAIT ident generic_params for_sized maybe_ty_param_bounds maybe_where_clause '{' maybe_trait_items '}';
-
-		syntax maybe_trait_items = trait_items?;
-
-		syntax trait_items = trait_item+;
+		syntax item_trait = UNSAFE? TRAIT ident generic_params for_sized maybe_ty_param_bounds where_clause? '{' trait_item* '}';
 
 		syntax trait_item
 		{
@@ -222,33 +219,27 @@ namespace VisualRust.Grammar
 
 		syntax trait_type = outer_attr* TYPE ty_param ';';
 
-		syntax maybe_unsafe = UNSAFE?;
-
 		syntax trait_method
 		{
 			| trait_method0 = type_method
 			| trait_method1 = method
 		}
 
-		syntax type_method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause ';';
+		syntax type_method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params where_clause? ';';
 
-		syntax method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params maybe_where_clause inner_attrs_and_block;
+		syntax method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
-		syntax impl_method = attrs_and_vis maybe_unsafe (EXTERN abi?)? FN ident generic_params fn_decl_with_self maybe_where_clause inner_attrs_and_block;
+		syntax impl_method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params fn_decl_with_self where_clause? inner_attrs_and_block;
 
 		syntax item_impl
 		{
-			| item_impl0 = maybe_unsafe IMPL generic_params ty_prim_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
-			| item_impl1 = maybe_unsafe IMPL generic_params '(' ty ')' maybe_where_clause '{' inner_attr* maybe_impl_items '}'
-			| item_impl2 = maybe_unsafe IMPL generic_params trait_ref FOR ty_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
-			| item_impl3 = maybe_unsafe IMPL generic_params '!' trait_ref FOR ty_sum maybe_where_clause '{' inner_attr* maybe_impl_items '}'
-			| item_impl4 = maybe_unsafe IMPL generic_params trait_ref FOR DOTDOT '{' '}'
-			| item_impl5 = maybe_unsafe IMPL generic_params '!' trait_ref FOR DOTDOT '{' '}'
+			| item_impl0 = UNSAFE? IMPL generic_params ty_prim_sum where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl1 = UNSAFE? IMPL generic_params '(' ty ')' where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl2 = UNSAFE? IMPL generic_params trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl3 = UNSAFE? IMPL generic_params '!' trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl4 = UNSAFE? IMPL generic_params trait_ref FOR DOTDOT '{' '}'
+			| item_impl5 = UNSAFE? IMPL generic_params '!' trait_ref FOR DOTDOT '{' '}'
 		}
-
-		syntax maybe_impl_items = impl_items?;
-
-		syntax impl_items = impl_item impl_items?;
 
 		syntax impl_item
 		{
@@ -262,9 +253,9 @@ namespace VisualRust.Grammar
 
 		syntax impl_type = attrs_and_vis TYPE ident generic_params '=' ty_sum ';';
 
-		syntax item_fn = FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
+		syntax item_fn = FN ident generic_params fn_decl where_clause? inner_attrs_and_block;
 
-		syntax item_unsafe_fn = UNSAFE (EXTERN abi?)? FN ident generic_params fn_decl maybe_where_clause inner_attrs_and_block;
+		syntax item_unsafe_fn = UNSAFE (EXTERN abi?)? FN ident generic_params fn_decl where_clause? inner_attrs_and_block;
 
 		syntax fn_decl = fn_params ret_ty;
 
@@ -278,17 +269,17 @@ namespace VisualRust.Grammar
 
 		syntax fn_params_with_self
 		{
-			| fn_params_with_self0 = '(' maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
-			| fn_params_with_self1 = '(' '&' maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
-			| fn_params_with_self2 = '(' '&' lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self0 = '(' MUT? SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self1 = '(' '&' MUT? SELF maybe_ty_ascription maybe_comma_params ')'
+			| fn_params_with_self2 = '(' '&' lifetime MUT? SELF maybe_ty_ascription maybe_comma_params ')'
 			| fn_params_with_self3 = '(' maybe_params ')'
 		}
 
 		syntax fn_anon_params_with_self
 		{
-			| fn_anon_params_with_self0 = '(' maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
-			| fn_anon_params_with_self1 = '(' '&' maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
-			| fn_anon_params_with_self2 = '(' '&' lifetime maybe_mut SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self0 = '(' MUT? SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self1 = '(' '&' MUT? SELF maybe_ty_ascription maybe_comma_anon_params ')'
+			| fn_anon_params_with_self2 = '(' '&' lifetime MUT? SELF maybe_ty_ascription maybe_comma_anon_params ')'
 			| fn_anon_params_with_self3 = '(' maybe_anon_params ')'
 		}
 
@@ -302,7 +293,7 @@ namespace VisualRust.Grammar
 
 		syntax inferrable_param = pat maybe_ty_ascription;
 
-		syntax maybe_unboxed_closure_kind = (('&' maybe_mut)? ':')?;
+		syntax maybe_unboxed_closure_kind = (('&' MUT?)? ':')?;
 
 		syntax maybe_comma_params = internal?
 		{
@@ -377,8 +368,6 @@ namespace VisualRust.Grammar
 				| internal11 = '<' ty_params ',' SHR
 			}
 		}
-
-		syntax maybe_where_clause = where_clause?;
 
 		syntax where_clause = WHERE where_predicates ','?;
 
@@ -464,7 +453,7 @@ namespace VisualRust.Grammar
 			| pat10 = path_expr '{' pat_struct '}'
 			| pat11 = path_expr '(' DOTDOT ')'
 			| pat12 = path_expr '(' pat_tup ')'
-			| pat13 = path_expr '!' maybe_ident delimited_token_trees
+			| pat13 = path_expr '!' ident? delimited_token_trees
 			| pat14 = binding_mode ident
 			| pat15 = ident '@' pat
 			| pat16 = binding_mode ident '@' pat
@@ -553,8 +542,8 @@ namespace VisualRust.Grammar
 			| ty_prim6 = '&' MUT ty
 			| ty_prim7 = ANDAND ty
 			| ty_prim8 = ANDAND MUT ty
-			| ty_prim9 = '&' lifetime maybe_mut ty
-			| ty_prim10 = ANDAND lifetime maybe_mut ty
+			| ty_prim9 = '&' lifetime MUT? ty
+			| ty_prim10 = ANDAND lifetime MUT? ty
 			| ty_prim11 = '[' ty ']'
 			| ty_prim12 = '[' ty ',' DOTDOT expr ']'
 			| ty_prim13 = '[' ty ';' expr ']'
@@ -594,8 +583,6 @@ namespace VisualRust.Grammar
 			| for_in_type_suffix2 = trait_ref
 			| for_in_type_suffix3 = ty_closure
 		}
-
-		syntax maybe_mut = MUT?;
 
 		syntax maybe_mut_or_const = internal?
 		{
@@ -702,8 +689,6 @@ namespace VisualRust.Grammar
 
 		syntax maybe_exprs = (exprs ','?)?;
 
-		syntax maybe_expr = expr?;
-
 		syntax exprs = (expr;',')+;
 
 		syntax path_expr
@@ -724,8 +709,8 @@ namespace VisualRust.Grammar
 
 		syntax macro_expr
 		{
-			| macro_expr0 = path_expr '!' maybe_ident parens_delimited_token_trees
-			| macro_expr1 = path_expr '!' maybe_ident brackets_delimited_token_trees
+			| macro_expr0 = path_expr '!' ident? parens_delimited_token_trees
+			| macro_expr1 = path_expr '!' ident? brackets_delimited_token_trees
 		}
 
 		syntax nonblock_expr = heads tails* 
@@ -748,7 +733,7 @@ namespace VisualRust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX '(' maybe_expr ')' nonblock_expr
+				| heads16 = BOX '(' expr? ')' nonblock_expr
 				| heads17 = expr_qualified_path
 				| heads18 = nonblock_prefix_expr
 			}
@@ -756,7 +741,7 @@ namespace VisualRust.Grammar
 			{
 				| tails0 = '.' path_generic_args_with_colons
 				| tails1 = '.' LIT_INTEGER
-				| tails2 = '[' maybe_expr ']'
+				| tails2 = '[' expr? ']'
 				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr
 				| tails5 = '=' expr
@@ -815,7 +800,7 @@ namespace VisualRust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX '(' maybe_expr ')' expr
+				| heads16 = BOX '(' expr? ')' expr
 				| heads17 = expr_qualified_path
 				| heads18 = block_expr
 				| heads19 = block
@@ -825,7 +810,7 @@ namespace VisualRust.Grammar
 			{
 				| tails0 = '.' path_generic_args_with_colons
 				| tails1 = '.' LIT_INTEGER
-				| tails2 = '[' maybe_expr ']'
+				| tails2 = '[' expr? ']'
 				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr
 				| tails5 = '=' expr
@@ -883,7 +868,7 @@ namespace VisualRust.Grammar
 				| heads12 = DOTDOT nonparen_expr
 				| heads13 = DOTDOT
 				| heads14 = BOX nonparen_expr
-				| heads15 = BOX '(' maybe_expr ')' expr
+				| heads15 = BOX '(' expr? ')' expr
 				| heads16 = expr_qualified_path
 				| heads17 = block_expr
 				| heads18 = block
@@ -893,7 +878,7 @@ namespace VisualRust.Grammar
 			{
 				| tails0 = '.' path_generic_args_with_colons
 				| tails1 = '.' LIT_INTEGER
-				| tails2 = '[' maybe_expr ']'
+				| tails2 = '[' expr? ']'
 				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW nonparen_expr
 				| tails5 = '=' nonparen_expr
@@ -951,7 +936,7 @@ namespace VisualRust.Grammar
 				| heads12 = DOTDOT expr_nostruct
 				| heads13 = DOTDOT
 				| heads14 = BOX nonparen_expr
-				| heads15 = BOX '(' maybe_expr ')' expr_nostruct
+				| heads15 = BOX '(' expr? ')' expr_nostruct
 				| heads16 = expr_qualified_path
 				| heads17 = block_expr
 				| heads18 = block
@@ -961,7 +946,7 @@ namespace VisualRust.Grammar
 			{
 				| tails0 = '.' path_generic_args_with_colons
 				| tails1 = '.' LIT_INTEGER
-				| tails2 = '[' maybe_expr ']'
+				| tails2 = '[' expr? ']'
 				| tails3 = '(' maybe_exprs ')'
 				| tails4 = LARROW expr_nostruct
 				| tails5 = '=' expr_nostruct
@@ -1005,8 +990,8 @@ namespace VisualRust.Grammar
 			| nonblock_prefix_expr_nostruct0 = '-' expr_nostruct
 			| nonblock_prefix_expr_nostruct1 = '!' expr_nostruct
 			| nonblock_prefix_expr_nostruct2 = '*' expr_nostruct
-			| nonblock_prefix_expr_nostruct3 = '&' maybe_mut expr_nostruct
-			| nonblock_prefix_expr_nostruct4 = ANDAND maybe_mut expr_nostruct
+			| nonblock_prefix_expr_nostruct3 = '&' MUT? expr_nostruct
+			| nonblock_prefix_expr_nostruct4 = ANDAND MUT? expr_nostruct
 			| nonblock_prefix_expr_nostruct5 = lambda_expr_nostruct
 			| nonblock_prefix_expr_nostruct6 = MOVE lambda_expr_nostruct
 			| nonblock_prefix_expr_nostruct7 = proc_expr_nostruct
@@ -1017,8 +1002,8 @@ namespace VisualRust.Grammar
 			| nonblock_prefix_expr0 = '-' expr
 			| nonblock_prefix_expr1 = '!' expr
 			| nonblock_prefix_expr2 = '*' expr
-			| nonblock_prefix_expr3 = '&' maybe_mut expr
-			| nonblock_prefix_expr4 = ANDAND maybe_mut expr
+			| nonblock_prefix_expr3 = '&' MUT? expr
+			| nonblock_prefix_expr4 = ANDAND MUT? expr
 			| nonblock_prefix_expr5 = lambda_expr
 			| nonblock_prefix_expr6 = MOVE lambda_expr
 			| nonblock_prefix_expr7 = proc_expr
@@ -1042,7 +1027,7 @@ namespace VisualRust.Grammar
 			| lambda_expr0 = OROR ret_ty expr
 			| lambda_expr1 = '|' maybe_unboxed_closure_kind '|' ret_ty expr
 			| lambda_expr2 = '|' inferrable_params '|' ret_ty expr
-			| lambda_expr3 = '|' '&' maybe_mut ':' inferrable_params '|' ret_ty expr
+			| lambda_expr3 = '|' '&' MUT? ':' inferrable_params '|' ret_ty expr
 			| lambda_expr4 = '|' ':' inferrable_params '|' ret_ty expr
 		}
 
@@ -1051,7 +1036,7 @@ namespace VisualRust.Grammar
 			| lambda_expr_nostruct0 = OROR expr_nostruct
 			| lambda_expr_nostruct1 = '|' maybe_unboxed_closure_kind '|' expr_nostruct
 			| lambda_expr_nostruct2 = '|' inferrable_params '|' expr_nostruct
-			| lambda_expr_nostruct3 = '|' '&' maybe_mut ':' inferrable_params '|' expr_nostruct
+			| lambda_expr_nostruct3 = '|' '&' MUT? ':' inferrable_params '|' expr_nostruct
 			| lambda_expr_nostruct4 = '|' ':' inferrable_params '|' expr_nostruct
 		}
 
@@ -1090,7 +1075,7 @@ namespace VisualRust.Grammar
 			| block_expr5 = expr_loop
 			| block_expr6 = expr_for
 			| block_expr7 = UNSAFE block
-			| block_expr8 = path_expr '!' maybe_ident braces_delimited_token_trees
+			| block_expr8 = path_expr '!' ident? braces_delimited_token_trees
 		}
 
 		syntax full_block_expr = block_expr tails*
@@ -1098,7 +1083,7 @@ namespace VisualRust.Grammar
 			syntax tails
 			{
 				| tails0 = '.' path_generic_args_with_colons
-				| tails1 = '.' path_generic_args_with_colons '[' maybe_expr ']'
+				| tails1 = '.' path_generic_args_with_colons '[' expr? ']'
 				| tails2 = '.' path_generic_args_with_colons '(' maybe_exprs ')'
 				| tails3 = '.' LIT_INTEGER
 			}
@@ -1107,12 +1092,10 @@ namespace VisualRust.Grammar
 		syntax expr_match
 		{
 			| expr_match0 = MATCH expr_nostruct '{' '}'
-			| expr_match1 = MATCH expr_nostruct '{' match_clauses '}'
-			| expr_match2 = MATCH expr_nostruct '{' match_clauses nonblock_match_clause '}'
+			| expr_match1 = MATCH expr_nostruct '{' match_clause+ '}'
+			| expr_match2 = MATCH expr_nostruct '{' match_clause+ nonblock_match_clause '}'
 			| expr_match3 = MATCH expr_nostruct '{' nonblock_match_clause '}'
 		}
-
-		syntax match_clauses = match_clause+;
 
 		syntax match_clause
 		{
@@ -1172,10 +1155,6 @@ namespace VisualRust.Grammar
 			| str2 = LIT_BYTE_STR
 			| str3 = LIT_BYTE_STR_RAW
 		}
-
-		syntax maybe_ident = ident?;
-
-		syntax ident = IDENT;
 
 		syntax unpaired_token
 		{
