@@ -1,0 +1,23 @@
+﻿using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace VisualRust.Grammar.Tests
+{
+  //https://github.com/rust-lang/rust/tree/master/src/test
+  [TestClass]  
+  public class Class1
+  {
+      [TestMethod]
+      public Test() : void
+      {
+          
+      }
+  }
+}
