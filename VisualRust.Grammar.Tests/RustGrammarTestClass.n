@@ -1,0 +1,26 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace VisualRust.Grammar.Tests
+{
+    public class RustGrammarTestClassAttribute : TestClassExtensionAttribute
+    {
+        public override ExtensionId : Uri
+        {
+            get { Uri("urn:VisualRust.RustGrammarAttribute") }
+        }
+        
+        public override GetExecution() : TestExtensionExecution
+        {
+            RustGrammarTestExtensionExecution()
+        }
+    }
+}

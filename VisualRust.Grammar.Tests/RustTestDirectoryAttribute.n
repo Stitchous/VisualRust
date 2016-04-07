@@ -9,7 +9,9 @@ namespace VisualRust.Grammar.Tests
     {
         public this(path : string, file : string)
         {
-            def files = Directory.EnumerateFiles(path, "*.rs", SearchOption.AllDirectories);
+            def dir = AppDomain.CurrentDomain.BaseDirectory;
+             
+            def files = Directory.EnumerateFiles(Path.Combine(dir, path), "*.rs", SearchOption.AllDirectories);
             
             def testData = xml <# 
                 <TestData>

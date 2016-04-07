@@ -15,6 +15,7 @@ using Nitra.ProjectSystem;
 namespace VisualRust.Grammar.Tests
 {
     [TestClass]  
+    //[RustGrammarTestClass]
     public class GrammarTests
     {   
         public TestContext : TestContext { get; set; }

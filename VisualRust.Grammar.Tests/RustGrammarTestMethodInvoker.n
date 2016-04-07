@@ -1,0 +1,28 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace VisualRust.Grammar.Tests
+{
+  class RustGrammarTestMethodInvoker : ITestMethodInvoker
+  {
+      public this (context : TestMethodInvokerContext)
+      {
+          m_context = context;
+      }
+      
+      public Invoke(params _ : array[Object]) : TestMethodInvokerResult
+      {
+          m_context.InnerInvoker.Invoke()
+      }
+      
+      private m_context : TestMethodInvokerContext;
+  }
+}
