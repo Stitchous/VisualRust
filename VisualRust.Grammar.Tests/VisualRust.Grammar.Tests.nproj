@@ -68,15 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrammarTests.n" />
-    <Compile Include="RustGrammarTestClass.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="RustGrammarTestExtensionExecution.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="RustGrammarTestMethodInvoker.n">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="RustTestDirectoryAttribute.n">
       <SubType>Code</SubType>
     </Compile>
