@@ -1,0 +1,23 @@
+﻿using Nemerle.Xml;
+using System;
+using System.IO;
+
+namespace VisualRust.Grammar.Tests
+{
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    class RustTestDirectoryAttribute : System.Attribute
+    {
+        public this(path : string, file : string)
+        {
+            def files = Directory.EnumerateFiles(path, "*.rs", SearchOption.AllDirectories);
+            
+            def testData = xml <# 
+                <TestData>
+                        <Filename $foreach (file in files)>$(file)</Filename>
+                </TestData>
+            #>;
+
+            File.WriteAllText(file, testData.ToString());
+        }
+    }
+}

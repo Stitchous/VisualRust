@@ -62,13 +62,26 @@
     <MacroReference Include="Nemerle.Linq">
       <HintPath>$(Nemerle)\Nemerle.Linq.dll</HintPath>
     </MacroReference>
+    <MacroReference Include="Nemerle.Xml.Macro">
+      <HintPath>$(Nemerle)\Nemerle.Xml.Macro.dll</HintPath>
+    </MacroReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.n" />
+    <Compile Include="GrammarTests.n" />
+    <Compile Include="RustTestDirectoryAttribute.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VisualRust.Grammar\VisualRust.Grammar.nproj">
+      <Name>VisualRust.Grammar</Name>
+      <Project>{e7655a81-9f8d-4826-9ca6-f7fcafd4d76a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--

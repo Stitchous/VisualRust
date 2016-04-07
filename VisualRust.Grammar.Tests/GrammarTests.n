@@ -1,0 +1,55 @@
+﻿using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using VisualRust.Grammar;
+using Nitra.ProjectSystem;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestClass]  
+    public class GrammarTests
+    {   
+        public TestContext : TestContext { get; set; }
+      
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-make", "run-make.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-make.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunMake() : void
+        {
+            PositiveTest()
+        }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-pass", "run-pass.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunPass() : void
+        {
+            PositiveTest()
+        }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-pass-fulldeps", "run-pass-fulldeps.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunPassFulldeps() : void
+        {
+            PositiveTest()
+        }
+        
+        PositiveTest() : void
+        {
+            def filename = TestContext.DataRow[0] :> string;            
+            def file = FsFile(filename, NitraRust.Instance);
+
+            Assert.IsTrue(
+                file.ParseResult.IsSuccess, "file://" + Path.GetFullPath(filename) + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+        }
+    }
+}

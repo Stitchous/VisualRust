@@ -2,3 +2,6 @@
 	path = MIEngine
 	url = https://github.com/PistonDevelopers/MIEngine.git
 	branch = master
+[submodule "rust-lang"]
+	path = rust
+	url = https://github.com/rust-lang/rust.git
