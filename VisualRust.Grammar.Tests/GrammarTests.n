@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Web;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -50,7 +51,7 @@ namespace VisualRust.Grammar.Tests
             def file = FsFile(filename, NitraRust.Instance);
 
             Assert.IsTrue(
-                file.ParseResult.IsSuccess, "file://" + Path.GetFullPath(filename) + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+                file.ParseResult.IsSuccess, Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
         }
     }
 }
