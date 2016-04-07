@@ -11,7 +11,7 @@ namespace VisualRust.Grammar.Tests
         {
             def dir = AppDomain.CurrentDomain.BaseDirectory;
              
-            def files = Directory.EnumerateFiles(Path.Combine(dir, path), "*.rs", SearchOption.AllDirectories);
+            def files = Directory.EnumerateFiles(Path.GetFullPath(Path.Combine(dir, path)), "*.rs", SearchOption.AllDirectories);
             
             def testData = xml <# 
                 <TestData>
