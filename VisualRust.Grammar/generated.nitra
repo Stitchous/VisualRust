@@ -179,10 +179,7 @@ namespace VisualRust.Grammar
 			| fn_params_allow_variadic3 = '(' params ',' DOTDOTDOT ')'
 		}
 
-		syntax idents_or_self = heads (',' ident_or_self)*
-		{
-			syntax heads = ident_or_self (AS ident)?;
-		}
+		syntax idents_or_self = (ident_or_self (AS ident)?; ',')*;
 
 		syntax ident_or_self
 		{
@@ -223,7 +220,7 @@ namespace VisualRust.Grammar
 
 		syntax method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
-		syntax impl_method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
+		syntax impl_method = attrs_and_vis DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
 
 		syntax item_impl
 		{
@@ -368,6 +365,7 @@ namespace VisualRust.Grammar
 				| heads1 = MOD_SEP ident
 				| heads2 = SELF
 				| heads3 = MOD_SEP SELF
+				| heads4 = SUPER
 			}
 		}
 
@@ -656,6 +654,7 @@ namespace VisualRust.Grammar
 			| path_expr0 = path_generic_args_with_colons
 			| path_expr1 = MOD_SEP path_generic_args_with_colons
 			| path_expr2 = SELF MOD_SEP path_generic_args_with_colons
+			| path_expr3 = SUPER MOD_SEP path_generic_args_with_colons
 		}
 
 		syntax path_generic_args_with_colons = ident tails*
@@ -1215,6 +1214,7 @@ namespace VisualRust.Grammar
 			| unpaired_token94 = '/'
 			| unpaired_token95 = '^'
 			| unpaired_token96 = '%'
+			| unpaired_token97 = SIZEOF
 		}
 
 		syntax token_trees = token_tree*;

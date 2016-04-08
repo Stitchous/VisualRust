@@ -43,7 +43,9 @@
 		token UNDERSCORE							= "_";
 		token LIFETIME								= "'" IDENT;
 		token SELF									= "self";
+		token SUPER									= "super";
 		token STATIC								= "static";
+		token SIZEOF								= "sizeof";
 		token AS									= "as";
 		token BREAK									= "break";
 		token CRATE									= "crate";
@@ -79,6 +81,7 @@
 		token CONST									= "const";
 		token WHERE									= "where";
 		token TYPEOF								= "typeof";
+		token DEFAULT								= "default";
 		token INNER_DOC_COMMENT						= "//" (!NewLine Any)*; 
 		token OUTER_DOC_COMMENT						= "//" (!NewLine Any)*;
 		token SHEBANG								= "#!";
