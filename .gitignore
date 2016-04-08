@@ -28,7 +28,7 @@ build/
 *.meta
 *.obj
 *.pch
-*.pdb
+
 *.pgc
 *.pgd
 *.rsp
@@ -160,3 +160,7 @@ $RECYCLE.BIN/
 
 # Skip automatically downloaded files
 VisualRust/gdb/*/*
+
+run-make.xml
+run-pass.xml
+run-pass-fulldeps.xml

@@ -49,6 +49,9 @@ namespace VisualRust.Grammar.Tests
             def filename = TestContext.DataRow[0] :> string;            
             def file = FsFile(filename, NitraRust.Instance);
 
+            when (filename.Contains("21475"))
+                 Console.Write("");
+                
             Assert.IsTrue(
                 file.ParseResult.IsSuccess, Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
         }
