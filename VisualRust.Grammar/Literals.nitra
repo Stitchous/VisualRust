@@ -109,7 +109,7 @@
       | QuoteEscapeStrPart						= QuoteEscapes;
       | ByteEscapeStrPart						= ByteEscapes;
 	  | NewLineEscapeSequenceStrPart			= '\\' NewLineCharacter;
-      | RegularStringLiteralCharacterSequence	= Ascii+;
+      | RegularStringLiteralCharacterSequence	= (!NotAllowedRegularStringLiteralChar Ascii)+;
     }
 
 	[SpanClass(Char)] token RegularByteStringLiteral = 'b' '"' RegularByteStringLiteralPart* '"';
