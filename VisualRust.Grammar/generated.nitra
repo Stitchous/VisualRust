@@ -13,24 +13,10 @@ namespace VisualRust.Grammar
 {
 	using Tokens;
 	using Identifiers;
+	using RustComments;
 
 	syntax module Rules
 	{
-		token NestedMultiLineComment  = Start="/*" Body=NestedMultiLineCommentBody* End="*/"
-		{
-			token NestedMultiLineCommentBody
-			{
-				| NestedMultiLineComment
-				| (!"/*" !"*/" Any)*
-			}
-		}
-
-		extend token IgnoreToken
-		{
-			| [SpanClass(InlineComment)]    SingleLineComment = Start="//" Body=(!NewLine Any)* End=NewLine?;
-			| [SpanClass(MultilineComment)] MultiLineComment  = NestedMultiLineComment
-		}
-
 		alias abi	= str;
 		alias ident = IDENT;
 
@@ -324,7 +310,7 @@ namespace VisualRust.Grammar
 		syntax anon_params_allow_variadic_tail
 		{
 			| anon_params_allow_variadic_tail0 = ',' DOTDOTDOT
-			| anon_params_allow_variadic_tail1 = ',' anon_param anon_params_allow_variadic_tail
+			| anon_params_allow_variadic_tail1 = ',' anon_param anon_params_allow_variadic_tail?
 		}
 
 		syntax named_arg

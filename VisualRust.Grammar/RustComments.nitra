@@ -1,0 +1,22 @@
+﻿namespace VisualRust.Grammar
+{
+  syntax module RustComments
+  {
+    using Nitra.Core;
+
+    token NestedMultiLineComment  = Start="/*" Body=NestedMultiLineCommentBody* End="*/"
+	{
+		token NestedMultiLineCommentBody
+		{
+			| NestedMultiLineComment
+			| (!"/*" !"*/" Any)*
+		}
+	}
+
+	extend token IgnoreToken
+	{
+		| [SpanClass(InlineComment)]    SingleLineComment = Start="//" Body=(!NewLine Any)* End=NewLine?;
+		| [SpanClass(MultilineComment)] MultiLineComment  = NestedMultiLineComment
+	}
+  }
+}

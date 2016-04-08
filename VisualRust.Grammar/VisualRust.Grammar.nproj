@@ -144,6 +144,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
+    <Compile Include="RustComments.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Tokens.nitra">
       <SubType>Code</SubType>
     </Compile>
