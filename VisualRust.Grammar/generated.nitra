@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Nitra.Core;
-using Nitra.CStyleComments;
 
 namespace VisualRust.Grammar
 {
@@ -17,6 +16,21 @@ namespace VisualRust.Grammar
 
 	syntax module Rules
 	{
+		token NestedMultiLineComment  = Start="/*" Body=NestedMultiLineCommentBody* End="*/"
+		{
+			token NestedMultiLineCommentBody
+			{
+				| NestedMultiLineComment
+				| (!"/*" !"*/" Any)*
+			}
+		}
+
+		extend token IgnoreToken
+		{
+			| [SpanClass(InlineComment)]    SingleLineComment = Start="//" Body=(!NewLine Any)* End=NewLine?;
+			| [SpanClass(MultilineComment)] MultiLineComment  = NestedMultiLineComment
+		}
+
 		alias abi	= str;
 		alias ident = IDENT;
 
