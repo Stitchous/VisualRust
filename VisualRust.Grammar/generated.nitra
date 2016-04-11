@@ -747,7 +747,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads4 = path_expr '{' struct_expr_fields? '}'
 				| heads5 = '(' maybe_exprs ')'
 				| heads6 = '[' vec_expr ']'
 				| heads7 = CONTINUE
