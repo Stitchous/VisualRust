@@ -34,7 +34,12 @@
 		token LIT_BYTE								= ByteLiteral;
 		[SpanClass(Char)] token LIT_CHAR			= CharacterLiteral;
 		syntax LIT_INTEGER							= IntegerLiteral;
-		token LIT_FLOAT								= FloatingPointLiteral;
+		token LIT_FLOAT
+		{
+		  regex Bad = '.' | '_' | ['a'..'z'] | ['A'..'Z'];
+
+		  | FloatingPointLiteral !Bad
+		}
 		[SpanClass(String)] token LIT_STR			= RegularStringLiteral;
 		syntax LIT_STR_RAW							= RawStringLiteral;
 		token LIT_BYTE_STR							= RegularByteStringLiteral;
