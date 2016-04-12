@@ -96,7 +96,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <VSTestParams Include="/Parallel" />
       <VSTestParams Include="/Logger:trx" />
       <VSTestParams Include="&quot;$(TargetPath)&quot;" />
     </ItemGroup>
