@@ -160,3 +160,6 @@ $RECYCLE.BIN/
 
 # Skip automatically downloaded files
 VisualRust/gdb/*/*
+/VisualRust.Grammar.Tests/run-pass.xml
+/VisualRust.Grammar.Tests/run-pass-fulldeps.xml
+/VisualRust.Grammar.Tests/run-make.xml

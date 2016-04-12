@@ -123,7 +123,7 @@ namespace VisualRust.Grammar
 			| item_struct2 = STRUCT ident generic_params? where_clause? ';'
 		}
 
-		syntax struct_decl_args = '{' struct_decl_fields ','? '}';
+		syntax struct_decl_args = outline_begin_before '{' struct_decl_fields ','? '}' outline_end_before;
 
 		syntax struct_tuple_args = '(' struct_tuple_fields ','? ')';
 
@@ -420,7 +420,7 @@ namespace VisualRust.Grammar
 			| pat7 = '[' pat_vec? ']'
 			| pat8 = lit_or_path
 			| pat9 = lit_or_path DOTDOTDOT lit_or_path
-			| pat10 = path_expr '{' pat_struct '}'
+			| pat10 = path_expr outline_begin_before '{' pat_struct '}' outline_end_before
 			| pat11 = path_expr '(' DOTDOT ')'
 			| pat12 = path_expr '(' pat_tup ')'
 			| pat13 = path_expr '!' ident? delimited_token_trees
@@ -622,9 +622,9 @@ namespace VisualRust.Grammar
 
 		syntax trait_ref = MOD_SEP? path_generic_args_without_colons;
 
-		syntax inner_attrs_and_block = '{' inner_attr* stmts? '}';
+		syntax inner_attrs_and_block = outline_begin_before '{' inner_attr* stmts? '}' outline_end_before;
 
-		syntax block = '{' stmts? '}';
+		syntax block = outline_begin '{' stmts? '}' outline_end_before;
 
 		syntax stmts
 		{
@@ -680,7 +680,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads4 = path_expr outline_begin_before '{' struct_expr_fields '}' outline_end_before
 				| heads5 = '[' vec_expr ']'
 				| heads6 = '(' maybe_exprs ')'
 				| heads7 = CONTINUE
@@ -1050,10 +1050,10 @@ namespace VisualRust.Grammar
 
 		syntax expr_match
 		{
-			| expr_match0 = MATCH expr_nostruct '{' '}'
-			| expr_match1 = MATCH expr_nostruct '{' match_clause+ '}'
-			| expr_match2 = MATCH expr_nostruct '{' match_clause+ nonblock_match_clause '}'
-			| expr_match3 = MATCH expr_nostruct '{' nonblock_match_clause '}'
+			| expr_match0 = MATCH expr_nostruct outline_begin_before '{' '}' outline_end_before
+			| expr_match1 = MATCH expr_nostruct outline_begin_before '{' match_clause+ '}' outline_end_before
+			| expr_match2 = MATCH expr_nostruct outline_begin_before '{' match_clause+ nonblock_match_clause '}' outline_end_before
+			| expr_match3 = MATCH expr_nostruct outline_begin_before '{' nonblock_match_clause '}' outline_end_before
 		}
 
 		syntax match_clause

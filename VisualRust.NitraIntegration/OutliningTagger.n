@@ -49,7 +49,6 @@ namespace VisualRust.NitraIntegration
                 tagSpan
             }
             
-            
             outlining
                 .Where(r => r.Span.StartPos <= end && r.Span.EndPos >= start)
                 .Select(mapRegion);
