@@ -254,7 +254,7 @@ namespace VisualRust.Grammar
 
 		syntax impl_const = attrs_and_vis item_const;
 
-		syntax impl_type = attrs_and_vis TYPE ident generic_params? '=' ty_sum ';';
+		syntax impl_type = attrs_and_vis DEFAULT? TYPE ident generic_params? '=' ty_sum ';';
 
 		syntax item_fn = FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
