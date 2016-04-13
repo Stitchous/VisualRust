@@ -258,7 +258,7 @@ namespace VisualRust.Grammar
 
 		syntax item_fn = CONST? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
-		syntax item_unsafe_fn = UNSAFE (EXTERN abi?)? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
+		syntax item_unsafe_fn = CONST? UNSAFE (EXTERN abi?)? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
 		syntax fn_decl = fn_params ret_ty?;
 
