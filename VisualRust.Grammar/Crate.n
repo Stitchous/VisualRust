@@ -5,29 +5,63 @@ using Nemerle.Utility;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 using Nitra.Declarations;
 using Nitra.ProjectSystem;
 
 namespace VisualRust.Grammar
 {
-    public partial class Crate : AstBase, IProjectSupport
+  public partial class Crate : AstBase, IProjectSupport
   {
-      public RefreshProject(project : Project) : void
+    public RefreshReferences(cancellationToken : CancellationToken, project : Project) : object
+    {
+      IgnoreParams();
+      def context = DependentPropertyEvalContext();
+      context
+    }
+    
+    public RefreshProject(cancellationToken : CancellationToken, files : ImmutableArray[FileEvalPropertiesData], data : object) : void
+    {
+      def context = data :> DependentPropertyEvalContext;
+      def scope   = TableScope("Variables", null);  
+      context.CancellationToken = cancellationToken;
+
+      def evalHost = VisualRustProjectEvalPropertiesHost(files, scope);
+
+      evalHost.EvalProperties(context, "Collect variables", 0);
+      evalHost.EvalProperties(context, "Compute variables", 1);
+      
+      foreach (crate in files.OfType.[Crate]())
       {
-        def files   = project.Files.ToArray();
-        def scope   = TableScope("Variables", null);  
-
-        foreach (crate in files.OfType.[Crate]())
-        {
-            crate.ContainingTable = scope; 
-        }
-        
-        def context = DependentPropertyEvalContext(); 
-
-        project.EvalProperties(context, "Collect variables", 0); 
-        project.EvalProperties(context, "Compute variables", 1); 
+          crate.ContainingTable = scope; 
       }
+    }
+  }
+  
+  class VisualRustProjectEvalPropertiesHost : ProjectEvalPropertiesHost
+  {
+    _scope : TableScope;
+    
+    public this(files : ImmutableArray[FileEvalPropertiesData], scope : TableScope /*, rootNamespace : NamespaceSymbol*/)
+    {
+      base(files/*, ImmutableArray.Create(rootNamespace)*/);
+      _scope = scope;
+    }
+
+    protected override BeforeStage(context : DependentPropertyEvalContext, _passName : string) : void
+    {
+      match (context.Stage)
+      {
+        | 0 =>
+          foreach (file in _files)
+            when (file.Ast is Crate as crate)
+              crate.ContainingTable = _scope; 
+
+        | _ => ()
+      }
+    }
   }
 }

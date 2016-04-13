@@ -84,20 +84,38 @@ namespace VisualRust.Grammar
 
 		syntax use_item = USE view_path ';';
 
+		syntax path_no_types_allowed = heads (MOD_SEP Reference)*
+		{
+			syntax heads
+			{
+				| heads0 = Reference
+				| heads2 = SELF
+				| heads4 = SUPER
+			}
+		}
+
+		syntax refs_or_self = (ref_or_self (AS Name)?; ',')*;
+
+		syntax ref_or_self
+		{
+			| ident_or_self0 = Reference
+			| ident_or_self1 = SELF
+		}
+
 		syntax view_path
 		{
-			| view_path0 = path_no_types_allowed
-			| view_path1 = path_no_types_allowed MOD_SEP '{' '}'
+			| view_path0 = MOD_SEP? path_no_types_allowed
+			| view_path1 = MOD_SEP? path_no_types_allowed MOD_SEP '{' '}'
 			| view_path2 = MOD_SEP '{' '}'
-			| view_path3 = path_no_types_allowed MOD_SEP '{' idents_or_self '}'
-			| view_path4 = MOD_SEP '{' idents_or_self '}'
-			| view_path5 = path_no_types_allowed MOD_SEP '{' idents_or_self ',' '}'
-			| view_path6 = MOD_SEP '{' idents_or_self ',' '}'
-			| view_path7 = path_no_types_allowed MOD_SEP '*'
+			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self '}'
+			| view_path4 = MOD_SEP '{' refs_or_self '}'
+			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self ',' '}'
+			| view_path6 = MOD_SEP '{' refs_or_self ',' '}'
+			| view_path7 = MOD_SEP? path_no_types_allowed MOD_SEP '*'
 			| view_path8 = '{' '}'
-			| view_path9 = '{' idents_or_self '}'
-			| view_path10 = '{' idents_or_self ',' '}'
-			| view_path11 = path_no_types_allowed AS ident
+			| view_path9 = '{' refs_or_self '}'
+			| view_path10 = '{' refs_or_self ',' '}'
+			| view_path11 = MOD_SEP? path_no_types_allowed AS ident
 		}
 
 		syntax block_item
@@ -179,13 +197,7 @@ namespace VisualRust.Grammar
 			| fn_params_allow_variadic3 = '(' params ',' DOTDOTDOT ')'
 		}
 
-		syntax idents_or_self = (ident_or_self (AS ident)?; ',')*;
 
-		syntax ident_or_self
-		{
-			| ident_or_self0 = ident
-			| ident_or_self1 = SELF
-		}
 
 		syntax item_type = TYPE ident generic_params? where_clause? '=' ty_sum ';';
 
@@ -357,17 +369,6 @@ namespace VisualRust.Grammar
 
 		syntax ty_params = (ty_param;',')+;
 
-		syntax path_no_types_allowed = heads (MOD_SEP ident)*
-		{
-			syntax heads
-			{
-				| heads0 = ident
-				| heads1 = MOD_SEP ident
-				| heads2 = SELF
-				| heads3 = MOD_SEP SELF
-				| heads4 = SUPER
-			}
-		}
 
 		syntax path_generic_args_without_colons = heads tails*
 		{

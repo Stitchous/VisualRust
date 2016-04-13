@@ -16,6 +16,8 @@
     <NemerleVersion>Net-4.0</NemerleVersion>
     <NemerleBinPathRoot Condition=" '$(NemerleBinPathRoot)' == '' ">$(ProgramFiles)\Nemerle</NemerleBinPathRoot>
     <Nemerle Condition=" '$(Nemerle)' == '' ">$(NemerleBinPathRoot)\$(NemerleVersion)</Nemerle>
+    <External Condition="$(Configuration)=='Release'">..\External\</External>
+    <External Condition="$(Configuration)=='Debug'">..\External\Debuggable\</External>
     <Name>VisualRust.NitraIntegration</Name>
     <KeyOriginatorFile>key.snk</KeyOriginatorFile>
   </PropertyGroup>
@@ -76,7 +78,7 @@
     <Reference Include="Nitra.Runtime">
       <Name>Nitra.Runtime</Name>
       <AssemblyName>Nitra.Runtime.dll</AssemblyName>
-      <HintPath>..\External\Nitra.Runtime.dll</HintPath>
+      <HintPath>$(External)Nitra.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
       <Name>PresentationCore</Name>
@@ -104,11 +106,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="Nemerle">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(Nemerle)\Nemerle.dll</HintPath>
+      <HintPath>$(External)\Nemerle.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <MacroReference Include="Nemerle.Linq">
-      <HintPath>$(Nemerle)\Nemerle.Linq.dll</HintPath>
+      <HintPath>$(External)\Nemerle.Linq.dll</HintPath>
     </MacroReference>
     <Reference Include="WindowsBase">
       <Name>WindowsBase</Name>
