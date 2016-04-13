@@ -254,11 +254,11 @@ namespace VisualRust.Grammar
 
 		syntax impl_const = attrs_and_vis item_const;
 
-		syntax impl_type = attrs_and_vis TYPE ident generic_params? '=' ty_sum ';';
+		syntax impl_type = attrs_and_vis DEFAULT? TYPE ident generic_params? '=' ty_sum ';';
 
-		syntax item_fn = FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
+		syntax item_fn = CONST? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
-		syntax item_unsafe_fn = UNSAFE (EXTERN abi?)? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
+		syntax item_unsafe_fn = CONST? UNSAFE (EXTERN abi?)? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
 		syntax fn_decl = fn_params ret_ty?;
 

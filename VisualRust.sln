@@ -40,8 +40,6 @@ Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "BisonRulesConverter", "Biso
 EndProject
 Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "VisualRust.NitraIntegration", "VisualRust.NitraIntegration\VisualRust.NitraIntegration.nproj", "{DAF0E950-79C6-4E28-821A-AEF1ABC44C17}"
 EndProject
-Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "VisualRust.Grammar.Mapping", "VisualRust.Grammar.Mapping\VisualRust.Grammar.Mapping.nproj", "{C0131932-8345-4231-B62E-BD621760A0B0}"
-EndProject
 Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "VisualRust.Grammar.Tests", "VisualRust.Grammar.Tests\VisualRust.Grammar.Tests.nproj", "{755F934D-17CF-4BCA-9C87-D713581E986F}"
 EndProject
 Global
@@ -474,36 +472,6 @@ Global
 		{DAF0E950-79C6-4E28-821A-AEF1ABC44C17}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DAF0E950-79C6-4E28-821A-AEF1ABC44C17}.Release|x86.ActiveCfg = Release|Any CPU
 		{DAF0E950-79C6-4E28-821A-AEF1ABC44C17}.Release|x86.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|Any CPU.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|x86.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug.Lab|x86.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug|x86.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|Any CPU.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|x86.ActiveCfg = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Debug-CI|x86.Build.0 = Debug|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|Any CPU.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|Any CPU.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|Mixed Platforms.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|x86.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release.Lab|x86.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|x86.ActiveCfg = Release|Any CPU
-		{C0131932-8345-4231-B62E-BD621760A0B0}.Release|x86.Build.0 = Release|Any CPU
 		{755F934D-17CF-4BCA-9C87-D713581E986F}.Debug.Lab|Any CPU.ActiveCfg = Debug|Any CPU
 		{755F934D-17CF-4BCA-9C87-D713581E986F}.Debug.Lab|Any CPU.Build.0 = Debug|Any CPU
 		{755F934D-17CF-4BCA-9C87-D713581E986F}.Debug.Lab|Mixed Platforms.ActiveCfg = Debug|Any CPU

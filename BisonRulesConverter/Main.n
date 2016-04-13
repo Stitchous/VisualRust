@@ -4,6 +4,7 @@ using Nemerle.Utility;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Console;
 using System.Linq;
 
@@ -19,7 +20,10 @@ module Program
         def lang = NitraBison.Instance;
         def file = FsFile("parser-lalr.y", lang);
         def context = DependentPropertyEvalContext();
-        def propsEvalHost = ProjectEvalPropertiesHost([file]);
+        
+        def filesData = ImmutableArray.Create(array[file.GetEvalPropertiesData()]);
+        def scope   = TableScope("Variables", null);  
+        def propsEvalHost = BisonRulesParser.BisonProjectEvalPropertiesHost(filesData, scope);
         
         propsEvalHost.EvalProperties(context, "Collect variables", 0); 
         propsEvalHost.EvalProperties(context, "Compute variables", 1);
