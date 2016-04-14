@@ -13,6 +13,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VisualRust.Grammar;
 using Nitra.ProjectSystem;
 
+using System.Threading;
+
 namespace VisualRust.Grammar.Tests
 {
     [TestClass]  
@@ -57,7 +59,9 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
         public RunRustLang() : void
         {
-            PositiveTest()
+            def t = Thread(PositiveTest, 32 * 1024 * 1024);
+            t.Start();
+            t.Join();
         }
 
         PositiveTest() : void
