@@ -232,7 +232,7 @@ namespace VisualRust.Grammar
 
 		syntax method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
-		syntax impl_method = attrs_and_vis DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
+		syntax impl_method = attrs_and_vis CONST? DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
 
 		syntax item_impl
 		{
