@@ -112,16 +112,12 @@ namespace VisualRust.Grammar
 		{
 			| view_path0 = MOD_SEP? path_no_types_allowed
 			| view_path1 = MOD_SEP? path_no_types_allowed MOD_SEP '{' '}'
-			| view_path2 = MOD_SEP '{' '}'
-			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self '}'
-			| view_path4 = MOD_SEP '{' refs_or_self '}'
-			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self ',' '}'
-			| view_path6 = MOD_SEP '{' refs_or_self ',' '}'
-			| view_path7 = MOD_SEP? path_no_types_allowed MOD_SEP '*'
-			| view_path8 = '{' '}'
-			| view_path9 = '{' refs_or_self '}'
-			| view_path10 = '{' refs_or_self ',' '}'
-			| view_path11 = MOD_SEP? path_no_types_allowed AS ident
+			| view_path2 = MOD_SEP? '{' '}'
+			
+			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self ','? '}'
+			| view_path4 = MOD_SEP? '{' refs_or_self ','? '}'
+			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP '*'
+			| view_path6 = MOD_SEP? path_no_types_allowed AS ident
 		}
 
 		syntax block_item
