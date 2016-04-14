@@ -40,7 +40,6 @@ namespace VisualRust.Grammar
 		{
 			MetaItem : MetaItemAst;
 			MetaItem.ContainingTable = ContainingTable;
-			
 		}
 	}
 
@@ -104,20 +103,20 @@ namespace VisualRust.Grammar
 		| Reference
 	}
 
-
-	ast Path
+	ast UsePath
 	{
 		IsGlobal : bool;
+		
 		Path : PathReference*;
-
-
+		
+		Tails : PathReference*;
 	}
 
 	abstract ast ModItem
 	{
 		| UseItem
 		{
-	
+			UsePath : UsePath;
 		}
 		| Other
 	}
@@ -148,7 +147,7 @@ namespace VisualRust.Grammar
 	{
 		| view_item0  -> ModItem.UseItem
 			{
-				
+				Use_item.View_path -> UsePath;
 			}
 		| view_item1  -> Other {}
 		| view_item2  -> Other {}
@@ -156,5 +155,65 @@ namespace VisualRust.Grammar
 	}   
 
 
+
+
+	map syntax Rules.view_path -> UsePath
+	{
+		
+		| view_path0 -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path_no_types_allowed -> Path;
+			Tails = PathReference.AstList(this);
+		}
+		| view_path1 -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path_no_types_allowed -> Path;
+			Tails = PathReference.AstList(this);
+		}
+		
+		| view_path2 -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path =	PathReference.AstList(this);
+			Tails = PathReference.AstList(this);
+		}
+		| view_path3  -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path_no_types_allowed -> Path;
+			Refs_or_self -> Tails;
+		}
+		| view_path4  -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path = PathReference.AstList(this);
+			Refs_or_self -> Tails;
+		}
+		| view_path5  -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path_no_types_allowed -> Path;
+			Tails = PathReference.AstList(this);
+		}
+		| view_path6  -> UsePath
+		{
+			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
+			Path_no_types_allowed -> Path;
+			Tails = PathReference.AstList(this);
+		}
+
+	}
+
+	map syntax Rules.path_no_types_allowed -> PathReference*
+	{
+		[]
+	}
+
+	map syntax Rules.refs_or_self -> PathReference*
+	{
+		[]
+	}
 
 }
