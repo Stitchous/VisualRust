@@ -84,12 +84,18 @@ namespace VisualRust.Grammar
 
 		syntax use_item = USE view_path ';';
 
-		syntax path_no_types_allowed = heads (MOD_SEP Reference)*
+		syntax path_no_types_allowed = head (MOD_SEP tail)*
 		{
-			syntax heads
+			syntax head
 			{
 				| heads0 = Reference
 				| heads2 = SELF
+				| heads4 = SUPER
+			}
+
+			syntax tail
+			{
+				| heads0 = Reference
 				| heads4 = SUPER
 			}
 		}
