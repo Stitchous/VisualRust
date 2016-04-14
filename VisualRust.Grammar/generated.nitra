@@ -633,7 +633,7 @@ namespace VisualRust.Grammar
 
 		syntax stmts
 		{
-			| stmts0 = stmt+ nonblock_expr?
+			| stmts0 = (outer_attr* stmt)+ nonblock_expr?
 			| stmts1 = nonblock_expr
 		}
 
