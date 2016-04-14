@@ -88,15 +88,15 @@ namespace VisualRust.Grammar
 		{
 			syntax head
 			{
-				| heads0 = Reference
-				| heads2 = SELF
-				| heads4 = SUPER
+				| head0 = Reference
+				| head1 = SELF
+				| head2 = SUPER
 			}
 
 			syntax tail
 			{
-				| heads0 = Reference
-				| heads4 = SUPER
+				| tail0 = Reference
+				| tail1 = SUPER
 			}
 		}
 
@@ -202,8 +202,6 @@ namespace VisualRust.Grammar
 			| fn_params_allow_variadic2 = '(' params ',' ')'
 			| fn_params_allow_variadic3 = '(' params ',' DOTDOTDOT ')'
 		}
-
-
 
 		syntax item_type = TYPE ident generic_params? where_clause? '=' ty_sum ';';
 
@@ -631,7 +629,7 @@ namespace VisualRust.Grammar
 
 		syntax inner_attrs_and_block = outline_begin_before '{' inner_attr* stmts? '}' outline_end_before;
 
-		syntax block = outline_begin '{' stmts? '}' outline_end_before;
+		syntax block = outline_begin outer_attr* '{' stmts? '}' outline_end_before;
 
 		syntax stmts
 		{
@@ -664,12 +662,19 @@ namespace VisualRust.Grammar
 			| path_expr3 = SUPER MOD_SEP path_generic_args_with_colons
 		}
 
-		syntax path_generic_args_with_colons = ident tails*
+		syntax path_generic_args_with_colons = head tails*
 		{
+			syntax head
+			{
+				| head0 = ident
+				| head1 = SUPER
+			}
+
 			syntax tails
 			{
-				| tails0 = MOD_SEP ident
-				| tails1 = MOD_SEP generic_args
+				| tail0 = MOD_SEP SUPER
+				| tail1 = MOD_SEP ident
+				| tail2 = MOD_SEP generic_args
 			}
 		}
 
