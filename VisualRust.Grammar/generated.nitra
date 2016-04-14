@@ -1216,6 +1216,7 @@ namespace VisualRust.Grammar
 			| unpaired_token95 = '^'
 			| unpaired_token96 = '%'
 			| unpaired_token97 = SIZEOF
+			| unpaired_token98 = SUPER
 		}
 
 		syntax token_trees = token_tree*;
