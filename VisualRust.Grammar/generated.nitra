@@ -357,6 +357,7 @@ namespace VisualRust.Grammar
 			| generic_params9 = '<' ty_params ',' '>'
 			| generic_params10 = '<' ty_params SHR
 			| generic_params11 = '<' ty_params ',' SHR
+			| generic_params12 = '<''>'
 		}
 
 		syntax where_clause = WHERE where_predicates ','?;
@@ -425,7 +426,7 @@ namespace VisualRust.Grammar
 			| pat7 = '[' pat_vec? ']'
 			| pat8 = lit_or_path
 			| pat9 = lit_or_path DOTDOTDOT lit_or_path
-			| pat10 = path_expr outline_begin_before '{' pat_struct '}' outline_end_before
+			| pat10 = path_expr outline_begin_before '{' pat_struct? '}' outline_end_before
 			| pat11 = path_expr '(' DOTDOT ')'
 			| pat12 = path_expr '(' pat_tup ')'
 			| pat13 = path_expr '!' ident? delimited_token_trees
