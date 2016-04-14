@@ -51,14 +51,19 @@ namespace VisualRust.Grammar.Tests
         {
             PositiveTest()
         }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src", "run-rust-lang.xml", "../../../rust/src/test")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunRustLang() : void
+        {
+            PositiveTest()
+        }
 
         PositiveTest() : void
         {
-            def filename = TestContext.DataRow[0] :> string;            
+            def filename = TestContext.DataRow[0] :> string;
             def file = FsFile(filename, NitraRust.Instance);
-
-            when (filename.Contains("21475"))
-                 Console.Write("");
                  
             Assert.IsTrue(
                 file.ParseResult.IsSuccess, Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
