@@ -228,9 +228,9 @@ namespace VisualRust.Grammar
 			| trait_method1 = method
 		}
 
-		syntax type_method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
+		syntax type_method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
 
-		syntax method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
+		syntax method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
 		syntax impl_method = attrs_and_vis CONST? DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
 
@@ -521,6 +521,7 @@ namespace VisualRust.Grammar
 			| ty_prim16 = ty_bare_fn
 			| ty_prim17 = ty_proc
 			| ty_prim18 = for_in_type
+			| ty_prim19 = macro_expr
 		}
 
 		syntax ty_bare_fn
@@ -768,7 +769,7 @@ namespace VisualRust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX '(' expr? ')' expr
+				| heads16 = BOX '(' expr? ')' expr?
 				| heads17 = expr_qualified_path
 				| heads18 = block_expr
 				| heads19 = block
