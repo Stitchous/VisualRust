@@ -27,15 +27,15 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-make.xml", "Filename", DataAccessMethod.Sequential)]
         public RunMake() : void
         {
-            PositiveTest()
+            RunTest(PositiveTest)
         }
-        
+                
         [TestMethod]
         [RustTestDirectory("../../../rust/src/test/run-pass", "run-pass.xml")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass.xml", "Filename", DataAccessMethod.Sequential)]
         public RunPass() : void
         {
-            PositiveTest()
+            RunTest(PositiveTest)
         }
         
         [TestMethod]
@@ -43,45 +43,118 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
         public RunPassFulldeps() : void
         {
-            PositiveTest()
+            RunTest(PositiveTest)
         }
         
         [TestMethod]
         [RustTestDirectory("../../examples", "examples.xml")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "examples.xml", "Filename", DataAccessMethod.Sequential)]
-        public RunExamples() : void
+        public Examples() : void
         {
-            PositiveTest()
+            RunTest(PositiveTest)
+        }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/compile-fail", "compile-fail.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "compile-fail.xml", "Filename", DataAccessMethod.Sequential)]
+        public CompileFail() : void
+        {
+            RunTest(CompilerNegativeTest)
+        }
+          
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/compile-fail-fulldeps", "compile-fail-fulldeps.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "compile-fail-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
+        public CompileFailFullDeps() : void
+        {
+            RunTest(CompilerNegativeTest)
         }
   
         [TestMethod]
-        [RustTestDirectory("../../../rust/src", "run-rust-lang.xml", "../../../rust/src/test")]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
-        public RunRustLang() : void
+        [RustTestDirectory("../../../rust/src/test/parse-fail", "parse-fail.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "parse-fail.xml", "Filename", DataAccessMethod.Sequential)]
+        public ParseFailFullDeps() : void
+        {
+            RunTest(NegativeTest)
+        }
+
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-fail", "run-fail.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-fail.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunFail() : void
+        {
+            RunTest(NegativeTest)
+        }
+
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-fail-fulldeps", "run-fail-fulldeps.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-fail-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunFailFulldeps() : void
+        {
+            RunTest(NegativeTest)
+        }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src", "rust-lang.xml", "../../../rust/src/test")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
+        public RustLang() : void
+        {
+            RunTest(PositiveTest);
+        }
+        
+        private RunTest(action : Action) : void
         {
             mutable exception = None();
             
-            def t = Thread(() => exception = SafeRun(PositiveTest), 32 * 1024 * 1024);
-            t.Start();
-            t.Join();
+            def maxStackSize = 32 * 1024 * 1024;
+            def thread = Thread(() =>
+                try
+                {
+                    action();
+                }
+                catch
+                {
+                    e => exception = Some(e)
+                },
+                maxStackSize);
+                
+            thread.Start();
+            thread.Join();
             
             exception.Iter(x => throw x);
         }
-        
-        private SafeRun(action : Action) : option[Exception]
-        {
-            try
-            {
-                action();
-                None()
-            }
-            catch
-            {
-                e is Exception => Some(e)
-            }
-        }
 
         private PositiveTest() : void
+        {
+            def filename = TestContext.DataRow[0] :> string;
+            def file = FsFile(filename, NitraRust.Instance);
+                 
+            Assert.IsTrue(
+                file.ParseResult.IsSuccess,
+                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+        }
+
+        private NegativeTest() : void
+        {
+            def filename = TestContext.DataRow[0] :> string;
+            def file = FsFile(filename, NitraRust.Instance);
+                 
+            Assert.IsFalse(
+                file.ParseResult.IsSuccess,
+                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+        }
+
+        private CompilerNegativeTest() : void
+        {
+            def filename = TestContext.DataRow[0] :> string;
+            def file = FsFile(filename, NitraRust.Instance);
+                 
+            Assert.IsTrue(
+                file.ParseResult.IsSuccess,
+                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+        }
+
+        private RunNegativeTest() : void
         {
             def filename = TestContext.DataRow[0] :> string;
             def file = FsFile(filename, NitraRust.Instance);
