@@ -87,7 +87,8 @@ namespace VisualRust.Grammar.Tests
             def file = FsFile(filename, NitraRust.Instance);
                  
             Assert.IsTrue(
-                file.ParseResult.IsSuccess, Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+                file.ParseResult.IsSuccess,
+                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
         }
     }
 }
