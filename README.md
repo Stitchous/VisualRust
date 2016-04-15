@@ -1,5 +1,5 @@
-Visual Studio extension for Rust based on [VisualRust](https://github.com/PistonDevelopers/VisualRust)
-======================================================================================================
+Visual Studio extension for Rust based on [VisualRust](https://github.com/PistonDevelopers/VisualRust) and [Nitra](https://github.com/rsdn/nitra)
+=================================================================================================================================================
 
 ![Screenshot1](/rust-experimental-instance.png)
 
