@@ -521,6 +521,7 @@ namespace VisualRust.Grammar
 			| ty_prim16 = ty_bare_fn
 			| ty_prim17 = ty_proc
 			| ty_prim18 = for_in_type
+			| ty_prim19 = macro_expr
 		}
 
 		syntax ty_bare_fn

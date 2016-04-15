@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{738916D8-D904-4252-A9EC-6D96886FF95C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		rust-experimental-instance.png = rust-experimental-instance.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Project", "Microsoft.VisualStudio.Project\Microsoft.VisualStudio.Project.csproj", "{CACB60A9-1E76-4F92-8831-B134A658C695}"
