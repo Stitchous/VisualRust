@@ -21,7 +21,7 @@ namespace VisualRust.Grammar.Tests
     public class GrammarTests
     {   
         public TestContext : TestContext { get; set; }
-      
+  
         [TestMethod]
         [RustTestDirectory("../../../rust/src/test/run-make", "run-make.xml")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-make.xml", "Filename", DataAccessMethod.Sequential)]
@@ -53,18 +53,35 @@ namespace VisualRust.Grammar.Tests
         {
             PositiveTest()
         }
-        
+  
         [TestMethod]
         [RustTestDirectory("../../../rust/src", "run-rust-lang.xml", "../../../rust/src/test")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
         public RunRustLang() : void
         {
-            def t = Thread(PositiveTest, 32 * 1024 * 1024);
+            mutable exception = None();
+            
+            def t = Thread(() => exception = SafeRun(PositiveTest), 32 * 1024 * 1024);
             t.Start();
             t.Join();
+            
+            exception.Iter(x => throw x);
+        }
+        
+        private SafeRun(action : Action) : option[Exception]
+        {
+            try
+            {
+                action();
+                None()
+            }
+            catch
+            {
+                e is Exception => Some(e)
+            }
         }
 
-        PositiveTest() : void
+        private PositiveTest() : void
         {
             def filename = TestContext.DataRow[0] :> string;
             def file = FsFile(filename, NitraRust.Instance);
