@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using VisualRust.Grammar;
 using Nitra.ProjectSystem;
+using Nitra.Declarations;
 
 using System.Threading;
 
@@ -27,7 +28,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-make.xml", "Filename", DataAccessMethod.Sequential)]
         public RunMake() : void
         {
-            RunTest(PositiveTest)
+            RunTest(Assert.IsTrue)
         }
                 
         [TestMethod]
@@ -35,7 +36,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass.xml", "Filename", DataAccessMethod.Sequential)]
         public RunPass() : void
         {
-            RunTest(PositiveTest)
+            RunTest(Assert.IsTrue)
         }
         
         [TestMethod]
@@ -43,15 +44,23 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
         public RunPassFulldeps() : void
         {
-            RunTest(PositiveTest)
+            RunTest(Assert.IsTrue)
         }
+        
+        [TestMethod]
+        [RustTestDirectory("../../../rust/src/test/run-pass-valgrind", "run-pass-valgrind.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-pass-valgrind.xml", "Filename", DataAccessMethod.Sequential)]
+        public RunPassValgrind() : void
+        {
+            RunTest(Assert.IsTrue)
+        }        
         
         [TestMethod]
         [RustTestDirectory("../../examples", "examples.xml")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "examples.xml", "Filename", DataAccessMethod.Sequential)]
         public Examples() : void
         {
-            RunTest(PositiveTest)
+            RunTest(Assert.IsTrue)
         }
         
         [TestMethod]
@@ -59,7 +68,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "compile-fail.xml", "Filename", DataAccessMethod.Sequential)]
         public CompileFail() : void
         {
-            RunTest(CompilerNegativeTest)
+            RunTest(Assert.IsTrue)
         }
           
         [TestMethod]
@@ -67,7 +76,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "compile-fail-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
         public CompileFailFullDeps() : void
         {
-            RunTest(CompilerNegativeTest)
+            RunTest(Assert.IsTrue)
         }
   
         [TestMethod]
@@ -75,7 +84,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "parse-fail.xml", "Filename", DataAccessMethod.Sequential)]
         public ParseFailFullDeps() : void
         {
-            RunTest(NegativeTest)
+            RunTest(Assert.IsFalse)
         }
 
         [TestMethod]
@@ -83,7 +92,7 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-fail.xml", "Filename", DataAccessMethod.Sequential)]
         public RunFail() : void
         {
-            RunTest(NegativeTest)
+            RunTest(Assert.IsTrue)
         }
 
         [TestMethod]
@@ -91,77 +100,41 @@ namespace VisualRust.Grammar.Tests
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "run-fail-fulldeps.xml", "Filename", DataAccessMethod.Sequential)]
         public RunFailFulldeps() : void
         {
-            RunTest(NegativeTest)
+            RunTest(Assert.IsTrue)
         }
-        
+                
         [TestMethod]
         [RustTestDirectory("../../../rust/src", "rust-lang.xml", "../../../rust/src/test")]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "rust-lang.xml", "Filename", DataAccessMethod.Sequential)]
         public RustLang() : void
         {
-            RunTest(PositiveTest);
+            RunTest(Assert.IsTrue);
         }
         
-        private RunTest(action : Action) : void
+        private RunTest(action : Action[bool, string]) : void
         {
-            mutable exception = None();
-            
-            def maxStackSize = 32 * 1024 * 1024;
-            def thread = Thread(() =>
-                try
-                {
-                    action();
-                }
-                catch
-                {
-                    e => exception = Some(e)
-                },
-                maxStackSize);
+            def filename = TestContext.DataRow[0] :> string;
+            when (filename.Any())
+            {
+                mutable exception = None();
+                def maxStackSize = 32 * 1024 * 1024;
+                def thread = Thread(() =>
+                    try
+                    {
+                        def file = FsFile(filename, NitraRust.Instance);
+                        action(file.ParseResult.IsSuccess, Uri(Path.GetFullPath(file.FilePath)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+                    }
+                    catch
+                    {
+                        e => exception = Some(e)
+                    },
+                    maxStackSize);
                 
-            thread.Start();
-            thread.Join();
+                thread.Start();
+                thread.Join();
             
-            exception.Iter(x => throw x);
-        }
-
-        private PositiveTest() : void
-        {
-            def filename = TestContext.DataRow[0] :> string;
-            def file = FsFile(filename, NitraRust.Instance);
-                 
-            Assert.IsTrue(
-                file.ParseResult.IsSuccess,
-                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
-        }
-
-        private NegativeTest() : void
-        {
-            def filename = TestContext.DataRow[0] :> string;
-            def file = FsFile(filename, NitraRust.Instance);
-                 
-            Assert.IsFalse(
-                file.ParseResult.IsSuccess,
-                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
-        }
-
-        private CompilerNegativeTest() : void
-        {
-            def filename = TestContext.DataRow[0] :> string;
-            def file = FsFile(filename, NitraRust.Instance);
-                 
-            Assert.IsTrue(
-                file.ParseResult.IsSuccess,
-                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
-        }
-
-        private RunNegativeTest() : void
-        {
-            def filename = TestContext.DataRow[0] :> string;
-            def file = FsFile(filename, NitraRust.Instance);
-                 
-            Assert.IsTrue(
-                file.ParseResult.IsSuccess,
-                Uri(Path.GetFullPath(filename)).AbsoluteUri + "\n" + $<#..$(file.GetCompilerMessages();"\n")#>);
+                exception.Iter(x => throw x);
+            }
         }
     }
 }

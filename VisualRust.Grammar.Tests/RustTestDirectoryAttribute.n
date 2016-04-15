@@ -24,6 +24,8 @@ namespace VisualRust.Grammar.Tests
             def testData = xml <# 
                 <TestData>
                         <Filename $foreach (file in filteredFiles)>$(file)</Filename>
+                        <Filename></Filename>
+                        <Filename></Filename>
                 </TestData>
             #>;
 
