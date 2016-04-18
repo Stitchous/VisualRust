@@ -286,7 +286,7 @@ namespace VisualRust.Grammar
 			| fn_anon_params_with_self3 = '(' maybe_anon_params ')'
 		}
 
-		syntax maybe_params = (params ','?)?;
+		syntax maybe_params = (param;',')* ','?;
 
 		syntax params = (param;',')+;
 
