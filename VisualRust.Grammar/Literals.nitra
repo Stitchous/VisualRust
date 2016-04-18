@@ -184,8 +184,9 @@
 
 	regex FloatingPointSuffix	= "f32" | "f64";
 	regex ExponentPart			= ('E' | 'e') ('-' | '+')? DecLiteral;
-	regex FloatingPointLiteral	= 
-		(DecLiteral '.') |
+	regex FloatingPointLiteral1	= 
+		(DecLiteral '.');
+	regex FloatingPointLiteral2 =
 		(DecLiteral ExponentPart FloatingPointSuffix?) |
 		(DecLiteral FloatingPointSuffix) |
 		(DecLiteral '.' DecLiteral ExponentPart? FloatingPointSuffix?);

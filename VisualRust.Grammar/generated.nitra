@@ -378,6 +378,7 @@ namespace VisualRust.Grammar
 				| heads0 = ident
 				| heads1 = ident generic_args
 				| heads2 = ident '(' maybe_ty_sums ')' ret_ty?
+				| heads3 = SUPER
 			}
 			syntax tails
 			{
@@ -566,7 +567,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_ty_sums = (ty_sums ','?)?;
 
-		syntax ty_sums = (ty_sum;',')+;
+		syntax ty_sums = ((outer_attr* ty_sum);',')+;
 
 		syntax ty_sum = ty ('+' ty_param_bounds)?;
 
@@ -650,7 +651,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_exprs = (exprs ','?)?;
 
-		syntax exprs = (expr;',')+;
+		syntax exprs = ((outer_attr* expr);',')+;
 
 		syntax path_expr
 		{
@@ -746,6 +747,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -815,6 +817,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -951,6 +954,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr_nostruct
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -1034,17 +1038,20 @@ namespace VisualRust.Grammar
 
 		syntax default_field_init = DOTDOT expr;
 
-		syntax block_expr
+		syntax block_expr = head '?'?
 		{
-			| block_expr0 = expr_match
-			| block_expr1 = expr_if
-			| block_expr2 = expr_if_let
-			| block_expr3 = expr_while
-			| block_expr4 = expr_while_let
-			| block_expr5 = expr_loop
-			| block_expr6 = expr_for
-			| block_expr7 = UNSAFE block
-			| block_expr8 = path_expr '!' ident? braces_delimited_token_trees
+			syntax head
+			{
+				| block_expr0 = expr_match
+				| block_expr1 = expr_if
+				| block_expr2 = expr_if_let
+				| block_expr3 = expr_while
+				| block_expr4 = expr_while_let
+				| block_expr5 = expr_loop
+				| block_expr6 = expr_for
+				| block_expr7 = UNSAFE block
+				| block_expr8 = path_expr '!' ident? braces_delimited_token_trees
+			}
 		}
 
 		syntax full_block_expr = block_expr tails*

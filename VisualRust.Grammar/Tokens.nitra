@@ -38,7 +38,8 @@
 		{
 		  regex Bad = '.' | '_' | ['a'..'z'] | ['A'..'Z'];
 
-		  | FloatingPointLiteral !Bad
+		  | FloatingPointLiteral1 !Bad
+		  | FloatingPointLiteral2
 		}
 		[SpanClass(String)] token LIT_STR			= RegularStringLiteral;
 		syntax LIT_STR_RAW							= RawStringLiteral;

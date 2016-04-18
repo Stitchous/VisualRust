@@ -163,3 +163,11 @@ VisualRust/gdb/*/*
 /VisualRust.Grammar.Tests/run-pass.xml
 /VisualRust.Grammar.Tests/run-pass-fulldeps.xml
 /VisualRust.Grammar.Tests/run-make.xml
+/VisualRust.Grammar.Tests/rust-lang.xml
+/VisualRust.Grammar.Tests/run-pass-valgrind.xml
+/VisualRust.Grammar.Tests/run-fail.xml
+/VisualRust.Grammar.Tests/run-fail-fulldeps.xml
+/VisualRust.Grammar.Tests/parse-fail.xml
+/VisualRust.Grammar.Tests/examples.xml
+/VisualRust.Grammar.Tests/compile-fail.xml
+/VisualRust.Grammar.Tests/compile-fail-fulldeps.xml
