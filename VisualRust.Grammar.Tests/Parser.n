@@ -1,0 +1,50 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+using System.Threading;
+
+using Nitra.Declarations;
+using Nitra.ProjectSystem;
+
+namespace VisualRust.Grammar.Tests
+{
+    module Parser
+    {
+        public ParseFileWithExtendedStack(filename : string) : FsFile[IAst]
+        {
+            mutable file      = None();
+            mutable exception = None();
+            
+            def maxStackSize = 32 * 1024 * 1024;
+            def thread = Thread(() =>
+                try
+                {
+                    file = Some(FsFile(filename, NitraRust.Instance))
+                }
+                catch
+                {
+                    e => exception = Some(e)
+                },
+                maxStackSize);
+                
+            thread.Start();
+            thread.Join();
+            
+            exception.Iter(x => throw x);
+            
+            file.Value
+        }
+        
+        public GetMessage(this file : FsFile[IAst]) : string
+        {
+            Uri(Path.GetFullPath(file.FilePath)).AbsoluteUri + ":\n" + $<#..$(file.GetCompilerMessages();"\n")#>
+        }
+    }
+}

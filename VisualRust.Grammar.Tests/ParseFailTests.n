@@ -1,0 +1,41 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+using MSTestHacks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestClass]
+    public class ParseFailTests : TestBase
+    {
+        [TestMethod]
+        [DataSource("VisualRust.Grammar.Tests.ParseFailTests.allFiles")]
+        public TestRunPass() : void
+        {
+            def file = Parser.ParseFileWithExtendedStack(TestContextPath);               
+            Assert.IsFalse(file.ParseResult.IsSuccess, file.GetMessage());
+        }
+        
+        #region DataSource
+        
+        TestContextPath : string
+        {
+            get { TestContext.GetRuntimeDataSourceObject.[string]() }
+        }        
+                    
+        static allFiles : IEnumerable[string]
+        {
+            get { Directory.EnumerateFiles(@"..\..\..\rust\src\test\parse-fail", "*.rs", SearchOption.AllDirectories) }
+        }
+        
+        #endregion
+    }
+}
