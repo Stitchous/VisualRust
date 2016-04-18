@@ -16,26 +16,17 @@ namespace VisualRust.Grammar.Tests
     [TestClass]
     public class ExampleTests : TestBase
     {
-        [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.ExampleTests.allFiles")]
-        public TestExample() : void
-        {
-            def file = Parser.ParseFileWithExtendedStack(TestContextPath);               
-            Assert.IsTrue(file.ParseResult.IsSuccess, file.GetMessage());
-        }
-        
-        #region DataSource
-        
-        TestContextPath : string
-        {
-            get { TestContext.GetRuntimeDataSourceObject.[string]() }
-        }        
-                    
         static allFiles : IEnumerable[string]
         {
             get { Directory.EnumerateFiles(@"..\..\examples", "*.rs", SearchOption.AllDirectories) }
         }
         
-        #endregion        
+        [TestMethod]
+        [DataSource("VisualRust.Grammar.Tests.ExampleTests.allFiles")]
+        public TestExample() : void
+        {
+            def path = TestContext.GetRuntimeDataSourceObject.[string]();
+            ParserVerifier.VerifyPositiveFile(path);
+        }
     }
 }

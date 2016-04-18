@@ -16,26 +16,17 @@ namespace VisualRust.Grammar.Tests
     [TestClass]
     public class RunFailFullDepsTests : TestBase
     {
-        [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.RunFailFullDepsTests.allFiles")]
-        public TestRunPass() : void
-        {
-            def file = Parser.ParseFileWithExtendedStack(TestContextPath);               
-            Assert.IsTrue(file.ParseResult.IsSuccess, file.GetMessage());
-        }
-        
-        #region DataSource
-        
-        TestContextPath : string
-        {
-            get { TestContext.GetRuntimeDataSourceObject.[string]() }
-        }        
-                    
         static allFiles : IEnumerable[string]
         {
             get { Directory.EnumerateFiles(@"..\..\..\rust\src\test\run-fail-fulldeps", "*.rs", SearchOption.AllDirectories) }
         }
-        
-        #endregion
+
+        [TestMethod]
+        [DataSource("VisualRust.Grammar.Tests.RunFailFullDepsTests.allFiles")]
+        public TestRunPass() : void
+        {
+            def path = TestContext.GetRuntimeDataSourceObject.[string]();
+            ParserVerifier.VerifyPositiveFile(path);
+        }
     }
 }

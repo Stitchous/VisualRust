@@ -20,27 +20,18 @@ namespace VisualRust.Grammar.Tests
 {
     [TestClass]
     public class CompilationFailureTests : TestBase
-    {        
-        [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.CompilationFailureTests.allFiles")]
-        public TestCompilationFailure() : void
-        {
-            def file = Parser.ParseFileWithExtendedStack(TestContextPath);               
-            Assert.IsTrue(file.ParseResult.IsSuccess, file.GetMessage());
-        }
-        
-        #region DataSource
-        
-        TestContextPath : string
-        {
-            get { TestContext.GetRuntimeDataSourceObject.[string]() }
-        }        
-                    
+    {                            
         static allFiles : IEnumerable[string]
         {
             get { Directory.EnumerateFiles(@"..\..\..\rust\src\test\compile-fail", "*.rs", SearchOption.AllDirectories) }
         }
-        
-        #endregion
+
+        [TestMethod]
+        [DataSource("VisualRust.Grammar.Tests.CompilationFailureTests.allFiles")]
+        public TestCompilationFailure() : void
+        {
+            def path = TestContext.GetRuntimeDataSourceObject.[string]();
+            ParserVerifier.VerifyPositiveFile(path);
+        }
     }
 }

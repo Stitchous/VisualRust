@@ -85,7 +85,7 @@
     <Compile Include="ExampleTests.n">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Parser.n">
+    <Compile Include="ParserVerifier.n">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ParseFailTests.n">

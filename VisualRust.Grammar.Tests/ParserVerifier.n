@@ -13,11 +13,25 @@ using System.Threading;
 using Nitra.Declarations;
 using Nitra.ProjectSystem;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace VisualRust.Grammar.Tests
 {
-    module Parser
+    module ParserVerifier
     {
-        public ParseFileWithExtendedStack(filename : string) : FsFile[IAst]
+        public VerifyPositiveFile(filename : string) : void
+        {
+            def file = ParseFileWithExtendedStack(filename);            
+            Assert.IsTrue(file.ParseResult.IsSuccess, GetMessage(file));
+        }        
+        
+        public VerifyNegativeFile(filename : string) : void
+        {
+            def file = ParseFileWithExtendedStack(filename);            
+            Assert.IsFalse(file.ParseResult.IsSuccess, GetMessage(file))
+        }        
+
+        private ParseFileWithExtendedStack(filename : string) : FsFile[IAst]
         {
             mutable file      = None();
             mutable exception = None();
@@ -42,7 +56,7 @@ namespace VisualRust.Grammar.Tests
             file.Value
         }
         
-        public GetMessage(this file : FsFile[IAst]) : string
+        private GetMessage(file : FsFile[IAst]) : string
         {
             Uri(Path.GetFullPath(file.FilePath)).AbsoluteUri + ":\n" + $<#..$(file.GetCompilerMessages();"\n")#>
         }
