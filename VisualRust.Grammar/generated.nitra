@@ -100,7 +100,10 @@ namespace VisualRust.Grammar
 			}
 		}
 
-		syntax refs_or_self = (ref_or_self (AS Name)?; ',')*;
+		syntax refs_or_self_part = ref_or_self (AS Name)?;
+		syntax refs_or_self = (refs_or_self_part; ',')*;
+
+		
 
 		syntax ref_or_self
 		{
