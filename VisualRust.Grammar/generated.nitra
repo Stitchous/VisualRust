@@ -289,7 +289,7 @@ namespace VisualRust.Grammar
 			| fn_anon_params_with_self3 = '(' maybe_anon_params ')'
 		}
 
-		syntax maybe_params = (param;',')* ','?;
+		syntax maybe_params = (param;',';?)*;
 
 		syntax params = (param;',')+;
 
@@ -475,19 +475,13 @@ namespace VisualRust.Grammar
 		syntax pat_vec
 		{
 			| pat_vec0 = pat_vec_elts
-			| pat_vec1 = pat_vec_elts ','
-			| pat_vec2 = pat_vec_elts DOTDOT
-			| pat_vec3 = pat_vec_elts ',' DOTDOT
-			| pat_vec4 = pat_vec_elts DOTDOT ',' pat_vec_elts
-			| pat_vec5 = pat_vec_elts DOTDOT ',' pat_vec_elts ','
-			| pat_vec6 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts
-			| pat_vec7 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts ','
-			| pat_vec8 = DOTDOT ',' pat_vec_elts
-			| pat_vec9 = DOTDOT ',' pat_vec_elts ','
-			| pat_vec10 = DOTDOT
+			| pat_vec1 = pat_vec_elts DOTDOT
+			| pat_vec2 = pat_vec_elts DOTDOT ',' pat_vec_elts
+			| pat_vec3 = DOTDOT ',' pat_vec_elts
+			| pat_vec4 = DOTDOT
 		}
 
-		syntax pat_vec_elts = (pat;',')+;
+		syntax pat_vec_elts = (pat;',';?)+;
 
 		syntax ty
 		{
@@ -495,8 +489,7 @@ namespace VisualRust.Grammar
 			| ty1 = ty_closure
 			| ty2 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
 			| ty3 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
-			| ty4 = '(' ty_sums ','? ')'
-			| ty5 = '(' ')'
+			| ty4 = '(' maybe_ty_sums ')'
 		}
 
 		syntax ty_prim
@@ -563,7 +556,7 @@ namespace VisualRust.Grammar
 
 		syntax ty_qualified_path = ty_sum AS trait_ref '>' MOD_SEP ident ('+' ty_param_bounds)?;
 
-		syntax maybe_ty_sums = (ty_sums ','?)?;
+		syntax maybe_ty_sums = ((outer_attr* ty_sum);',';?)*;
 
 		syntax ty_sums = ((outer_attr* ty_sum);',')+;
 

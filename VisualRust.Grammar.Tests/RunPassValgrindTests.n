@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace VisualRust.Grammar.Tests
 {
     [TestClass]
-    public class RunPassFullValgrind : TestBase
+    public class RunPassFullValgrindTests : TestBase
     {
         static allFiles : IEnumerable[string]
         {
@@ -23,7 +23,7 @@ namespace VisualRust.Grammar.Tests
         
         [TestMethod]
         [DataSource("VisualRust.Grammar.Tests.RunPassFullValgrind.allFiles")]
-        public TestRunPass() : void
+        public TestRunPassFullValgrind() : void
         {
             def path = TestContext.GetRuntimeDataSourceObject.[string]();
             ParserVerifier.VerifyPositiveFile(path);

@@ -125,6 +125,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config">
+      <SubType>Content</SubType>
+    </None>
     <Content Include="packages.config">
       <SubType>Content</SubType>
     </Content>

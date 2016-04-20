@@ -23,7 +23,7 @@ namespace VisualRust.Grammar.Tests
         
         [TestMethod]
         [DataSource("VisualRust.Grammar.Tests.ParseFailTests.allFiles")]
-        public TestRunPass() : void
+        public TestParseFail() : void
         {
             def path = TestContext.GetRuntimeDataSourceObject.[string]();
             ParserVerifier.VerifyNegativeFile(path);

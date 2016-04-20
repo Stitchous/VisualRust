@@ -29,7 +29,7 @@ namespace VisualRust.Grammar.Tests
 
         [TestMethod]
         [DataSource("VisualRust.Grammar.Tests.RustLangTests.allFiles")]
-        public TestExample() : void
+        public TestRustLang() : void
         {
             def path = TestContext.GetRuntimeDataSourceObject.[string]();
             ParserVerifier.VerifyPositiveFile(path);
