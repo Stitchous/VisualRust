@@ -268,7 +268,7 @@ namespace VisualRust.Grammar
 
 		syntax fn_params = '(' maybe_params ')';
 
-		syntax fn_anon_params = '(' (anon_param anon_params_allow_variadic_tail?)? ')';
+		syntax fn_anon_params = '(' anon_params_allow_variadic_tail? ')';
 
 		syntax fn_params_with_self
 		{
@@ -310,7 +310,7 @@ namespace VisualRust.Grammar
 			| comma_anon_params1 = ',' anon_params ','?
 		}
 
-		syntax maybe_anon_params = (anon_params ','?)?;
+		syntax maybe_anon_params = (anon_param;',';?)*;
 
 		syntax anon_params = (anon_param;',')+;
 
@@ -318,8 +318,8 @@ namespace VisualRust.Grammar
 
 		syntax anon_params_allow_variadic_tail
 		{
-			| anon_params_allow_variadic_tail0 = ',' DOTDOTDOT
-			| anon_params_allow_variadic_tail1 = ',' anon_param anon_params_allow_variadic_tail?
+			| anon_params_allow_variadic_tail0 = anon_params ',' DOTDOTDOT
+			| anon_params_allow_variadic_tail1 = (anon_param;',';?)+;
 		}
 
 		syntax named_arg
@@ -346,19 +346,15 @@ namespace VisualRust.Grammar
 			| generic_params2 = '<' lifetimes SHR
 			| generic_params3 = '<' lifetimes ',' SHR
 			| generic_params4 = '<' lifetimes ',' ty_params '>'
-			| generic_params5 = '<' lifetimes ',' ty_params ',' '>'
-			| generic_params6 = '<' lifetimes ',' ty_params SHR
-			| generic_params7 = '<' lifetimes ',' ty_params ',' SHR
-			| generic_params8 = '<' ty_params '>'
-			| generic_params9 = '<' ty_params ',' '>'
-			| generic_params10 = '<' ty_params SHR
-			| generic_params11 = '<' ty_params ',' SHR
-			| generic_params12 = '<''>'
+			| generic_params5 = '<' lifetimes ',' ty_params SHR
+			| generic_params6= '<' ty_params '>'
+			| generic_params7 = '<' ty_params SHR
+			| generic_params8 = '<''>'
 		}
 
-		syntax where_clause = WHERE where_predicates ','?;
+		syntax where_clause = WHERE where_predicates;
 
-		syntax where_predicates = (where_predicate;',')+;
+		syntax where_predicates = (where_predicate;',';?)+;
 
 		syntax where_predicate
 		{
@@ -368,7 +364,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_for_lifetimes = (FOR '<' lifetimes '>')?;
 
-		syntax ty_params = (ty_param;',')+;
+		syntax ty_params = (ty_param;',';?)+;
 
 
 		syntax path_generic_args_without_colons = heads tails*
@@ -496,9 +492,8 @@ namespace VisualRust.Grammar
 			| ty1 = ty_closure
 			| ty2 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
 			| ty3 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
-			| ty4 = '(' ty_sums ')'
-			| ty5 = '(' ty_sums ',' ')'
-			| ty6 = '(' ')'
+			| ty4 = '(' ty_sums ','? ')'
+			| ty5 = '(' ')'
 		}
 
 		syntax ty_prim
