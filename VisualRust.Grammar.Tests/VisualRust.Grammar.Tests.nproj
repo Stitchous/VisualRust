@@ -41,6 +41,16 @@
       <AssemblyName>Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</AssemblyName>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="MSTestHacks, Version=2.3.18.0, Culture=neutral, PublicKeyToken=null">
+      <Name>MSTestHacks</Name>
+      <AssemblyName>MSTestHacks.dll</AssemblyName>
+      <HintPath>..\packages\MSTestHacks.2.3.18.0\lib\net45\MSTestHacks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <Name>Newtonsoft.Json</Name>
+      <AssemblyName>Newtonsoft.Json.dll</AssemblyName>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -66,8 +76,40 @@
     </MacroReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GrammarTests.n" />
-    <Compile Include="RustTestDirectoryAttribute.n">
+    <Compile Include="CompilationFailureFullDepsTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CompilationFailureTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExampleTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParserVerifier.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParseFailTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunFailFullDepsTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunFailTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunMakeTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunPassFullDepsTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunPassTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunPassValgrindTests.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RustLangTests.n">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
@@ -82,6 +124,11 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--
 		To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -94,16 +141,11 @@
     <PropertyGroup>
       <VSTestExe>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</VSTestExe>
     </PropertyGroup>
-
     <ItemGroup>
+      <VSTestParams Include="/UseVsixExtensions:true" />
       <VSTestParams Include="/Logger:trx" />
       <VSTestParams Include="&quot;$(TargetPath)&quot;" />
     </ItemGroup>
-
-    <Exec ContinueOnError="true"
-          ConsoleToMSBuild="true"
-          Command="&quot;$(VSTestExe)&quot; @(VSTestParams, ' ')"
-          IgnoreExitCode="true"/>
-
-  </Target>  
+    <Exec ContinueOnError="true" ConsoleToMSBuild="true" Command="&quot;$(VSTestExe)&quot; @(VSTestParams, ' ')" IgnoreExitCode="true" />
+  </Target>
 </Project>

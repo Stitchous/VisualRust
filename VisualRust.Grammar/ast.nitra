@@ -100,7 +100,7 @@ namespace VisualRust.Grammar
 	{
 		| Self
 		| Super
-		| Reference
+		| Reference { Value : Nitra.Declarations.Reference; }
 	}
 
 	ast UsePath
@@ -159,7 +159,6 @@ namespace VisualRust.Grammar
 
 	map syntax Rules.view_path -> UsePath
 	{
-		
 		| view_path0 -> UsePath
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
@@ -211,9 +210,25 @@ namespace VisualRust.Grammar
 		[]
 	}
 
+	map syntax Rules.ref_or_self -> PathReference
+	{
+		| ident_or_self0 -> Reference
+		{
+			Reference -> Value;
+		}
+
+		| ident_or_self1 -> Self {}
+	}
+
+
+	map syntax Rules.refs_or_self_part -> PathReference
+	{
+		Ref_or_self
+	}
+
 	map syntax Rules.refs_or_self -> PathReference*
 	{
-		[]
+		Refs_or_self_parts.Item1
 	}
 
 }

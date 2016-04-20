@@ -1,0 +1,38 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+using MSTestHacks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestClass]
+    public class RustLangTests : TestBase
+    {
+        static allFiles : IEnumerable[string]
+        {
+            get
+            {
+                def excludePath = @"..\..\..\rust\src\test";
+                Directory
+                    .EnumerateFiles(@"..\..\..\rust\src", "*.rs", SearchOption.AllDirectories)
+                    .Where(file => !excludePath.Any() || file.IndexOf(excludePath, StringComparison.OrdinalIgnoreCase) == -1)
+            }
+        }
+
+        [TestMethod]
+        [DataSource("VisualRust.Grammar.Tests.RustLangTests.allFiles")]
+        public TestExample() : void
+        {
+            def path = TestContext.GetRuntimeDataSourceObject.[string]();
+            ParserVerifier.VerifyPositiveFile(path);
+        }
+    }
+}
