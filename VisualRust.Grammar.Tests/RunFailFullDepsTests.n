@@ -1,31 +1,27 @@
-﻿using Nemerle;
-using Nemerle.Collections;
-using Nemerle.Text;
-using Nemerle.Utility;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-using MSTestHacks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace VisualRust.Grammar.Tests
 {
-    [TestClass]
-    public class RunFailFullDepsTests : TestBase
+    [TestFixture]
+    public class RunFailFullDepsTests
     {
-        static allFiles : IEnumerable[string]
+        static AllFiles : IEnumerable[TestCaseData]
         {
-            get { Directory.EnumerateFiles(@"..\..\..\rust\src\test\run-fail-fulldeps", "*.rs", SearchOption.AllDirectories) }
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\..\rust\src\test\run-fail-fulldeps")
+                    .Select((x, i) => TestCaseData(i, x))
+            }
         }
 
-        [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.RunFailFullDepsTests.allFiles")]
-        public TestRunFailFullDeps() : void
+        [Test, TestCaseSource("AllFiles")]
+        public TestRunFailFullDeps(_ : int, path : string) : void
         {
-            def path = TestContext.GetRuntimeDataSourceObject.[string]();
             ParserVerifier.VerifyPositiveFile(path);
         }
     }

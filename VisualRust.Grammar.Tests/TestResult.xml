@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-run start-time="2016-04-21 22:06:21Z">
+  <command-line><![CDATA["..\packages\NUnit.ConsoleRunner.3.2.1\tools\nunit3-console.exe"  "C:\Projects\VisualRust\VisualRust\VisualRust.Grammar.Tests\bin\Debug\VisualRust.Grammar.Tests.dll" --nocolor --full]]></command-line>
+</test-run>

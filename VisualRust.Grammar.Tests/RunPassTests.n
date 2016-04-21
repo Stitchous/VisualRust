@@ -1,31 +1,27 @@
-﻿using Nemerle;
-using Nemerle.Collections;
-using Nemerle.Text;
-using Nemerle.Utility;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-using MSTestHacks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace VisualRust.Grammar.Tests
 {
-    [TestClass]
-    public class RunPassTests : TestBase
+    [TestFixture]
+    public class RunPassTests
     {
-        static allFiles : IEnumerable[string]
+        static AllFiles : IEnumerable[TestCaseData] 
         {
-            get { Directory.EnumerateFiles(@"..\..\..\rust\src\test\run-pass", "*.rs", SearchOption.AllDirectories) }
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\..\rust\src\test\run-pass")
+                    .Select((x, i) => TestCaseData(i, x))
+            }
         }
         
-        [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.RunPassTests.allFiles")]
-        public TestRunPass() : void
+        [Test, TestCaseSource("AllFiles")]
+        public TestRunPass(_ : int, path : string) : void
         {
-            def path = TestContext.GetRuntimeDataSourceObject.[string]();
             ParserVerifier.VerifyPositiveFile(path);
         }
     }
