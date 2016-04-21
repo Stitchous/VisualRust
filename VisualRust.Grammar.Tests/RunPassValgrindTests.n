@@ -22,7 +22,7 @@ namespace VisualRust.Grammar.Tests
         }
         
         [TestMethod]
-        [DataSource("VisualRust.Grammar.Tests.RunPassFullValgrind.allFiles")]
+        [DataSource("VisualRust.Grammar.Tests.RunPassFullValgrindTests.allFiles")]
         public TestRunPassFullValgrind() : void
         {
             def path = TestContext.GetRuntimeDataSourceObject.[string]();

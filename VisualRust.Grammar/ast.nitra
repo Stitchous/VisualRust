@@ -12,7 +12,6 @@ using Nitra;
 
 namespace VisualRust.Grammar
 {
-
 	ast Crate
 	{
 		out ContainingTable : TableScope = TableScope("Global", null);
@@ -151,11 +150,7 @@ namespace VisualRust.Grammar
 			}
 		| view_item1  -> Other {}
 		| view_item2  -> Other {}
-		| view_item3  -> Other {}
-	}   
-
-
-
+	}
 
 	map syntax Rules.view_path -> UsePath
 	{
@@ -219,7 +214,6 @@ namespace VisualRust.Grammar
 
 		| ident_or_self1 -> Self {}
 	}
-
 
 	map syntax Rules.refs_or_self_part -> PathReference
 	{
