@@ -13,7 +13,7 @@ namespace VisualRust.Grammar.Tests
     {
         public VerifyPositiveFile(filename : string) : void
         {
-            def file = ParseFileWithExtendedStack(filename);
+            def file = FsFile(filename, NitraRust.Instance);
             when (!file.ParseResult.IsSuccess)
             {
                 TestContext.Write(GetMessage(file));
@@ -23,7 +23,7 @@ namespace VisualRust.Grammar.Tests
         
         public VerifyNegativeFile(filename : string) : void
         {
-            def file = ParseFileWithExtendedStack(filename);
+            def file = FsFile(filename, NitraRust.Instance);
             Assert.IsFalse(file.ParseResult.IsSuccess, GetPathUri(filename));
         }
         
@@ -32,31 +32,6 @@ namespace VisualRust.Grammar.Tests
             Uri(Path.GetFullPath(filename)).AbsoluteUri
         }
 
-        private ParseFileWithExtendedStack(filename : string) : FsFile[IAst]
-        {
-            mutable file      = None();
-            mutable exception = None();
-            
-            def maxStackSize = 32 * 1024 * 1024;
-            def thread = Thread(() =>
-                try
-                {
-                    file = Some(FsFile(filename, NitraRust.Instance))
-                }
-                catch
-                {
-                    e => exception = Some(e)
-                },
-                maxStackSize);
-                
-            thread.Start();
-            thread.Join();
-            
-            exception.Iter(x => throw x);
-            
-            file.Value
-        }
-        
         private GetMessage(file : FsFile[IAst]) : string
         {
             "\t\t" + $<#..$(file.GetCompilerMessages();"\n\t\t")#>
