@@ -35,6 +35,18 @@
       <Component Id="Cmp_PistonDevelopers_MIDebugEngine_dll_dll_$(var.VsVersion)" Guid="{FB9BBC7F-DEAA-4DE5-A80A-93FEC1317FBD}">
         <File Id="File_PistonDevelopers_MIDebugEngine_dll_dll_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)PistonDevelopers.MIDebugEngine.dll" />
       </Component>
+      <Component Id="Cmp_VisualRust_Grammar_dll" Guid="{28DE6AE6-A323-4479-88E1-6B3C03A2BE28}">
+        <File Id="Cmp_VisualRust_Grammar_dll" KeyPath="yes" Source="$(var.VisualRust.Grammar.TargetDir)VisualRust.Grammar.dll" />
+      </Component>
+      <Component Id="Cmp_VisualRust_NitraIntegration_dll" Guid="{A94A4575-93AD-457B-87F1-436E63EB2870}">
+        <File Id="Cmp_VisualRust_NitraIntegration_dll" KeyPath="yes" Source="$(var.VisualRust.NitraIntegration.TargetDir)VisualRust.NitraIntegration.dll" />
+      </Component>
+      <Component Id="Cmp_Nemerle_dll" Guid="{A91244EB-077B-477D-B952-8D85B9834779}">
+        <File Id="Cmp_Nemerle_dll" KeyPath="yes" Source="$(var.VisualRust.TargetDir)..\..\..\External\Nemerle.dll" />
+      </Component>
+      <Component Id="Cmp_Nitra_Runtime_dll" Guid="{A976C2C7-12E3-4A26-A215-B150E1079C92}">
+        <File Id="Cmp_Nitra_Runtime_dll" KeyPath="yes" Source="$(var.VisualRust.TargetDir)..\..\..\External\Nitra.Runtime.dll" />
+      </Component>
       <!-- Racer files -->
       <ComponentGroupRef Id="CmpGroup_Racer_2015"/>
       <!-- Open .rsproj with vs launcher -->

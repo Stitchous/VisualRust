@@ -59,6 +59,22 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\VisualRust.Grammar\VisualRust.Grammar.nproj">
+      <Name>VisualRust.Grammar</Name>
+      <Project>{e7655a81-9f8d-4826-9ca6-f7fcafd4d76a}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualRust.NitraIntegration\VisualRust.NitraIntegration.nproj">
+      <Name>VisualRust.NitraIntegration</Name>
+      <Project>{daf0e950-79c6-4e28-821a-aef1abc44c17}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\VisualRust.Templates\VisualRust.Templates.csproj">
       <Name>VisualRust.Templates</Name>
       <Project>{59d94b96-1af7-46f2-8790-aab6dfae8d9a}</Project>
