@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">default</Platform>
+    <ProjectGuid>1c731adf-b783-4828-b935-e9b47ffd897d</ProjectGuid>
+    <OutputType>library</OutputType>
+    <CrateName>visualrust_metadata_native</CrateName>
+    <Name>VisualRust.Metadata.Native</Name>
+    <RootNamespace>VisualRust.Metadata.Native</RootNamespace>
+    <BuildDylib>True</BuildDylib>
+    <BuildRlib>False</BuildRlib>
+    <BuildStaticlib>False</BuildStaticlib>
+    <CodegenOptions>prefer-dynamic</CodegenOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|default' ">
+    <LinkTimeOptimization>false</LinkTimeOptimization>
+    <DebugSymbols>true</DebugSymbols>
+    <OptimizationLevel>0</OptimizationLevel>
+    <PlatformTarget>default</PlatformTarget>
+    <CodegenOptions>prefer-dynamic</CodegenOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|default' ">
+    <LinkTimeOptimization>False</LinkTimeOptimization>
+    <DebugSymbols>False</DebugSymbols>
+    <OptimizationLevel>3</OptimizationLevel>
+    <PlatformTarget>default</PlatformTarget>
+    <CodegenOptions>prefer-dynamic</CodegenOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Code Include="src\lib.rs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
+</Project>
