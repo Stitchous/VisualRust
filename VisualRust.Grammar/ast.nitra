@@ -108,7 +108,7 @@ namespace VisualRust.Grammar
 		
 		Path : PathReference*;
 		
-		Tails : PathReference*;
+		Tails : RefOrSelfPathReference*;
 	}
 
 	abstract ast ModItem
@@ -158,20 +158,20 @@ namespace VisualRust.Grammar
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = PathReference.AstList(this);
+			Tails = RefOrSelfPathReference.AstList(this);
 		}
 		| view_path1 -> UsePath
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = PathReference.AstList(this);
+			Tails = RefOrSelfPathReference.AstList(this);
 		}
 		
 		| view_path2 -> UsePath
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path =	PathReference.AstList(this);
-			Tails = PathReference.AstList(this);
+			Tails = RefOrSelfPathReference.AstList(this);
 		}
 		| view_path3  -> UsePath
 		{
@@ -189,13 +189,13 @@ namespace VisualRust.Grammar
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = PathReference.AstList(this);
+			Tails = RefOrSelfPathReference.AstList(this);
 		}
 		| view_path6  -> UsePath
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = PathReference.AstList(this);
+			Tails = RefOrSelfPathReference.AstList(this);
 		}
 
 	}
@@ -215,12 +215,25 @@ namespace VisualRust.Grammar
 		| ident_or_self1 -> Self {}
 	}
 
-	map syntax Rules.refs_or_self_part -> PathReference
+
+	ast RefOrSelfPathReference
 	{
-		Ref_or_self
+		PathReference : PathReference; 
+		Alias : option[Name];
+	} 
+
+	map syntax Rules.refs_or_self_part -> RefOrSelfPathReference
+	{
+		Ref_or_self -> PathReference;
+		
+		Alias = if (NameOpt.HasValue)
+					ParsedValue(NameOpt.Value.Item2.Span, Some(NameOpt.Value.Item2.GetAst()))
+				else
+					ParsedValue(NameOpt.Span, None());
+
 	}
 
-	map syntax Rules.refs_or_self -> PathReference*
+	map syntax Rules.refs_or_self -> RefOrSelfPathReference*
 	{
 		Refs_or_self_parts.Item1
 	}
