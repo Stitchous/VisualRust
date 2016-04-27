@@ -199,10 +199,26 @@ namespace VisualRust.Grammar
 		}
 
 	}
-
-	map syntax Rules.path_no_types_allowed -> PathReference*
+	
+	map syntax Rules.path_no_types_allowed_tail -> PathReference
 	{
-		[]
+		| tail0 -> Reference 
+		{
+			Reference -> Value;
+		}
+		| tail1 -> Super {}
+	}
+	
+	map syntax Rules.path_no_types_allowed -> PathReference* = AstUtils.Convert_path_no_types_allowed(this);
+
+	map syntax Rules.path_no_types_allowed_head -> PathReference
+	{
+		| head0 -> Reference
+		{
+			Reference -> Value;
+		}
+		| head1 -> Self {}
+		| head2 -> Super {}
 	}
 
 	map syntax Rules.ref_or_self -> PathReference
