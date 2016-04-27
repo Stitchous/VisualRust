@@ -39,7 +39,7 @@ namespace VisualRust.Grammar
 		{
 			| meta_item0 = Name
 			| meta_item1 = Name '=' lit
-			| meta_item2 = ident '(' (meta_item;',')* ','? ')'
+			| meta_item2 = ident '(' (meta_item;',';?)* ')'
 		}
 
 		syntax attrs_and_vis = outer_attr* PUB?;
@@ -76,31 +76,31 @@ namespace VisualRust.Grammar
 		{
 			| view_item0 = use_item
 			| view_item1 = extern_fn_item
-			| view_item2 = EXTERN CRATE ident ';'
-			| view_item3 = EXTERN CRATE ident AS ident ';'
+			| view_item2 = EXTERN CRATE ident (AS ident)? ';'
 		}
 
 		syntax extern_fn_item = EXTERN abi? item_fn;
 
 		syntax use_item = USE view_path ';';
 
-		syntax path_no_types_allowed = head (MOD_SEP tail)*
+		syntax path_no_types_allowed_tail
 		{
-			syntax head
-			{
-				| head0 = Reference
-				| head1 = SELF
-				| head2 = SUPER
-			}
-
-			syntax tail
-			{
-				| tail0 = Reference
-				| tail1 = SUPER
-			}
+			| tail0 = MOD_SEP Reference
+			| tail1 = MOD_SEP SUPER
 		}
 
-		syntax refs_or_self = (ref_or_self (AS Name)?; ',')*;
+		syntax path_no_types_allowed_head
+		{
+			| head0 = Reference
+			| head1 = SELF
+			| head2 = SUPER
+		}
+
+		syntax path_no_types_allowed = path_no_types_allowed_head (path_no_types_allowed_tail)*;
+		
+		syntax refs_or_self_part = ref_or_self (AS Name)?;
+
+		syntax refs_or_self = (refs_or_self_part; ',';?)*;
 
 		syntax ref_or_self
 		{
@@ -114,10 +114,10 @@ namespace VisualRust.Grammar
 			| view_path1 = MOD_SEP? path_no_types_allowed MOD_SEP '{' '}'
 			| view_path2 = MOD_SEP? '{' '}'
 			
-			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self ','? '}'
-			| view_path4 = MOD_SEP? '{' refs_or_self ','? '}'
-			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP '*'
-			| view_path6 = MOD_SEP? path_no_types_allowed AS ident
+			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self '}'
+			| view_path4 = MOD_SEP? '{' refs_or_self '}'
+			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP Asterisk='*'
+			| view_path6 = MOD_SEP? path_no_types_allowed AS Name
 		}
 
 		syntax block_item
@@ -143,30 +143,29 @@ namespace VisualRust.Grammar
 			| item_struct2 = STRUCT ident generic_params? where_clause? ';'
 		}
 
-		syntax struct_decl_args = outline_begin_before '{' struct_decl_fields ','? '}' outline_end_before;
+		syntax struct_decl_args = outline_begin_before '{' struct_decl_fields '}' outline_end_before;
 
-		syntax struct_tuple_args = '(' struct_tuple_fields ','? ')';
+		syntax struct_tuple_args = '(' struct_tuple_fields ')';
 
-		syntax struct_decl_fields = (struct_decl_field;',')*;
+		syntax struct_decl_fields = (struct_decl_field;',';?)*;
 
 		syntax struct_decl_field = attrs_and_vis ident ':' ty_sum;
 
-		syntax struct_tuple_fields = (struct_tuple_field;',')+;
+		syntax struct_tuple_fields = (struct_tuple_field;',';?)+;
 
 		syntax struct_tuple_field = attrs_and_vis ty_sum;
 
-		syntax item_enum = ENUM ident generic_params? where_clause? '{' enum_defs ','? '}';
+		syntax item_enum = ENUM ident generic_params? where_clause? '{' enum_defs '}';
 
-		syntax enum_defs = (enum_def;',')*;
+		syntax enum_defs = (enum_def;',';?)*;
 
 		syntax enum_def = attrs_and_vis ident enum_args?;
 
 		syntax enum_args
 		{
 			| enum_args0 = '{' struct_decl_fields '}'
-			| enum_args1 = '{' struct_decl_fields ',' '}'
-			| enum_args2 = '(' maybe_ty_sums ')'
-			| enum_args3 = '=' expr
+			| enum_args1 = '(' maybe_ty_sums ')'
+			| enum_args2 = '=' expr
 		}
 
 		syntax item_mod
@@ -228,9 +227,9 @@ namespace VisualRust.Grammar
 			| trait_method1 = method
 		}
 
-		syntax type_method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
+		syntax type_method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
 
-		syntax method = attrs_and_vis UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
+		syntax method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
 		syntax impl_method = attrs_and_vis CONST? DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
 
@@ -268,7 +267,7 @@ namespace VisualRust.Grammar
 
 		syntax fn_params = '(' maybe_params ')';
 
-		syntax fn_anon_params = '(' (anon_param anon_params_allow_variadic_tail?)? ')';
+		syntax fn_anon_params = '(' anon_params_allow_variadic_tail? ')';
 
 		syntax fn_params_with_self
 		{
@@ -286,7 +285,7 @@ namespace VisualRust.Grammar
 			| fn_anon_params_with_self3 = '(' maybe_anon_params ')'
 		}
 
-		syntax maybe_params = (params ','?)?;
+		syntax maybe_params = (param;',';?)*;
 
 		syntax params = (param;',')+;
 
@@ -298,19 +297,11 @@ namespace VisualRust.Grammar
 
 		syntax maybe_unboxed_closure_kind = (('&' MUT?)? ':')?;
 
-		syntax comma_params
-		{
-			| comma_params0 = ','
-			| comma_params1 = ',' params ','?
-		}
+		syntax comma_params = ',' maybe_params;
 
-		syntax comma_anon_params
-		{
-			| comma_anon_params0 = ','
-			| comma_anon_params1 = ',' anon_params ','?
-		}
-
-		syntax maybe_anon_params = (anon_params ','?)?;
+		syntax comma_anon_params = ',' maybe_anon_params;
+		
+		syntax maybe_anon_params = (anon_param;',';?)*;
 
 		syntax anon_params = (anon_param;',')+;
 
@@ -318,8 +309,8 @@ namespace VisualRust.Grammar
 
 		syntax anon_params_allow_variadic_tail
 		{
-			| anon_params_allow_variadic_tail0 = ',' DOTDOTDOT
-			| anon_params_allow_variadic_tail1 = ',' anon_param anon_params_allow_variadic_tail?
+			| anon_params_allow_variadic_tail0 = anon_params ',' DOTDOTDOT
+			| anon_params_allow_variadic_tail1 = (anon_param;',';?)+;
 		}
 
 		syntax named_arg
@@ -346,19 +337,15 @@ namespace VisualRust.Grammar
 			| generic_params2 = '<' lifetimes SHR
 			| generic_params3 = '<' lifetimes ',' SHR
 			| generic_params4 = '<' lifetimes ',' ty_params '>'
-			| generic_params5 = '<' lifetimes ',' ty_params ',' '>'
-			| generic_params6 = '<' lifetimes ',' ty_params SHR
-			| generic_params7 = '<' lifetimes ',' ty_params ',' SHR
-			| generic_params8 = '<' ty_params '>'
-			| generic_params9 = '<' ty_params ',' '>'
-			| generic_params10 = '<' ty_params SHR
-			| generic_params11 = '<' ty_params ',' SHR
-			| generic_params12 = '<''>'
+			| generic_params5 = '<' lifetimes ',' ty_params SHR
+			| generic_params6= '<' ty_params '>'
+			| generic_params7 = '<' ty_params SHR
+			| generic_params8 = '<''>'
 		}
 
-		syntax where_clause = WHERE where_predicates ','?;
+		syntax where_clause = WHERE where_predicates;
 
-		syntax where_predicates = (where_predicate;',')+;
+		syntax where_predicates = (where_predicate;',';?)+;
 
 		syntax where_predicate
 		{
@@ -368,7 +355,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_for_lifetimes = (FOR '<' lifetimes '>')?;
 
-		syntax ty_params = (ty_param;',')+;
+		syntax ty_params = (ty_param;',';?)+;
 
 
 		syntax path_generic_args_without_colons = heads tails*
@@ -378,6 +365,7 @@ namespace VisualRust.Grammar
 				| heads0 = ident
 				| heads1 = ident generic_args
 				| heads2 = ident '(' maybe_ty_sums ')' ret_ty?
+				| heads3 = SUPER
 			}
 			syntax tails
 			{
@@ -390,13 +378,7 @@ namespace VisualRust.Grammar
 		syntax generic_args
 		{
 			| generic_args0 = '<' generic_values '>'
-/*			| generic_args1 = '<' generic_values SHR
-			| generic_args2 = '<' generic_values GE
-			| generic_args3 = '<' generic_values SHREQ */
-			| generic_args4 = SHL ty_qualified_path_and_generic_values '>'
-/*			| generic_args5 = SHL ty_qualified_path_and_generic_values SHR
-			| generic_args6 = SHL ty_qualified_path_and_generic_values GE
-			| generic_args7 = SHL ty_qualified_path_and_generic_values SHREQ */
+			| generic_args1 = SHL ty_qualified_path_and_generic_values '>'
 		}
 
 		syntax generic_values = maybe_lifetimes ty_sums_and_or_bindings?;
@@ -475,19 +457,13 @@ namespace VisualRust.Grammar
 		syntax pat_vec
 		{
 			| pat_vec0 = pat_vec_elts
-			| pat_vec1 = pat_vec_elts ','
-			| pat_vec2 = pat_vec_elts DOTDOT
-			| pat_vec3 = pat_vec_elts ',' DOTDOT
-			| pat_vec4 = pat_vec_elts DOTDOT ',' pat_vec_elts
-			| pat_vec5 = pat_vec_elts DOTDOT ',' pat_vec_elts ','
-			| pat_vec6 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts
-			| pat_vec7 = pat_vec_elts ',' DOTDOT ',' pat_vec_elts ','
-			| pat_vec8 = DOTDOT ',' pat_vec_elts
-			| pat_vec9 = DOTDOT ',' pat_vec_elts ','
-			| pat_vec10 = DOTDOT
+			| pat_vec1 = pat_vec_elts DOTDOT
+			| pat_vec2 = pat_vec_elts DOTDOT ',' pat_vec_elts
+			| pat_vec3 = DOTDOT ',' pat_vec_elts
+			| pat_vec4 = DOTDOT
 		}
 
-		syntax pat_vec_elts = (pat;',')+;
+		syntax pat_vec_elts = (pat;',';?)+;
 
 		syntax ty
 		{
@@ -495,9 +471,7 @@ namespace VisualRust.Grammar
 			| ty1 = ty_closure
 			| ty2 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
 			| ty3 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
-			| ty4 = '(' ty_sums ')'
-			| ty5 = '(' ty_sums ',' ')'
-			| ty6 = '(' ')'
+			| ty4 = '(' maybe_ty_sums ')'
 		}
 
 		syntax ty_prim
@@ -521,6 +495,7 @@ namespace VisualRust.Grammar
 			| ty_prim16 = ty_bare_fn
 			| ty_prim17 = ty_proc
 			| ty_prim18 = for_in_type
+			| ty_prim19 = macro_expr
 		}
 
 		syntax ty_bare_fn
@@ -563,9 +538,9 @@ namespace VisualRust.Grammar
 
 		syntax ty_qualified_path = ty_sum AS trait_ref '>' MOD_SEP ident ('+' ty_param_bounds)?;
 
-		syntax maybe_ty_sums = (ty_sums ','?)?;
+		syntax maybe_ty_sums = ((outer_attr* ty_sum);',';?)*;
 
-		syntax ty_sums = (ty_sum;',')+;
+		syntax ty_sums = ((outer_attr* ty_sum);',')+;
 
 		syntax ty_sum = ty ('+' ty_param_bounds)?;
 
@@ -606,7 +581,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_ty_default = ('=' ty_sum)?;
 
-		syntax maybe_lifetimes = (lifetimes ','?)?;
+		syntax maybe_lifetimes = (lifetime_and_bounds;',';?)*;
 
 		syntax lifetimes = (lifetime_and_bounds;',')+;
 
@@ -647,9 +622,9 @@ namespace VisualRust.Grammar
 			| stmt8 = ';'
 		}
 
-		syntax maybe_exprs = (exprs ','?)?;
+		syntax maybe_exprs = ((outer_attr* expr);',';?)*;
 
-		syntax exprs = (expr;',')+;
+		syntax exprs = ((outer_attr* expr);',')+;
 
 		syntax path_expr
 		{
@@ -745,6 +720,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -768,7 +744,7 @@ namespace VisualRust.Grammar
 				| heads13 = DOTDOT expr
 				| heads14 = DOTDOT
 				| heads15 = BOX nonparen_expr
-				| heads16 = BOX '(' expr? ')' expr
+				| heads16 = BOX '(' maybe_exprs ')'
 				| heads17 = expr_qualified_path
 				| heads18 = block_expr
 				| heads19 = block
@@ -814,6 +790,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -950,6 +927,7 @@ namespace VisualRust.Grammar
 				| tails35 = DOTDOT expr_nostruct
 				| tails36 = AS ty
 				| tails37 = '?'
+				| tails38 = ':' ty
 			}
 		}
 
@@ -1018,32 +996,26 @@ namespace VisualRust.Grammar
 			| vec_expr1 = exprs ';' expr
 		}
 
-		syntax struct_expr_fields
-		{
-			| struct_expr_fields0 = field_inits
-			| struct_expr_fields1 = field_inits ','
-			| struct_expr_fields2 = maybe_field_inits default_field_init
-		}
-
-		syntax maybe_field_inits = (field_inits ','?)?;
-
-		syntax field_inits = (field_init;',')+;
-
+		syntax struct_expr_fields = (field_init;',';?)* default_field_init?;
+		
 		syntax field_init = ident ':' expr;
 
 		syntax default_field_init = DOTDOT expr;
 
-		syntax block_expr
+		syntax block_expr = head '?'?
 		{
-			| block_expr0 = expr_match
-			| block_expr1 = expr_if
-			| block_expr2 = expr_if_let
-			| block_expr3 = expr_while
-			| block_expr4 = expr_while_let
-			| block_expr5 = expr_loop
-			| block_expr6 = expr_for
-			| block_expr7 = UNSAFE block
-			| block_expr8 = path_expr '!' ident? braces_delimited_token_trees
+			syntax head
+			{
+				| block_expr0 = expr_match
+				| block_expr1 = expr_if
+				| block_expr2 = expr_if_let
+				| block_expr3 = expr_while
+				| block_expr4 = expr_while_let
+				| block_expr5 = expr_loop
+				| block_expr6 = expr_for
+				| block_expr7 = UNSAFE block
+				| block_expr8 = path_expr '!' ident? braces_delimited_token_trees
+			}
 		}
 
 		syntax full_block_expr = block_expr tails*

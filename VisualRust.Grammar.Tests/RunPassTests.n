@@ -1,0 +1,28 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using NUnit.Framework;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestFixture]
+    public class RunPassTests
+    {
+        static AllFiles : IEnumerable[TestCaseData] 
+        {
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\..\rust\src\test\run-pass")
+                    .Select((x, i) => TestCaseData(i, x))
+            }
+        }
+        
+        [Test, TestCaseSource("AllFiles")]
+        public TestRunPass(_ : int, path : string) : void
+        {
+            ParserVerifier.VerifyPositiveFile(path);
+        }
+    }
+}

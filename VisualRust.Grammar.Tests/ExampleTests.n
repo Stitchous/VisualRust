@@ -1,0 +1,28 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using NUnit.Framework;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestFixture]
+    public class ExampleTests
+    {
+        static AllFiles : IEnumerable[TestCaseData]
+        {
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\examples")
+                    .Select((x, i) => TestCaseData(i, x))
+            }
+        }
+        
+        [Test, TestCaseSource("AllFiles")]
+        public TestExample(_ : int, path : string) : void
+        {
+            ParserVerifier.VerifyPositiveFile(path);
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+
+namespace VisualRust.Grammar.Tests
+{
+    module RustFilesEnumerator
+    {
+        public EnumerateFiles(path : string) : IEnumerable[string]
+        {
+            Directory
+                .EnumerateFiles(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path)), "*.rs", SearchOption.AllDirectories);
+        }
+    }
+}

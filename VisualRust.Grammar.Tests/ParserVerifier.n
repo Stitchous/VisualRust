@@ -1,0 +1,40 @@
+﻿using System;
+using System.Threading;
+using System.IO;
+
+using Nitra.Declarations;
+using Nitra.ProjectSystem;
+
+using NUnit.Framework;
+
+namespace VisualRust.Grammar.Tests
+{
+    module ParserVerifier
+    {
+        public VerifyPositiveFile(filename : string) : void
+        {
+            def file = FsFile(filename, NitraRust.Instance);
+            when (!file.ParseResult.IsSuccess)
+            {
+                TestContext.Write(GetMessage(file));
+                Assert.Fail(GetPathUri(filename));
+            }
+        }        
+        
+        public VerifyNegativeFile(filename : string) : void
+        {
+            def file = FsFile(filename, NitraRust.Instance);
+            Assert.IsFalse(file.ParseResult.IsSuccess, GetPathUri(filename));
+        }
+        
+        private GetPathUri(filename : string) : string
+        {
+            Uri(Path.GetFullPath(filename)).AbsoluteUri
+        }
+
+        private GetMessage(file : FsFile[IAst]) : string
+        {
+            "\t\t" + $<#..$(file.GetCompilerMessages();"\n\t\t")#>
+        }
+    }
+}

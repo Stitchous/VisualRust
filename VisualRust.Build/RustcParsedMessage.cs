@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace VisualRust.Build
+﻿namespace VisualRust.Build
 {
-    enum RustcParsedMessageType
+    internal enum RustcParsedMessageType
     {
         Error,
         Warning,
@@ -10,7 +8,7 @@ namespace VisualRust.Build
         Help
     }
 
-    class RustcParsedMessage
+    internal class RustcParsedMessage
     {
         public RustcParsedMessageType Type;
         public string Message;
@@ -39,17 +37,14 @@ namespace VisualRust.Build
         public bool TryMergeWithFollowing(RustcParsedMessage other)
         {
             if ((other.Type == RustcParsedMessageType.Note || other.Type == RustcParsedMessageType.Help)
-                && other.File == this.File && other.LineNumber == this.LineNumber && other.ColumnNumber == this.ColumnNumber &&
-                other.EndLineNumber == this.EndLineNumber && other.EndColumnNumber == this.EndColumnNumber)
+                && other.File == File && other.LineNumber == LineNumber && other.ColumnNumber == ColumnNumber &&
+                other.EndLineNumber == EndLineNumber && other.EndColumnNumber == EndColumnNumber)
             {
                 var prefix = other.Type == RustcParsedMessageType.Note ? "\nnote: " : "\nhelp: ";
-                this.Message += prefix + other.Message;
+                Message += prefix + other.Message;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

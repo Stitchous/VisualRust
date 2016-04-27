@@ -1,24 +1,12 @@
-Visual Studio extension for Rust
-================================
+Visual Studio extension for Rust based on [VisualRust](https://github.com/PistonDevelopers/VisualRust) and [Nitra](https://github.com/rsdn/nitra)
+=================================================================================================================================================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/5nw5no10jj0y4p3f?svg=true)]
-(https://ci.appveyor.com/project/vosen/visualrust)
-
-![Screenshot](http://i.imgur.com/63IYU6b.png)
-
-Currently in development, and not feature complete. Stable versions are
-available [on the Visual Studio extension gallery](https://visualstudiogallery.msdn.microsoft.com/c6075d2f-8864-47c0-8333-92f183d3e640).
-
-Unstable, but more recent builds are downloadable from [AppVeyor]
-(https://ci.appveyor.com/project/vosen/visualrust) (choose "Configuration:
-Release" and "Artifacts").
+![Screenshot1](/rust-experimental-instance.png)
 
 ## Features
 
 * Project support
-* Syntax highlighting
-* Autocomplete
-* Go to definition
+* Syntax highlighting and outlining
 * MIEngine-powered debugging featuring
   * Conditional breakpoints
   * Watch window (with the ability to change the runtime state)
@@ -88,14 +76,6 @@ our two build configurations.
  Also you'll want to modify `VisualRust` project with location of your
  Visual Studio installation to [launch it automatically when debugging]
  (http://stackoverflow.com/a/9281921).
-
-
-Contact
-=======
-
-This project is currently maintained by [vosen](https://github.com/vosen/).
-
-Feel free to mail him or ask around in `#rust-gamedev` on irc.mozilla.org.
 
 License
 =======

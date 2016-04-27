@@ -1,0 +1,28 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using NUnit.Framework;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestFixture]
+    public class ParseFailTests
+    {
+        static AllFiles : IEnumerable[TestCaseData]
+        {
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\..\rust\src\test\parse-fail")
+                    .Select((x, i) => TestCaseData(i, x))
+            }
+        }
+        
+        [Test, TestCaseSource("AllFiles")]
+        public TestParseFail(_ : int, path : string) : void
+        {
+            ParserVerifier.VerifyNegativeFile(path);
+        }
+    }
+}

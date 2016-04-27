@@ -1,0 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+using NUnit.Framework;
+
+namespace VisualRust.Grammar.Tests
+{
+    [TestFixture]
+    public class RustLangTests
+    {
+        static AllFiles : IEnumerable[TestCaseData]
+        {
+            get
+            {
+                RustFilesEnumerator
+                    .EnumerateFiles(@"..\..\..\rust\src")
+                    .Where(file => file.IndexOf(@"\rust\src\test", StringComparison.OrdinalIgnoreCase) == -1)
+                    .Select((x, i) => TestCaseData(i, x))
+            }
+        }
+
+        [Test, TestCaseSource("AllFiles")]
+        public TestRustLang(_ : int, path : string) : void
+        {
+            ParserVerifier.VerifyPositiveFile(path);
+        }
+    }
+}

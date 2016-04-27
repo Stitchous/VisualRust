@@ -36,6 +36,7 @@ namespace VisualRust
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "0.1.1", IconResourceID = 400)]
+    [ProvideService(typeof(RustLanguage), ServiceName = "Rust Language Service")]
     [ProvideLanguageService(typeof(RustLanguage), "Rust", 100, 
         CodeSense = true, 
         DefaultToInsertSpaces = true,
@@ -102,6 +103,13 @@ namespace VisualRust
             base.Initialize();
             packageCommandTarget = GetService(typeof(IOleCommandTarget)) as IOleCommandTarget;
             Instance = this;
+
+            IServiceContainer serviceContainer = this as IServiceContainer;
+            RustLanguage langService = new RustLanguage();
+            langService.SetSite(this);
+            serviceContainer.AddService(typeof(RustLanguage),
+                                        langService,
+                                        true);
 
             docEventsListener = new RunningDocTableEventsListener((IVsRunningDocumentTable)GetService(typeof(SVsRunningDocumentTable)));
 

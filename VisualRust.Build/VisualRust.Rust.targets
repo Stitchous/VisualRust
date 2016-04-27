@@ -58,7 +58,8 @@
            LTO="$(LinkTimeOptimization)"
            DebugInfo="$(DebugSymbols)"
            OptimizationLevel="$(OptimizationLevel)"
-           TargetTriple="$(PlatformTarget)"/>
+           TargetTriple="$(PlatformTarget)"
+           CodegenOptions="$(CodegenOptions)"/>
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup Condition="'$(BuildStaticlib)'=='true'">

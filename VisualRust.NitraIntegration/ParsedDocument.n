@@ -24,16 +24,14 @@ namespace VisualRust.NitraIntegration
         
         public CurrentSnapshot : ITextSnapshot
         {
-            get
-            {
-                _snapshot;
-            }
+            get;
+            private set;
         }
         
         public Update(snapshot : ITextSnapshot) : void
         {
-            _snapshot = snapshot;
-            _parseResult = Lazy(() => Parse(_snapshot));
+            CurrentSnapshot = snapshot;
+            _parseResult = Lazy(() => Parse(CurrentSnapshot));
         }
 
         public static Get(buffer : ITextBuffer ) : ParsedDocument 
@@ -43,10 +41,9 @@ namespace VisualRust.NitraIntegration
             {
                 result = ParsedDocument();
                 buffer.Properties.AddProperty(Key, result);
+                buffer.Changed += (_, arg) => result.Update(arg.After);
+                result.Update(buffer.CurrentSnapshot);
             }
-            
-            buffer.Changed += (_, arg) => result.Update(arg.After);
-            result.Update(buffer.CurrentSnapshot);
             result;
         }
         
@@ -61,7 +58,5 @@ namespace VisualRust.NitraIntegration
         
         private static Key = object();
         private mutable _parseResult : Lazy[IParseResult];
-        private mutable _snapshot : ITextSnapshot;
-        
     }
 }
