@@ -216,21 +216,20 @@ namespace VisualRust.Grammar
 	}
 
 
-	ast RefOrSelfPathReference
-	{
-		PathReference : PathReference; 
-		Alias : option[Name];
-	} 
+	abstract ast RefOrSelfPathReference
+    {
+		| Simple { PathReference : PathReference; }
+		| Aliased { PathReference : PathReference; Alias : Name;}
+    } 
+
 
 	map syntax Rules.refs_or_self_part -> RefOrSelfPathReference
 	{
-		Ref_or_self -> PathReference;
-		
-		Alias = if (NameOpt.HasValue)
-					ParsedValue(NameOpt.Value.Item2.Span, Some(NameOpt.Value.Item2.GetAst()))
-				else
-					ParsedValue(NameOpt.Span, None());
-
+	  match (NameOpt)
+	  {
+		| Some((_, name)) -> RefOrSelfPathReference.Aliased { Ref_or_self -> PathReference; name -> Alias; }
+		| None            -> RefOrSelfPathReference.Simple  { Ref_or_self -> PathReference; }
+	  }
 	}
 
 	map syntax Rules.refs_or_self -> RefOrSelfPathReference*
