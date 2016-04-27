@@ -30,6 +30,8 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Code Include="src\lib.rs" />
+    
   </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
 </Project>

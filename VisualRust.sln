@@ -45,6 +45,8 @@ Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "VisualRust.Grammar.Tests", 
 EndProject
 Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "VisualRust.Metadata.Native", "VisualRust.Metadata.Native\VisualRust.Metadata.Native.rsproj", "{1C731ADF-B783-4828-B935-E9B47FFD897D}"
 EndProject
+Project("{EDCC3B85-0BAD-11DB-BC1A-00112FDE8B61}") = "VisualRust.Metadata", "VisualRust.Metadata\VisualRust.Metadata.nproj", "{9272ACD6-6153-4197-8055-66A529F0592D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug.Lab|Any CPU = Debug.Lab|Any CPU
@@ -531,6 +533,36 @@ Global
 		{1C731ADF-B783-4828-B935-E9B47FFD897D}.Release|Mixed Platforms.ActiveCfg = Release|default
 		{1C731ADF-B783-4828-B935-E9B47FFD897D}.Release|Mixed Platforms.Build.0 = Release|default
 		{1C731ADF-B783-4828-B935-E9B47FFD897D}.Release|x86.ActiveCfg = Release|default
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|Any CPU.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|Any CPU.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|x86.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug.Lab|x86.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug|x86.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|Any CPU.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|Any CPU.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|x86.ActiveCfg = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Debug-CI|x86.Build.0 = Debug|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|Any CPU.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|Any CPU.Build.0 = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|Mixed Platforms.Build.0 = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|x86.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release.Lab|x86.Build.0 = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|x86.ActiveCfg = Release|Any CPU
+		{9272ACD6-6153-4197-8055-66A529F0592D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
