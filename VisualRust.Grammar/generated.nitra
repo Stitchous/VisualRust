@@ -83,23 +83,23 @@ namespace VisualRust.Grammar
 
 		syntax use_item = USE view_path ';';
 
-		syntax path_no_types_allowed = head (MOD_SEP tail)*
+		syntax path_no_types_allowed_tail
 		{
-			syntax head
-			{
-				| head0 = Reference
-				| head1 = SELF
-				| head2 = SUPER
-			}
-
-			syntax tail
-			{
-				| tail0 = Reference
-				| tail1 = SUPER
-			}
+			| tail0 = MOD_SEP Reference
+			| tail1 = MOD_SEP SUPER
 		}
 
+		syntax path_no_types_allowed_head
+		{
+			| head0 = Reference
+			| head1 = SELF
+			| head2 = SUPER
+		}
+
+		syntax path_no_types_allowed = path_no_types_allowed_head (path_no_types_allowed_tail)*;
+		
 		syntax refs_or_self_part = ref_or_self (AS Name)?;
+
 		syntax refs_or_self = (refs_or_self_part; ',';?)*;
 
 		syntax ref_or_self
@@ -116,8 +116,8 @@ namespace VisualRust.Grammar
 			
 			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self '}'
 			| view_path4 = MOD_SEP? '{' refs_or_self '}'
-			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP '*'
-			| view_path6 = MOD_SEP? path_no_types_allowed AS ident
+			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP Asterisk='*'
+			| view_path6 = MOD_SEP? path_no_types_allowed AS Name
 		}
 
 		syntax block_item

@@ -102,13 +102,31 @@ namespace VisualRust.Grammar
 		| Reference { Value : Nitra.Declarations.Reference; }
 	}
 
-	ast UsePath
+	abstract ast UsePath
 	{
-		IsGlobal : bool;
-		
-		Path : PathReference*;
-		
-		Tails : RefOrSelfPathReference*;
+		| Simple
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+		}
+		| Aliased
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+			Alias : Name;
+		}
+		| Multi
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+			Tails : RefOrSelfPathReference*;
+		}
+		| Empty
+		| Asterisk
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+		}
 	}
 
 	abstract ast ModItem
@@ -154,55 +172,60 @@ namespace VisualRust.Grammar
 
 	map syntax Rules.view_path -> UsePath
 	{
-		| view_path0 -> UsePath
+		| view_path0 -> UsePath.Simple
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = RefOrSelfPathReference.AstList(this);
 		}
-		| view_path1 -> UsePath
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path_no_types_allowed -> Path;
-			Tails = RefOrSelfPathReference.AstList(this);
-		}
+		| view_path1 -> UsePath.Empty { }
 		
-		| view_path2 -> UsePath
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path =	PathReference.AstList(this);
-			Tails = RefOrSelfPathReference.AstList(this);
-		}
-		| view_path3  -> UsePath
+		| view_path2 -> UsePath.Empty { }
+		
+		| view_path3  -> UsePath.Multi
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
 			Refs_or_self -> Tails;
 		}
-		| view_path4  -> UsePath
+		| view_path4  -> UsePath.Multi
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path = PathReference.AstList(this);
 			Refs_or_self -> Tails;
 		}
-		| view_path5  -> UsePath
+		| view_path5  -> Asterisk
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = RefOrSelfPathReference.AstList(this);
 		}
-		| view_path6  -> UsePath
+		| view_path6  -> Aliased
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
 			Path_no_types_allowed -> Path;
-			Tails = RefOrSelfPathReference.AstList(this);
+			Name -> Alias;
 		}
 
 	}
-
-	map syntax Rules.path_no_types_allowed -> PathReference*
+	
+	map syntax Rules.path_no_types_allowed_tail -> PathReference
 	{
-		[]
+		| tail0 -> Reference 
+		{
+			Reference -> Value;
+		}
+		| tail1 -> Super {}
+	}
+	
+	map syntax Rules.path_no_types_allowed -> PathReference* = AstUtils.Convert_path_no_types_allowed(this);
+
+	map syntax Rules.path_no_types_allowed_head -> PathReference
+	{
+		| head0 -> Reference
+		{
+			Reference -> Value;
+		}
+		| head1 -> Self {}
+		| head2 -> Super {}
 	}
 
 	map syntax Rules.ref_or_self -> PathReference
@@ -216,21 +239,20 @@ namespace VisualRust.Grammar
 	}
 
 
-	ast RefOrSelfPathReference
-	{
-		PathReference : PathReference; 
-		Alias : option[Name];
-	} 
+	abstract ast RefOrSelfPathReference
+    {
+		| Simple { PathReference : PathReference; }
+		| Aliased { PathReference : PathReference; Alias : Name;}
+    } 
+
 
 	map syntax Rules.refs_or_self_part -> RefOrSelfPathReference
 	{
-		Ref_or_self -> PathReference;
-		
-		Alias = if (NameOpt.HasValue)
-					ParsedValue(NameOpt.Value.Item2.Span, Some(NameOpt.Value.Item2.GetAst()))
-				else
-					ParsedValue(NameOpt.Span, None());
-
+	  match (NameOpt)
+	  {
+		| Some((_, name)) -> RefOrSelfPathReference.Aliased { Ref_or_self -> PathReference; name -> Alias; }
+		| None            -> RefOrSelfPathReference.Simple  { Ref_or_self -> PathReference; }
+	  }
 	}
 
 	map syntax Rules.refs_or_self -> RefOrSelfPathReference*
