@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
+using VisualRust.NitraIntegration;
 
 namespace VisualRust
 {
@@ -11,7 +12,7 @@ namespace VisualRust
     {
         public RustPrettyPrintCommandHandler(IVsTextView vsTextView, IWpfTextView textView) : base(vsTextView, textView)
         {
-            buffer = textView.TextBuffer;
+            _prettyPrinter = new RustPrettyPrinter(textView.TextBuffer);
         }
 
         protected override IEnumerable<VSConstants.VSStd2KCmdID> SupportedCommands
@@ -19,6 +20,7 @@ namespace VisualRust
             get
             {
                 yield return VSConstants.VSStd2KCmdID.FORMATDOCUMENT;
+                yield return VSConstants.VSStd2KCmdID.FORMATSELECTION;
             }
         }
 
@@ -34,19 +36,19 @@ namespace VisualRust
 
         protected override bool Execute(VSConstants.VSStd2KCmdID command, uint options, IntPtr pvaIn, IntPtr pvaOut)
         {
-            var snapshot = buffer.CurrentSnapshot;
-            int start = TextView.Selection.Start.Position.Position;
-            int end = TextView.Selection.End.Position.Position;
-
             switch (command)
             {
                 case VSConstants.VSStd2KCmdID.FORMATDOCUMENT:
+                    _prettyPrinter.PrettyPrint();
+                    break;
 
+                case VSConstants.VSStd2KCmdID.FORMATSELECTION:
+                    _prettyPrinter.PrettyPrint(TextView.Selection);
                     break;
             }
             return true;
         }
 
-        private readonly ITextBuffer buffer;
+        private readonly RustPrettyPrinter _prettyPrinter;
     }
 }
