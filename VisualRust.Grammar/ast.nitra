@@ -15,12 +15,13 @@ namespace VisualRust.Grammar
 	ast Crate
 	{
 		out ContainingTable : TableScope = TableScope("Global", null);
-
+		
 		Attributes : Attribute*;
 
 		ModItems : ModItem*;
 
 		Attributes.ContainingTable = ContainingTable;
+		ModItems.ContainingTable = ContainingTable;
 	}
 
 	map syntax Rules.crate -> Crate
@@ -29,7 +30,7 @@ namespace VisualRust.Grammar
 
 		Mod_items -> ModItems;
 	}
-
+	
 	abstract ast Attribute
 	{
 		in  ContainingTable : TableScope;
@@ -95,45 +96,22 @@ namespace VisualRust.Grammar
 		IsVisible = ParsedValue(PUBOpt.Span, PUBOpt.HasValue);
 	}
 
-	abstract ast PathReference
+	declaration UseAliasDeclaration
 	{
-		| Self
-		| Super
-		| Reference { Value : Nitra.Declarations.Reference; }
-	}
-
-	abstract ast UsePath
-	{
-		| Simple
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-		}
-		| Aliased
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-			Alias : Name;
-		}
-		| Multi
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-			Tails : RefOrSelfPathReference*;
-		}
-		| Empty
-		| Asterisk
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-		}
+		
 	}
 
 	abstract ast ModItem
 	{
+		in  ContainingTable : TableScope;
+		
 		| UseItem
 		{
+			Declarations : UseAliasDeclaration*;
 			UsePath : UsePath;
+
+			Declarations.ContainingTable = ContainingTable;
+			
 		}
 		| ExternCrate
 		{
@@ -156,8 +134,6 @@ namespace VisualRust.Grammar
 	{
 		| item0 -> this.Stmt_item
 		| item1 -> Other {}
-
-
 	}
 
 	map syntax Rules.stmt_item -> ModItem
@@ -178,13 +154,12 @@ namespace VisualRust.Grammar
 		ModItem.Other {}
 	}
 
-	map syntax Rules.view_item.view_item0 -> ModItem
+	map syntax Rules.view_item.view_item0 -> ModItem 
 	{
-		ModItem.UseItem
-		{
-			Use_item.View_path -> UsePath;
-		}
+		Use_item 
 	}
+
+	map syntax Rules.use_item  -> ModItem.UseItem = AstUtils.ConvertUsePath(View_path.GetAst());
 
 	map syntax Rules.view_item.view_item2 -> ModItem
 	{
@@ -196,94 +171,5 @@ namespace VisualRust.Grammar
 		}	
 	}
 	
-	map syntax Rules.view_path -> UsePath
-	{
-		| view_path0 -> UsePath.Simple
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path_no_types_allowed -> Path;
-		}
-		| view_path1 -> UsePath.Empty { }
-		
-		| view_path2 -> UsePath.Empty { }
-		
-		| view_path3  -> UsePath.Multi
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path_no_types_allowed -> Path;
-			Refs_or_self -> Tails;
-		}
-		| view_path4  -> UsePath.Multi
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path = PathReference.AstList(this);
-			Refs_or_self -> Tails;
-		}
-		| view_path5  -> Asterisk
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path_no_types_allowed -> Path;
-		}
-		| view_path6  -> Aliased
-		{
-			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path_no_types_allowed -> Path;
-			Name -> Alias;
-		}
-
-	}
 	
-	map syntax Rules.path_no_types_allowed_tail -> PathReference
-	{
-		| tail0 -> Reference 
-		{
-			Reference -> Value;
-		}
-		| tail1 -> Super {}
-	}
-	
-	map syntax Rules.path_no_types_allowed -> PathReference* = AstUtils.Convert_path_no_types_allowed(this);
-
-	map syntax Rules.path_no_types_allowed_head -> PathReference
-	{
-		| head0 -> Reference
-		{
-			Reference -> Value;
-		}
-		| head1 -> Self {}
-		| head2 -> Super {}
-	}
-
-	map syntax Rules.ref_or_self -> PathReference
-	{
-		| ident_or_self0 -> Reference
-		{
-			Reference -> Value;
-		}
-
-		| ident_or_self1 -> Self {}
-	}
-
-
-	abstract ast RefOrSelfPathReference
-    {
-		| Simple { PathReference : PathReference; }
-		| Aliased { PathReference : PathReference; Alias : Name;}
-    } 
-
-
-	map syntax Rules.refs_or_self_part -> RefOrSelfPathReference
-	{
-	  match (NameOpt)
-	  {
-		| Some((_, name)) -> RefOrSelfPathReference.Aliased { Ref_or_self -> PathReference; name -> Alias; }
-		| None            -> RefOrSelfPathReference.Simple  { Ref_or_self -> PathReference; }
-	  }
-	}
-
-	map syntax Rules.refs_or_self -> RefOrSelfPathReference*
-	{
-		Refs_or_self_parts.Item1
-	}
-
 }

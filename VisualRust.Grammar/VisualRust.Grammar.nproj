@@ -129,6 +129,9 @@
     <Compile Include="AstUtils.n">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Ast\UsePath.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Crate.n">
       <SubType>Code</SubType>
     </Compile>
@@ -153,6 +156,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Ast" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
