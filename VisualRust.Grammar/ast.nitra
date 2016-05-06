@@ -135,6 +135,15 @@ namespace VisualRust.Grammar
 		{
 			UsePath : UsePath;
 		}
+		| ExternCrate
+		{
+			Crate : Name;
+		}
+		| ExternCrateWithAlias
+		{
+			Crate : Name;
+			Alias : Name;
+		}
 		| Other
 	}
 
@@ -162,14 +171,31 @@ namespace VisualRust.Grammar
 
 	map syntax Rules.view_item -> ModItem
 	{
-		| view_item0  -> ModItem.UseItem
-			{
-				Use_item.View_path -> UsePath;
-			}
-		| view_item1  -> Other {}
-		| view_item2  -> Other {}
 	}
 
+	map syntax Rules.view_item.view_item1 -> ModItem
+	{
+		ModItem.Other {}
+	}
+
+	map syntax Rules.view_item.view_item0 -> ModItem
+	{
+		ModItem.UseItem
+		{
+			Use_item.View_path -> UsePath;
+		}
+	}
+
+	map syntax Rules.view_item.view_item2 -> ModItem
+	{
+		// EXTERN CRATE Name (AS Name)? ';'
+		match (NameOpt)
+		{
+			| Some((_, name)) -> ModItem.ExternCrateWithAlias { name -> Alias; Name -> Crate;}
+			| None			  -> ModItem.ExternCrate { Name -> Crate; }
+		}	
+	}
+	
 	map syntax Rules.view_path -> UsePath
 	{
 		| view_path0 -> UsePath.Simple
