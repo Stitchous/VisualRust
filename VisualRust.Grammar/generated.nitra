@@ -76,7 +76,7 @@ namespace VisualRust.Grammar
 		{
 			| view_item0 = use_item
 			| view_item1 = extern_fn_item
-			| view_item2 = EXTERN CRATE ident (AS ident)? ';'
+			| view_item2 = EXTERN CRATE Name (AS Name)? ';'
 		}
 
 		syntax extern_fn_item = EXTERN abi? item_fn;
