@@ -49,7 +49,7 @@ namespace VisualRust
         AutoOutlining = true,
         ShowSmartIndent = true, 
         EnableLineNumbers = true, 
-        EnableFormatSelection = true,
+        EnableFormatSelection = false,
         SupportCopyPasteOfHTML = false
     )]
     [ProvideProjectFactory(

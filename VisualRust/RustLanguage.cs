@@ -82,7 +82,7 @@ namespace VisualRust
                 preferences.AutoOutlining = false;
                 preferences.MaxRegionTime = 2000;
                 preferences.ShowNavigationBar = true;
-                preferences.EnableFormatSelection = true;
+                preferences.EnableFormatSelection = false;
 
                 preferences.AutoListMembers = false;
                 preferences.EnableQuickInfo = false;

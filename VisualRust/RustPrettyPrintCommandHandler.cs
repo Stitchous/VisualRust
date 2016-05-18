@@ -20,7 +20,7 @@ namespace VisualRust
             get
             {
                 yield return VSConstants.VSStd2KCmdID.FORMATDOCUMENT;
-                yield return VSConstants.VSStd2KCmdID.FORMATSELECTION;
+                //yield return VSConstants.VSStd2KCmdID.FORMATSELECTION;
             }
         }
 
