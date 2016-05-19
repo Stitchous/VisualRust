@@ -30,6 +30,31 @@ namespace VisualRust.Grammar
 
 		Mod_items -> ModItems;
 	}
+
+
+	declaration Module
+	{
+		Attributes : Attribute*;
+		
+		ModItems : ModItem*;
+	}
+	
+	map syntax Rules.item_mod  -> Module
+	{
+		| item_mod0 -> Module 
+		{
+			Name -> Name;
+			Attributes = Attribute.AstList(this);
+			ModItems = ModItem.AstList(this);
+		}
+		
+		| item_mod1 -> Module 
+		{
+			Name -> Name;
+			Mod_items -> ModItems;
+			Inner_attrs -> Attributes;
+		}
+	}
 	
 	abstract ast Attribute
 	{
@@ -122,7 +147,12 @@ namespace VisualRust.Grammar
 			Crate : Name;
 			Alias : Name;
 		}
+		| Module
+		{
+			Module : VisualRust.Grammar.Module;
+		}
 		| Other
+		
 	}
 
 	map syntax Rules.mod_item -> ModItem
@@ -141,14 +171,26 @@ namespace VisualRust.Grammar
 		| stmt_item0  -> Other {}
 		| stmt_item1  -> Other {}
 		| stmt_item2  -> Other {}
-		| stmt_item3  -> Other {}
+		| stmt_item3  -> this.Block_item
 		| stmt_item4  -> this.View_item
+	}
+
+	map syntax Rules.block_item -> ModItem
+	{
+		| block_item0 -> Other {}
+		| block_item1 -> Other {}
+		| block_item2 -> Module { this.Item_mod -> Module; }
+		| block_item3 -> Other {}
+		| block_item4 -> Other {}
+		| block_item5 -> Other {}
+		| block_item6 -> Other {}
+		| block_item7 -> Other {}
 	}
 
 	map syntax Rules.view_item -> ModItem
 	{
 	}
-
+		
 	map syntax Rules.view_item.view_item1 -> ModItem
 	{
 		ModItem.Other {}

@@ -170,9 +170,8 @@ namespace VisualRust.Grammar
 
 		syntax item_mod
 		{
-			| item_mod0 = MOD ident ';'
-			| item_mod1 = MOD ident '{' mod_item* '}'
-			| item_mod2 = MOD ident '{' inner_attr+ mod_item* '}'
+			| item_mod0 = MOD Name ';' 
+			| item_mod1 = MOD Name '{' inner_attr* mod_item* '}'
 		}
 
 		syntax item_foreign_mod = EXTERN abi? '{' inner_attr* foreign_item* '}';
