@@ -1,0 +1,53 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+
+using Nitra;
+
+namespace VisualRust.NitraIntegration
+{
+    public class RustPrettyPrinter
+    {
+        public this (textBuffer : ITextBuffer)
+        {
+            _parsedDocument = ParsedDocument.Get(textBuffer);
+        }
+
+        public PrettyPrint() : void
+        {
+            def snapshot  = _parsedDocument.CurrentSnapshot;
+            def parseTree = _parsedDocument.ParseResult.CreateParseTree();
+
+            _ = snapshot.TextBuffer.Replace(Span(0, snapshot.Length), parseTree.ToString());
+        }
+
+        public PrettyPrint(selection : ITextSelection) : void
+        {
+            //def snapshot  = _parsedDocument.CurrentSnapshot;
+            //def parseTree = _parsedDocument.ParseResult.CreateParseTree();
+            
+            //mutable spans : List.[SpanInfo];
+            //_ = parseTree.ToString(PrettyPrintOptions.DebugIndent, out spans);
+            
+            //def docSpans = HashSet.[SpanInfo]();
+            //_parsedDocument.ParseResult.GetSpans(0, snapshot.Length, docSpans);
+            
+            //def spanBegin = docSpans.Select((x, i) => (x, i)).(x => x.Span.StartPos <= selection.Start.Position && x.Span.EndPos >= selection.Start.Position);
+            //def spanEnd   = docSpans.selection.End.Position;
+            
+            
+            
+            //Console.WriteLine(spans);
+        }
+
+        private _parsedDocument : ParsedDocument;
+    }
+}

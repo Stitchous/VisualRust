@@ -14,6 +14,7 @@ namespace VisualRust.Grammar
 	using Tokens;
 	using Identifiers;
 	using RustComments;
+	using PrettyPrint;
 
 	syntax module Rules
 	{
@@ -25,13 +26,13 @@ namespace VisualRust.Grammar
 
 		syntax inner_attr
 		{
-			| inner_attr0 = SHEBANG '[' meta_item ']'
+			| inner_attr0 = SHEBANG '[' meta_item ']' nl
 			| inner_attr1 = INNER_DOC_COMMENT
 		}
 
 		syntax outer_attr
 		{
-			| outer_attr0 = '#' '[' meta_item ']'
+			| outer_attr0 = '#' '[' meta_item ']' nl
 			| outer_attr1 = OUTER_DOC_COMMENT
 		}
 
@@ -44,7 +45,7 @@ namespace VisualRust.Grammar
 
 		syntax attrs_and_vis = outer_attr* PUB?;
 
-		syntax mod_item = attrs_and_vis item;
+		syntax mod_item = attrs_and_vis item nl nl;
 
 		syntax item
 		{
@@ -81,7 +82,7 @@ namespace VisualRust.Grammar
 
 		syntax extern_fn_item = EXTERN abi? item_fn;
 
-		syntax use_item = USE view_path ';';
+		syntax use_item = USE sm view_path ';';
 
 		syntax path_no_types_allowed_tail
 		{
@@ -100,7 +101,7 @@ namespace VisualRust.Grammar
 		
 		syntax refs_or_self_part = ref_or_self (AS Name)?;
 
-		syntax refs_or_self = (refs_or_self_part; ',';?)*;
+		syntax refs_or_self = (refs_or_self_part; ',' sm;?)*;
 
 		syntax ref_or_self
 		{
@@ -138,18 +139,18 @@ namespace VisualRust.Grammar
 
 		syntax item_struct
 		{
-			| item_struct0 = STRUCT ident generic_params? where_clause? struct_decl_args
-			| item_struct1 = STRUCT ident generic_params? struct_tuple_args where_clause? ';'
-			| item_struct2 = STRUCT ident generic_params? where_clause? ';'
+			| item_struct0 = STRUCT sm ident generic_params? where_clause? struct_decl_args
+			| item_struct1 = STRUCT sm ident generic_params? struct_tuple_args where_clause? ';' nl
+			| item_struct2 = STRUCT sm ident generic_params? where_clause? ';' nl
 		}
 
-		syntax struct_decl_args = outline_begin_before '{' struct_decl_fields '}' outline_end_before;
+		syntax struct_decl_args = outline_begin_before sm '{' inl struct_decl_fields d '}' outline_end_before;
 
 		syntax struct_tuple_args = '(' struct_tuple_fields ')';
 
-		syntax struct_decl_fields = (struct_decl_field;',';?)*;
+		syntax struct_decl_fields = (struct_decl_field;',' nl;?)*;
 
-		syntax struct_decl_field = attrs_and_vis ident ':' ty_sum;
+		syntax struct_decl_field = attrs_and_vis ident ':' sm ty_sum;
 
 		syntax struct_tuple_fields = (struct_tuple_field;',';?)+;
 
@@ -185,7 +186,7 @@ namespace VisualRust.Grammar
 
 		syntax item_foreign_static = MUT? ident ':' ty ';';
 
-		syntax item_foreign_fn = FN ident generic_params? fn_decl_allow_variadic where_clause? ';';
+		syntax item_foreign_fn = FN sm ident generic_params? fn_decl_allow_variadic where_clause? ';';
 
 		syntax fn_decl_allow_variadic = fn_params_allow_variadic ret_ty?;
 
@@ -226,20 +227,20 @@ namespace VisualRust.Grammar
 			| trait_method1 = method
 		}
 
-		syntax type_method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
+		syntax type_method = outer_attr* UNSAFE? (EXTERN abi?)? FN sm ident generic_params? fn_decl_with_self_allow_anon_params where_clause? ';';
 
-		syntax method = outer_attr* UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
+		syntax method = outer_attr* UNSAFE? (EXTERN abi?)? FN sm ident generic_params? fn_decl_with_self_allow_anon_params where_clause? inner_attrs_and_block;
 
-		syntax impl_method = attrs_and_vis CONST? DEFAULT? UNSAFE? (EXTERN abi?)? FN ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
+		syntax impl_method = attrs_and_vis CONST? DEFAULT? UNSAFE? (EXTERN abi?)? FN sm ident generic_params? fn_decl_with_self where_clause? inner_attrs_and_block;
 
 		syntax item_impl
 		{
-			| item_impl0 = UNSAFE? IMPL generic_params? ty_prim_sum where_clause? '{' inner_attr* impl_item* '}'
-			| item_impl1 = UNSAFE? IMPL generic_params? '(' ty ')' where_clause? '{' inner_attr* impl_item* '}'
-			| item_impl2 = UNSAFE? IMPL generic_params? trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
-			| item_impl3 = UNSAFE? IMPL generic_params? '!' trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
-			| item_impl4 = UNSAFE? IMPL generic_params? trait_ref FOR DOTDOT '{' '}'
-			| item_impl5 = UNSAFE? IMPL generic_params? '!' trait_ref FOR DOTDOT '{' '}'
+			| item_impl0 = UNSAFE? IMPL sm (generic_params sm)? ty_prim_sum where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl1 = UNSAFE? IMPL sm (generic_params sm)? '(' ty ')' where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl2 = UNSAFE? IMPL sm (generic_params sm)? trait_ref sm FOR sm ty_sum (where_clause sm)? sm '{' inl inner_attr* impl_item* nl d '}'
+			| item_impl3 = UNSAFE? IMPL sm (generic_params sm)? '!' trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
+			| item_impl4 = UNSAFE? IMPL sm (generic_params sm)? trait_ref FOR DOTDOT '{' '}'
+			| item_impl5 = UNSAFE? IMPL sm (generic_params sm)? '!' trait_ref FOR DOTDOT '{' '}'
 		}
 
 		syntax impl_item
@@ -254,9 +255,9 @@ namespace VisualRust.Grammar
 
 		syntax impl_type = attrs_and_vis DEFAULT? TYPE ident generic_params? '=' ty_sum ';';
 
-		syntax item_fn = CONST? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
+		syntax item_fn = CONST? FN sm ident generic_params? fn_decl sm where_clause? inner_attrs_and_block;
 
-		syntax item_unsafe_fn = CONST? UNSAFE (EXTERN abi?)? FN ident generic_params? fn_decl where_clause? inner_attrs_and_block;
+		syntax item_unsafe_fn = CONST? UNSAFE (EXTERN abi?)? FN sm ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
 		syntax fn_decl = fn_params ret_ty?;
 
@@ -484,7 +485,7 @@ namespace VisualRust.Grammar
 			| ty_prim6 = '&' MUT ty
 			| ty_prim7 = ANDAND ty
 			| ty_prim8 = ANDAND MUT ty
-			| ty_prim9 = '&' lifetime MUT? ty
+			| ty_prim9 = '&' lifetime sm (MUT sm)? ty
 			| ty_prim10 = ANDAND lifetime MUT? ty
 			| ty_prim11 = '[' ty ']'
 			| ty_prim12 = '[' ty ',' DOTDOT expr ']'
@@ -596,11 +597,11 @@ namespace VisualRust.Grammar
 			| lifetime1 = STATIC_LIFETIME
 		}
 
-		syntax trait_ref = MOD_SEP? path_generic_args_without_colons;
+		syntax trait_ref = (MOD_SEP sm)? path_generic_args_without_colons;
 
-		syntax inner_attrs_and_block = outline_begin_before '{' inner_attr* stmts? '}' outline_end_before;
+		syntax inner_attrs_and_block = outline_begin_before sm '{' inl inner_attr* stmts? nl d '}' outline_end_before;
 
-		syntax block = outline_begin outer_attr* '{' stmts? '}' outline_end_before;
+		syntax block = outline_begin outer_attr* sm '{' inl stmts? nl d '}' outline_end_before;
 
 		syntax stmts
 		{
@@ -663,7 +664,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr outline_begin_before '{' struct_expr_fields '}' outline_end_before
+				| heads4 = path_expr outline_begin_before sm '{' inl struct_expr_fields nl d '}' outline_end_before
 				| heads5 = '[' vec_expr ']'
 				| heads6 = '(' maybe_exprs ')'
 				| heads7 = CONTINUE
@@ -731,7 +732,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr '{' struct_expr_fields? '}'
+				| heads4 = path_expr sm '{' inl struct_expr_fields? nl d '}'
 				| heads5 = '(' maybe_exprs ')'
 				| heads6 = '[' vec_expr ']'
 				| heads7 = CONTINUE
@@ -801,7 +802,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr '{' struct_expr_fields '}'
+				| heads4 = path_expr sm '{' inl struct_expr_fields nl d '}'
 				| heads5 = '[' vec_expr ']'
 				| heads6 = CONTINUE
 				| heads7 = CONTINUE ident
@@ -1030,10 +1031,10 @@ namespace VisualRust.Grammar
 
 		syntax expr_match
 		{
-			| expr_match0 = MATCH expr_nostruct outline_begin_before '{' '}' outline_end_before
-			| expr_match1 = MATCH expr_nostruct outline_begin_before '{' match_clause+ '}' outline_end_before
-			| expr_match2 = MATCH expr_nostruct outline_begin_before '{' match_clause+ nonblock_match_clause '}' outline_end_before
-			| expr_match3 = MATCH expr_nostruct outline_begin_before '{' nonblock_match_clause '}' outline_end_before
+			| expr_match0 = MATCH expr_nostruct outline_begin_before sm '{' '}' outline_end_before
+			| expr_match1 = MATCH expr_nostruct outline_begin_before sm '{' match_clause+ '}' outline_end_before
+			| expr_match2 = MATCH expr_nostruct outline_begin_before sm '{' match_clause+ nonblock_match_clause '}' outline_end_before
+			| expr_match3 = MATCH expr_nostruct outline_begin_before sm '{' nonblock_match_clause '}' outline_end_before
 		}
 
 		syntax match_clause
@@ -1051,11 +1052,11 @@ namespace VisualRust.Grammar
 
 		syntax block_match_clause = outer_attr* pats_or maybe_guard FAT_ARROW block;
 
-		syntax maybe_guard = (IF expr_nostruct)?;
+		syntax maybe_guard = (IF sm expr_nostruct)?;
 
-		syntax expr_if = IF expr_nostruct block (ELSE block_or_if)?;
+		syntax expr_if = IF sm expr_nostruct block (sm ELSE block_or_if)?;
 
-		syntax expr_if_let = IF LET pat '=' expr_nostruct block (ELSE block_or_if)?;
+		syntax expr_if_let = IF sm LET sm pat sm '=' sm expr_nostruct block (sm ELSE block_or_if)?;
 
 		syntax block_or_if
 		{
@@ -1064,17 +1065,17 @@ namespace VisualRust.Grammar
 			| block_or_if2 = expr_if_let
 		}
 
-		syntax expr_while = maybe_label WHILE expr_nostruct block;
+		syntax expr_while = maybe_label WHILE sm expr_nostruct block;
 
-		syntax expr_while_let = maybe_label WHILE LET pat '=' expr_nostruct block;
+		syntax expr_while_let = maybe_label WHILE sm LET sm pat sm '=' sm expr_nostruct block;
 
 		syntax expr_loop = maybe_label LOOP block;
 
-		syntax expr_for = maybe_label FOR pat IN expr_nostruct block;
+		syntax expr_for = maybe_label FOR sm pat sm IN sm expr_nostruct block;
 
-		syntax maybe_label = (lifetime ':')?;
+		syntax maybe_label = (lifetime ':' sm)?;
 
-		syntax let = LET pat maybe_ty_ascription maybe_init_expr ';';
+		syntax let = LET sm pat maybe_ty_ascription sm maybe_init_expr ';';
 
 		syntax lit
 		{

@@ -249,6 +249,7 @@
     <Compile Include="RustBraceMatcher.cs" />
     <Compile Include="RustOutliningTaggerProvider.cs" />
     <Compile Include="RustSource.cs" />
+    <Compile Include="RustPrettyPrintCommandHandler.cs" />
     <Compile Include="Text\JoinedTextChange.cs" />
     <Compile Include="Text\RustClassifierProvider.cs" />
     <Compile Include="RustCommentSelectionCommandHandler.cs" />
