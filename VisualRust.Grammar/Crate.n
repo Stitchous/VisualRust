@@ -14,6 +14,8 @@ using Nitra.ProjectSystem;
 
 namespace VisualRust.Grammar
 {
+
+  /*
   public partial class Crate : AstBase, IProjectSupport
   {
     public RefreshReferences(cancellationToken : CancellationToken, project : Project) : object
@@ -22,7 +24,7 @@ namespace VisualRust.Grammar
       def context = DependentPropertyEvalContext();
       context
     }
-    
+     
     public RefreshProject(cancellationToken : CancellationToken, files : ImmutableArray[FileEvalPropertiesData], data : object) : void
     {
       def context = data :> DependentPropertyEvalContext;
@@ -40,6 +42,7 @@ namespace VisualRust.Grammar
       }
     }
   }
+  */
   
   class VisualRustProjectEvalPropertiesHost : ProjectEvalPropertiesHost
   {

@@ -23,7 +23,7 @@ namespace VisualRust.Grammar
             PathReference.AstList(path_no_types_allowed.Location, elems.ToArray());
         }
 
-        public ConvertUsePath(usePath : UsePath) : ModItem.UseItem
+        public ConvertUsePath(usePath : UsePath) : ModuleItem.UseItem
         {
             def GetDeclarations(multi)
             {
@@ -39,7 +39,7 @@ namespace VisualRust.Grammar
                     | _                  =>  array[]
                 };
            
-            ModItem.UseItem(usePath.Location, UseAliasDeclaration.AstList(usePath.Location, declarations), usePath, true)
+            ModuleItem.UseItem(usePath.Location, UseAliasDeclaration.AstList(usePath.Location, declarations), usePath, true)
         }
     }
 }

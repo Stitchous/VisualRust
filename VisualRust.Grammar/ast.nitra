@@ -12,31 +12,45 @@ using Nitra;
 
 namespace VisualRust.Grammar
 {
-	ast Crate
+	abstract ast ScopeDefinition
+	{
+		out Scope : Scope;
+	}
+
+	ast Crate : ScopeDefinition
 	{
 		out ContainingTable : TableScope = TableScope("Global", null);
 		
 		Attributes : Attribute*;
 
-		ModItems : ModItem*;
+		ModuleItems : ModuleItem*;
 
 		Attributes.ContainingTable = ContainingTable;
-		ModItems.ContainingTable = ContainingTable;
+		ModuleItems.ContainingTable = ContainingTable;
+
+		Scope = ContainingTable;
+		ModuleItems.DeclaredIn = this;
 	}
 
 	map syntax Rules.crate -> Crate
 	{
 		Inner_attrs -> Attributes;
 
-		Mod_items -> ModItems;
+		Mod_items -> ModuleItems;
 	}
 
 
-	declaration Module
+	declaration Module : ScopeDefinition, Container
 	{
+		in DeclaredIn : ScopeDefinition;
+
 		Attributes : Attribute*;
 		
-		ModItems : ModItem*;
+		ModuleItems : ModuleItem*;
+
+		Scope = DeclaredIn.Scope;
+		
+		ModuleItems.DeclaredIn = this;
 	}
 	
 	map syntax Rules.item_mod  -> Module
@@ -45,13 +59,13 @@ namespace VisualRust.Grammar
 		{
 			Name -> Name;
 			Attributes = Attribute.AstList(this);
-			ModItems = ModItem.AstList(this);
+			ModuleItems = ModuleItem.AstList(this);
 		}
 		
 		| item_mod1 -> Module 
 		{
 			Name -> Name;
-			Mod_items -> ModItems;
+			Mod_items -> ModuleItems;
 			Inner_attrs -> Attributes;
 		}
 	}
@@ -126,9 +140,10 @@ namespace VisualRust.Grammar
 		
 	}
 
-	abstract ast ModItem
+	abstract ast ModuleItem
 	{
-		in  ContainingTable : TableScope;
+		in ContainingTable : TableScope;
+		in DeclaredIn : ScopeDefinition;
 		
 		| UseItem
 		{
@@ -150,23 +165,24 @@ namespace VisualRust.Grammar
 		| Module
 		{
 			Module : VisualRust.Grammar.Module;
+			Module.DeclaredIn = DeclaredIn;
 		}
 		| Other
 		
 	}
 
-	map syntax Rules.mod_item -> ModItem
+	map syntax Rules.mod_item -> ModuleItem
 	{
 		Item
 	}
 
-	map syntax Rules.item -> ModItem
+	map syntax Rules.item -> ModuleItem
 	{
 		| item0 -> this.Stmt_item
 		| item1 -> Other {}
 	}
 
-	map syntax Rules.stmt_item -> ModItem
+	map syntax Rules.stmt_item -> ModuleItem
 	{
 		| stmt_item0  -> Other {}
 		| stmt_item1  -> Other {}
@@ -175,7 +191,7 @@ namespace VisualRust.Grammar
 		| stmt_item4  -> this.View_item
 	}
 
-	map syntax Rules.block_item -> ModItem
+	map syntax Rules.block_item -> ModuleItem
 	{
 		| block_item0 -> Other {}
 		| block_item1 -> Other {}
@@ -187,29 +203,29 @@ namespace VisualRust.Grammar
 		| block_item7 -> Other {}
 	}
 
-	map syntax Rules.view_item -> ModItem
+	map syntax Rules.view_item -> ModuleItem
 	{
 	}
 		
-	map syntax Rules.view_item.view_item1 -> ModItem
+	map syntax Rules.view_item.view_item1 -> ModuleItem
 	{
-		ModItem.Other {}
+		ModuleItem.Other {}
 	}
 
-	map syntax Rules.view_item.view_item0 -> ModItem 
+	map syntax Rules.view_item.view_item0 -> ModuleItem 
 	{
 		Use_item 
 	}
 
-	map syntax Rules.use_item  -> ModItem.UseItem = AstUtils.ConvertUsePath(View_path.GetAst());
+	map syntax Rules.use_item  -> ModuleItem.UseItem = AstUtils.ConvertUsePath(View_path.GetAst());
 
-	map syntax Rules.view_item.view_item2 -> ModItem
+	map syntax Rules.view_item.view_item2 -> ModuleItem
 	{
 		// EXTERN CRATE Name (AS Name)? ';'
 		match (NameOpt)
 		{
-			| Some((_, name)) -> ModItem.ExternCrateWithAlias { name -> Alias; Name -> Crate;}
-			| None			  -> ModItem.ExternCrate { Name -> Crate; }
+			| Some((_, name)) -> ModuleItem.ExternCrateWithAlias { name -> Alias; Name -> Crate;}
+			| None			  -> ModuleItem.ExternCrate { Name -> Crate; }
 		}	
 	}
 	
