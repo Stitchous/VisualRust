@@ -1,16 +1,36 @@
 ﻿using System;
 using System.Threading;
 using System.IO;
+using System.Text;
 
+using Nitra;
 using Nitra.Declarations;
 using Nitra.ProjectSystem;
 
 using NUnit.Framework;
 
+using VisualRust.NitraIntegration;
+
 namespace VisualRust.Grammar.Tests
 {
     module ParserVerifier
     {
+        public VerifyPrettyFile(filename : string) : void
+        {   
+            def sourceText = File.ReadAllText(filename);
+            def sourceResult = ParseText(sourceText);
+        
+            def stringBuilder = StringBuilder();
+            def prettyPrintWalker = PrettyPrintWalker();
+            prettyPrintWalker.Walk(sourceResult, stringBuilder);
+            
+            def prettyText = stringBuilder.ToString();
+            Assert.IsNotEmpty(prettyText);
+            
+            def prettyResult = ParseText(prettyText);
+            Assert.IsTrue(prettyResult.IsSuccess, GetPathUri(filename));
+        }
+        
         public VerifyPositiveFile(filename : string) : void
         {
             def file = FsFile(filename, NitraRust.Instance);
@@ -35,6 +55,13 @@ namespace VisualRust.Grammar.Tests
         private GetMessage(file : FsFile[IAst]) : string
         {
             "\t\t" + $<#..$(file.GetCompilerMessages();"\n\t\t")#>
+        }
+        
+        private ParseText(text : string) : IParseResult
+        {
+            def lang = NitraRust.Instance;
+            def session = Nitra.ParseSession(lang.StartRule, lang.CompositeGrammar);
+            session.Parse(text)
         }
     }
 }

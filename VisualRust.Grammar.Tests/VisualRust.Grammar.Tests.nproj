@@ -91,6 +91,9 @@
     <Compile Include="ParseFailTests.n">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PrettyPrintTest.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RunFailFullDepsTests.n">
       <SubType>Code</SubType>
     </Compile>
@@ -124,6 +127,11 @@
     <ProjectReference Include="..\VisualRust.Grammar\VisualRust.Grammar.nproj">
       <Name>VisualRust.Grammar</Name>
       <Project>{e7655a81-9f8d-4826-9ca6-f7fcafd4d76a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualRust.NitraIntegration\VisualRust.NitraIntegration.nproj">
+      <Name>VisualRust.NitraIntegration</Name>
+      <Project>{daf0e950-79c6-4e28-821a-aef1abc44c17}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
