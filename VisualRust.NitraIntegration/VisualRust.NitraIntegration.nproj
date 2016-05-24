@@ -124,6 +124,9 @@
     <Compile Include="ParsedDocument.n">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PrettyPrintWalker.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
     <Compile Include="RustClassifier.n">
       <SubType>Code</SubType>

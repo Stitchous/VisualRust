@@ -27,6 +27,14 @@ namespace VisualRust.NitraIntegration
             def parseTree = _parsedDocument.ParseResult.CreateParseTree();
 
             _ = snapshot.TextBuffer.Replace(Span(0, snapshot.Length), parseTree.ToString());
+            
+            //TODO: replace with
+            //def snapshot  = _parsedDocument.CurrentSnapshot;
+            //def sb = StringBuilder();
+            //def prettyPrintWalker = PrettyPrintWalker();
+            
+            //prettyPrintWalker.Walk(_parsedDocument.ParseResult, sb);
+            //_ = snapshot.TextBuffer.Replace(Span(0, snapshot.Length), sb.ToString());
         }
 
         public PrettyPrint(selection : ITextSelection) : void
