@@ -18,72 +18,191 @@ namespace VisualRust.NitraIntegration
   public class PrettyPrintWalker : WalkerBase[StringBuilder]
   {
         public override OnDeleted(parseResult : IParseResult, startPos : int, endPos : int, sequenceInfo : SequenceInfo, context : StringBuilder) : void
-        {}
+        {
+            Console.WriteLine($"OnDeleted($parseResult : IParseResult, $startPos : int, $endPos : int, $sequenceInfo : SequenceInfo, $context : StringBuilder) : void");
+            
+            _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+        }
         
 		public override OnEmpty(ruleInfo : SubruleInfo.Empty, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
-		{}
+		{
+		    Console.WriteLine($"OnEmpty($ruleInfo : SubruleInfo.Empty, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		}
 		
 		public override OnMarker(ruleInfo : SubruleInfo.Marker, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
-		{}
+		{
+		    Console.WriteLine($"OnMarker($ruleInfo : SubruleInfo.Marker, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    match (ruleInfo.Name)
+		    {
+                  | "Nitra.Core.nl"  => _ = context.Append("\n").Append(GetIndent());                        
+                  | "Nitra.Core.sm"  => _ = context.Append(" ")
+                  | "Nitra.Core.d"   => DecreaseIndent();
+                  | "Nitra.Core.i"   => IncreaseIndent();
+                  | "Nitra.Core.inl" =>
+                        IncreaseIndent();
+                        _ = context.Append("\n").Append(GetIndent());
+                        
+                  | _ => {}
+		    }
+		}
 		
-		public override OnPrefixMissed(ruleParser : ExtensibleRuleParser, pos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnPrefixMissed(ruleParser : ExtensibleRuleParser, pos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnPrefixMissed($ruleParser : ExtensibleRuleParser, $pos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		}
 		
-		public override OnRegularCall(ruleInfo : SubruleInfo.RegularCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnRegularCall(ruleInfo : SubruleInfo.RegularCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnRegularCall($ruleInfo : SubruleInfo.RegularCall, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    when (ruleInfo.FullName != "SpaceToken")
+		        _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		}
 		
-		public override OnTokenString(ruleInfo : SubruleInfo.TokenString, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnTokenString(ruleInfo : SubruleInfo.TokenString, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnTokenString($ruleInfo : SubruleInfo.TokenString, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		}
 		
-		public override OnSimpleCall(ruleInfo : SubruleInfo.SimpleCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnSimpleCall(ruleInfo : SubruleInfo.SimpleCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnSimpleCall($ruleInfo : SubruleInfo.SimpleCall, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnSimpleCall(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnListItem(rawTreePtr : int, ruleInfo : SubruleInfo.ListItem, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnListItem(rawTreePtr : int, ruleInfo : SubruleInfo.ListItem, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnListItem($rawTreePtr : int, $ruleInfo : SubruleInfo.ListItem, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnListItem(rawTreePtr, ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnExtensibleCall(ruleInfo : SubruleInfo.ExtensibleCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnExtensibleCall(ruleInfo : SubruleInfo.ExtensibleCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnExtensibleCall($ruleInfo : SubruleInfo.ExtensibleCall, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnExtensibleCall(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnOption(ruleInfo : SubruleInfo.Option, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnOption(ruleInfo : SubruleInfo.Option, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnOption($ruleInfo : SubruleInfo.Option, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnOption(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnList(ruleInfo : SubruleInfo.List, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnList(ruleInfo : SubruleInfo.List, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnList($ruleInfo : SubruleInfo.List, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void, $(ruleInfo.IsOptimized)");
+		    
+		    if (ruleInfo.FullName == "SingleLineComment")
+		        _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		    else
+		        base.OnList(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnDyntamicSyntaxExtensionPoint(ruleInfo : SubruleInfo.List, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnDyntamicSyntaxExtensionPoint(ruleInfo : SubruleInfo.List, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnDyntamicSyntaxExtensionPoint($ruleInfo : SubruleInfo.List, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnDyntamicSyntaxExtensionPoint(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnDynamicExtensibleItem(rawTreePtr : int, startPos : int, endPos : int, ruleParser : ExtensionRuleParser, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnDynamicExtensibleItem(rawTreePtr : int, startPos : int, endPos : int, ruleParser : ExtensionRuleParser, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnDynamicExtensibleItem($rawTreePtr : int, $startPos : int, $endPos : int, $ruleParser : ExtensionRuleParser, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnDynamicExtensibleItem(rawTreePtr, startPos, endPos, ruleParser, parseResult, context);
+		}
 		
-		public override OnListWithSeparator(ruleInfo : SubruleInfo.ListWithSeparator, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override OnListWithSeparator(ruleInfo : SubruleInfo.ListWithSeparator, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnListWithSeparator($ruleInfo : SubruleInfo.ListWithSeparator, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.OnListWithSeparator(ruleInfo, startPos, endPos, parseResult, context);
+		}
 		
-		public override OnAmbiguous(parseResult : IParseResult, parseWays : array[array[SubruleStart]], sequenceInfo : SequenceInfo, startPos : int, endPos : int, context : StringBuilder) : void 
-		{}
+		public override OnAmbiguous(parseResult : IParseResult, parseWays : array[array[SubruleStart]], sequenceInfo : SequenceInfo, startPos : int, endPos : int, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnAmbiguous($parseResult : IParseResult, $parseWays : array[array[SubruleStart]], $sequenceInfo : SequenceInfo, $startPos : int, $endPos : int, $context : StringBuilder) : void");
+		    
+		    base.OnAmbiguous(parseResult, parseWays, sequenceInfo, startPos, endPos, context);
+		}
 		
-		public override OnAmbiguousPrefix(parseResult : IParseResult, extensibleRuleParser : ExtensibleRuleParser, ambiguousPrefixs : List[ExtensionAmbiguity[PrefixRuleParser]], startPos : int, endPos : int, context : StringBuilder) : void 
-		{}
+		public override OnAmbiguousPrefix(parseResult : IParseResult, extensibleRuleParser : ExtensibleRuleParser, ambiguousPrefixs : List[ExtensionAmbiguity[PrefixRuleParser]], startPos : int, endPos : int, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnAmbiguousPrefix($parseResult : IParseResult, $extensibleRuleParser : ExtensibleRuleParser, $ambiguousPrefixs : List[ExtensionAmbiguity[PrefixRuleParser]], $startPos : int, $endPos : int, $context : StringBuilder) : void");
+		    
+		    base.OnAmbiguousPrefix(parseResult, extensibleRuleParser, ambiguousPrefixs, startPos, endPos, context);
+		}
 		
-		public override OnAmbiguousPostfix(parseResult : IParseResult, extensibleRuleParser : ExtensibleRuleParser, ambiguousPrefixs : List[ExtensionAmbiguity[PostfixRuleParser]], startPos : int, endPos : int, context : StringBuilder) : void 
-		{}
+		public override OnAmbiguousPostfix(parseResult : IParseResult, extensibleRuleParser : ExtensibleRuleParser, ambiguousPrefixs : List[ExtensionAmbiguity[PostfixRuleParser]], startPos : int, endPos : int, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"OnAmbiguousPostfix($parseResult : IParseResult, $extensibleRuleParser : ExtensibleRuleParser, $ambiguousPrefixs : List[ExtensionAmbiguity[PostfixRuleParser]], $startPos : int, $endPos : int, $context : StringBuilder) : void");
+		    
+		    base.OnAmbiguousPostfix(parseResult, extensibleRuleParser, ambiguousPrefixs, startPos, endPos, context);
+		}
 		
-		public override WalkSimple(startPos : int, endPos : int, ruleParser : SimpleRuleParser, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override WalkSimple(startPos : int, endPos : int, ruleParser : SimpleRuleParser, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"WalkSimple($startPos : int, $endPos : int, $ruleParser : SimpleRuleParser, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.WalkSimple(startPos, endPos, ruleParser, parseResult, context);
+		}
 		
-		public override WalkExtensible(startPos : int, endPos : int, ruleParser : ExtensibleRuleParser, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override WalkExtensible(startPos : int, endPos : int, ruleParser : ExtensibleRuleParser, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"WalkExtensible($startPos : int, $endPos : int, $ruleParser : ExtensibleRuleParser, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.WalkExtensible(startPos, endPos, ruleParser, parseResult, context);
+		}
 		
-		public override WalkPrefix(rawTreePtr : int, startPos : int, endPos : int, ruleParser : PrefixRuleParser, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override WalkPrefix(rawTreePtr : int, startPos : int, endPos : int, ruleParser : PrefixRuleParser, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"WalkPrefix($rawTreePtr : int, $startPos : int, $endPos : int, $ruleParser : PrefixRuleParser, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.WalkPrefix(rawTreePtr, startPos, endPos, ruleParser, parseResult, context);
+		}
 		
-		public override WalkPostfix(rawTreePtr : int, startPos : int, endPos : int, ruleParser : PostfixRuleParser, parseResult : IParseResult, context : StringBuilder) : void 
-		{}
+		public override WalkPostfix(rawTreePtr : int, startPos : int, endPos : int, ruleParser : PostfixRuleParser, parseResult : IParseResult, context : StringBuilder) : void
+		{
+		    Console.WriteLine($"WalkPostfix($rawTreePtr : int, $startPos : int, $endPos : int, $ruleParser : PostfixRuleParser, $parseResult : IParseResult, $context : StringBuilder) : void");
+		    
+		    base.WalkPostfix(rawTreePtr, startPos, endPos, ruleParser, parseResult, context);
+		}
 		
-		public override StartWalkSequence(sequenceInfo : SequenceInfo) : void 
-		{}
+		public override StartWalkSequence(sequenceInfo : SequenceInfo) : void
+		{
+		    Console.WriteLine($"StartWalkSequence($sequenceInfo : SequenceInfo) : void");
+		}
 		
-		public override FinishWalkSequence(sequenceInfo : SequenceInfo) : void 
-		{}	
+		public override FinishWalkSequence(sequenceInfo : SequenceInfo) : void
+		{
+		    Console.WriteLine($"FinishWalkSequence($sequenceInfo : SequenceInfo) : void");
+		}	
+		
+		private GetIndent() : string
+		{
+		    string(' ', 4 * _indentSize)
+		}
+		
+		private IncreaseIndent() : void
+		{
+		    ++_indentSize;
+		}
+		
+		private DecreaseIndent() : void
+		{
+		    when (_indentSize > 0)
+		        --_indentSize;
+		}
+		
+		mutable _indentSize : int;
   }
 }
