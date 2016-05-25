@@ -18,19 +18,18 @@ namespace VisualRust.Grammar.Tests
         public VerifyPrettyFile(filename : string) : void
         {   
             def sourceText = File.ReadAllText(filename);
-            def sourceResult = ParseText(sourceText);
-        
-            def stringBuilder = StringBuilder();
-            def prettyPrintWalker = PrettyPrintWalker();
-            prettyPrintWalker.Walk(sourceResult, stringBuilder);
-            
-            def prettyText = stringBuilder.ToString();
+            def prettyText = PrettyPrint(ParseText(sourceText));
             Assert.IsNotEmpty(prettyText);
-            
-            def prettyResult = ParseText(prettyText);
-            Assert.IsTrue(prettyResult.IsSuccess, GetPathUri(filename));
+            Assert.IsTrue(ParseText(prettyText).IsSuccess, GetPathUri(filename));
         }
         
+        public VerifyPrettyText(sourceText : string) : void
+        {
+            def prettyText = PrettyPrint(ParseText(sourceText));
+            Assert.IsNotEmpty(prettyText);
+            Assert.IsTrue(ParseText(prettyText).IsSuccess);
+        }
+                
         public VerifyPositiveFile(filename : string) : void
         {
             def file = FsFile(filename, NitraRust.Instance);
@@ -55,6 +54,14 @@ namespace VisualRust.Grammar.Tests
         private GetMessage(file : FsFile[IAst]) : string
         {
             "\t\t" + $<#..$(file.GetCompilerMessages();"\n\t\t")#>
+        }
+        
+        private PrettyPrint(parseResult : IParseResult) : string
+        {
+            def stringBuilder = StringBuilder();
+            def prettyPrintWalker = PrettyPrintWalker();
+            prettyPrintWalker.Walk(parseResult, stringBuilder);
+            stringBuilder.ToString();
         }
         
         private ParseText(text : string) : IParseResult

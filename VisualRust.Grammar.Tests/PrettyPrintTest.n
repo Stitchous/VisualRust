@@ -25,7 +25,7 @@ namespace VisualRust.Grammar.Tests
         }
         
         [Test, TestCaseSource("AllFiles")]
-        //[Ignore("Ignored pretty print test")]
+        [Ignore("Ignored pretty print test")]
         public TestRunPass(_ : int, path : string) : void
         {            
             ParserVerifier.VerifyPrettyFile(path);
