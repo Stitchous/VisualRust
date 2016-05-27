@@ -1,0 +1,29 @@
+﻿using Nitra;
+using Nitra.Declarations;
+
+namespace VisualRust.Grammar.Ast
+{
+	abstract ast ModuleBody
+	{
+		Attributes : Attribute*;
+		ModuleItems : ModuleItem*;
+	}
+
+	declaration Module : ModuleBody, Container
+	{
+		sealed symbol
+		{
+			in DeclaredIn : ModuleSymbol;
+
+			Kind = "module";
+			SpanClass = RustSpans.ModuleSpanClass;
+		}
+
+		in DeclaredIn  : ModuleSymbol;
+		
+		Symbol.DeclaredIn = DeclaredIn;
+		ContainingTable = DeclaredIn.MemberTable;
+
+		ModuleItems.DeclaredIn = Symbol;
+	}
+}

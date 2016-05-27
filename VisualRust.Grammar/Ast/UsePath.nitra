@@ -10,48 +10,10 @@ using System.Linq;
 using Nitra.Declarations;
 using Nitra;
 
+using VisualRust.Grammar.Ast;
+
 namespace VisualRust.Grammar
 {
-	abstract ast PathReference
-	{
-		| Self
-		| Super
-		| Reference { Value : Nitra.Declarations.Reference; }
-	}
-
-	abstract ast RefOrSelfPathReference
-    {
-		| Simple { PathReference : PathReference; }
-		| Aliased { PathReference : PathReference; Alias : Name;}
-    } 
-
-	abstract ast UsePath
-	{
-		| Simple
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-		}
-		| Aliased
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-			Alias : Name;
-		}
-		| Multi
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-			Tails : RefOrSelfPathReference*;
-		}
-		| Empty
-		| Asterisk
-		{
-			IsGlobal : bool;
-			Path : PathReference*;
-		}
-	}
-
 	map syntax Rules.path_no_types_allowed_tail -> PathReference
 	{
 		| tail0 -> Reference 

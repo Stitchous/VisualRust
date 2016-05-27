@@ -10,26 +10,17 @@ using System.Linq;
 using Nitra.Declarations;
 using Nitra;
 
+using VisualRust.Grammar.Ast;
+
 namespace VisualRust.Grammar
 {
-	abstract ast ScopeDefinition
+	ast Crate : ModuleBody
 	{
-		out Scope : Scope;
-	}
+		in Root : ModuleSymbol;
+	
+		ModuleItems.DeclaredIn = Root;
 
-	ast Crate : ScopeDefinition
-	{
 		out ContainingTable : TableScope = TableScope("Global", null);
-		
-		Attributes : Attribute*;
-
-		ModuleItems : ModuleItem*;
-
-		Attributes.ContainingTable = ContainingTable;
-		ModuleItems.ContainingTable = ContainingTable;
-
-		Scope = ContainingTable;
-		ModuleItems.DeclaredIn = this;
 	}
 
 	map syntax Rules.crate -> Crate
@@ -37,20 +28,6 @@ namespace VisualRust.Grammar
 		Inner_attrs -> Attributes;
 
 		Mod_items -> ModuleItems;
-	}
-
-
-	declaration Module : ScopeDefinition, Container
-	{
-		in DeclaredIn : ScopeDefinition;
-
-		Attributes : Attribute*;
-		
-		ModuleItems : ModuleItem*;
-
-		Scope = DeclaredIn.Scope;
-		
-		ModuleItems.DeclaredIn = this;
 	}
 	
 	map syntax Rules.item_mod  -> Module
@@ -67,18 +44,6 @@ namespace VisualRust.Grammar
 			Name -> Name;
 			Mod_items -> ModuleItems;
 			Inner_attrs -> Attributes;
-		}
-	}
-	
-	abstract ast Attribute
-	{
-		in  ContainingTable : TableScope;
-
-		| Empty
-		| NotEmpty
-		{
-			MetaItem : MetaItemAst;
-			MetaItem.ContainingTable = ContainingTable;
 		}
 	}
 
@@ -100,13 +65,6 @@ namespace VisualRust.Grammar
 		| outer_attr1 -> Attribute.Empty {}
 	}
 
-	abstract ast MetaItemAst
-	{
-		in  ContainingTable : TableScope;
-		| MetaWord { Name : Name; }
-		| MetaNameValue	{ Name : Name; }  
-		| MetaList { MetaItems : MetaItemAst*; }
-	}
 
 	map syntax Rules.meta_item -> MetaItemAst
 	{
@@ -135,41 +93,9 @@ namespace VisualRust.Grammar
 		IsVisible = ParsedValue(PUBOpt.Span, PUBOpt.HasValue);
 	}
 
-	declaration UseAliasDeclaration
-	{
-		
-	}
 
-	abstract ast ModuleItem
-	{
-		in ContainingTable : TableScope;
-		in DeclaredIn : ScopeDefinition;
-		
-		| UseItem
-		{
-			Declarations : UseAliasDeclaration*;
-			UsePath : UsePath;
 
-			Declarations.ContainingTable = ContainingTable;
-			
-		}
-		| ExternCrate
-		{
-			Crate : Name;
-		}
-		| ExternCrateWithAlias
-		{
-			Crate : Name;
-			Alias : Name;
-		}
-		| Module
-		{
-			Module : VisualRust.Grammar.Module;
-			Module.DeclaredIn = DeclaredIn;
-		}
-		| Other
-		
-	}
+	
 
 	map syntax Rules.mod_item -> ModuleItem
 	{

@@ -1,0 +1,158 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nitra.Declarations;
+using Nitra;
+
+namespace VisualRust.Grammar.Ast
+{
+	abstract ast MetaItemAst
+	{
+		in  ContainingTable : TableScope;
+		| MetaWord { Name : Name; }
+		| MetaNameValue	{ Name : Name; }  
+		| MetaList { MetaItems : MetaItemAst*; }
+	}
+
+	abstract ast Attribute
+	{
+		in  ContainingTable : TableScope;
+
+		| Empty
+		| NotEmpty
+		{
+			MetaItem : MetaItemAst;
+			MetaItem.ContainingTable = ContainingTable;
+		}
+	}
+	
+	declaration UseAliasDeclaration
+	{
+		
+	}
+	abstract ast PathReference
+	{
+		in ContainingTable : TableScope;
+
+		| Self
+		| Super
+		| Reference 
+		{ 
+			Value : Nitra.Declarations.Reference; 
+			Value.Scope = ContainingTable;
+		}
+	}
+
+	abstract ast RefOrSelfPathReference
+    {
+		in ContainingTable : TableScope;
+
+		| Simple 
+		{ 
+			PathReference : PathReference; 
+			ContainingTable = ContainingTable;
+		}
+		| Aliased 
+		{ 
+			PathReference : PathReference; 
+			Alias : Name;
+			ContainingTable = ContainingTable;
+		}
+    } 
+
+	abstract ast UsePath
+	{
+		in ContainingTable : TableScope;
+		
+		| Simple
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+			
+			Path.ContainingTable = ContainingTable;
+		}
+		| Aliased
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+			Alias : Name;
+			
+			Path.ContainingTable = ContainingTable;
+			
+		}
+		| Multi
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+			Tails : RefOrSelfPathReference*;
+
+			Path.ContainingTable = ContainingTable;
+			Tails.ContainingTable = ContainingTable;
+		}
+		| Empty
+		| Asterisk
+		{
+			IsGlobal : bool;
+			Path : PathReference*;
+
+			Path.ContainingTable = ContainingTable;
+		}
+	}
+
+	abstract declaration ModuleDeclartion
+	{
+		| MOdule
+		| fun
+	}
+
+	
+	
+
+	
+	abstract ast ModuleItem 
+	{
+		in DeclaredIn  : ModuleSymbol;
+
+	stage 1:
+		
+		inout Opening           : Scope;
+		in    CurrentScope      : Scope;
+		in    UsingAliasesScope : TableScope;
+
+		| UseItem
+		{
+			Declarations : UseAliasDeclaration*;
+			UsePath : UsePath;
+			
+			Declarations.ContainingTable = DeclaredIn.MemberTable;
+			UsePath.ContainingTable = DeclaredIn.MemberTable;
+		}
+		| ExternCrate
+		{
+			Crate : Name;
+
+			Crate.Symbol.Scope= DeclaredIn.MemberTable;
+		}
+		| ExternCrateWithAlias
+		{
+			Crate : Name;
+			Alias : Name;
+
+			Alias.Symbol.Scope = DeclaredIn.MemberTable;
+			Crate.Symbol.Scope = DeclaredIn.MemberTable;
+		}
+		| Module
+		{
+			Module : VisualRust.Grammar.Ast.Module;
+
+			Module.DeclaredIn = DeclaredIn;
+		}
+		| Other
+	}
+}

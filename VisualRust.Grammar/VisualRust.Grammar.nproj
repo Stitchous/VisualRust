@@ -170,6 +170,13 @@
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VisualRust.Grammar.Ast\VisualRust.Grammar.Ast.nproj">
+      <Name>VisualRust.Grammar.Ast</Name>
+      <Project>{d12a3c86-10e8-48a4-85c2-a60e3d5f5c9f}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--
 		To modify your build process, add your task inside one of the targets below and uncomment it. 
