@@ -14,11 +14,13 @@ namespace VisualRust.Grammar.Ast
 		sealed symbol
 		{
 			in DeclaredIn : ModuleSymbol;
-
+			
 			Kind = "module";
 			SpanClass = RustSpans.ModuleSpanClass;
-		}
 
+			Scope = MemberTable;
+		}
+		
 		in DeclaredIn  : ModuleSymbol;
 		
 		Symbol.DeclaredIn = DeclaredIn;

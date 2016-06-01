@@ -38,14 +38,38 @@ namespace VisualRust.Grammar.Ast
 	}
 	abstract ast PathReference
 	{
+		in DeclaredIn : ModuleSymbol;
 		in ContainingTable : TableScope;
+		
+		out Ref : DeclarationSymbol;
 
 		| Self
+		{
+			Ref = DeclaredIn;
+		}
 		| Super
-		| Reference 
+		{
+			Ref = DeclaredIn.DeclaredIn;
+		}
+
+		| Simple 
 		{ 
 			Value : Nitra.Declarations.Reference; 
 			Value.Scope = ContainingTable;
+			Ref = Value.Ref.Symbol;
+		}
+		| Qualified
+		{
+			Value	  : Nitra.Declarations.Reference; 
+			Qualifier : PathReference;
+
+			Qualifier.ContainingTable = ContainingTable;
+			Qualifier.DeclaredIn = DeclaredIn;
+			Ref = Value.Ref.Symbol;
+	
+		stage 1:			
+
+			Value.Scope = Qualifier.Ref.Scope;
 		}
 	}
 
@@ -69,50 +93,56 @@ namespace VisualRust.Grammar.Ast
 	abstract ast UsePath
 	{
 		in ContainingTable : TableScope;
+		in DeclaredIn	   : ModuleSymbol;
 		
 		| Simple
 		{
 			IsGlobal : bool;
-			Path : PathReference*;
-			
+			Path : PathReference;
+
+			Path.DeclaredIn = DeclaredIn;
 			Path.ContainingTable = ContainingTable;
 		}
 		| Aliased
 		{
 			IsGlobal : bool;
-			Path : PathReference*;
+			Path : PathReference;
 			Alias : Name;
 			
 			Path.ContainingTable = ContainingTable;
+			Path.DeclaredIn = DeclaredIn;
 			
 		}
 		| Multi
 		{
 			IsGlobal : bool;
-			Path : PathReference*;
+			Path : PathReference;
 			Tails : RefOrSelfPathReference*;
 
 			Path.ContainingTable = ContainingTable;
+			Path.DeclaredIn = DeclaredIn;
+			
 			Tails.ContainingTable = ContainingTable;
+		}
+		| OnlyTails
+		{
+			IsGlobal : bool;
+			Tails : Reference*;
+
+			Tails.Scope = ContainingTable;
 		}
 		| Empty
 		| Asterisk
 		{
 			IsGlobal : bool;
-			Path : PathReference*;
+			Path : PathReference;
+			Path.DeclaredIn = DeclaredIn;
 
 			Path.ContainingTable = ContainingTable;
 		}
 	}
 
-	abstract declaration ModuleDeclartion
-	{
-		| MOdule
-		| fun
-	}
 
-	
-	
 
 	
 	abstract ast ModuleItem 
@@ -132,6 +162,7 @@ namespace VisualRust.Grammar.Ast
 			
 			Declarations.ContainingTable = DeclaredIn.MemberTable;
 			UsePath.ContainingTable = DeclaredIn.MemberTable;
+			UsePath.DeclaredIn = DeclaredIn;
 		}
 		| ExternCrate
 		{

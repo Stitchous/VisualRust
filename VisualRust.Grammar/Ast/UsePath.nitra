@@ -16,18 +16,28 @@ namespace VisualRust.Grammar
 {
 	map syntax Rules.path_no_types_allowed_tail -> PathReference
 	{
-		| tail0 -> Reference 
+		| tail0 -> Simple 
 		{
 			Reference -> Value;
 		}
 		| tail1 -> Super {}
 	}
+
+	map syntax Rules.path_no_types_allowed_tail(qualifier : PathReference) -> PathReference
+	{
+		| tail0 -> Qualified
+		{
+			Reference -> Value;
+			qualifier -> Qualifier;
+		}
+		| tail1 -> Super {}
+	}
 	
-	map syntax Rules.path_no_types_allowed -> PathReference* = AstUtils.Convert_path_no_types_allowed(this);
+	map syntax Rules.path_no_types_allowed -> PathReference = AstUtils.Convert_path_no_types_allowed(this);
 
 	map syntax Rules.path_no_types_allowed_head -> PathReference
 	{
-		| head0 -> Reference
+		| head0 -> Simple
 		{
 			Reference -> Value;
 		}
@@ -37,7 +47,7 @@ namespace VisualRust.Grammar
 
 	map syntax Rules.ref_or_self -> PathReference
 	{
-		| ident_or_self0 -> Reference
+		| ident_or_self0 -> Simple
 		{
 			Reference -> Value;
 		}
@@ -76,11 +86,11 @@ namespace VisualRust.Grammar
 			Path_no_types_allowed -> Path;
 			Refs_or_self -> Tails;
 		}
-		| view_path4  -> UsePath.Multi
+		| view_path4  -> UsePath.OnlyTails
 		{
 			IsGlobal = ParsedValue(MOD_SEPOpt.Span, MOD_SEPOpt.HasValue);
-			Path = PathReference.AstList(this);
-			Refs_or_self -> Tails;
+			
+			References.Item1 -> Tails;
 		}
 		| view_path5  -> Asterisk
 		{

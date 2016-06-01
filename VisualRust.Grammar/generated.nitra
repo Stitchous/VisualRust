@@ -116,7 +116,7 @@ namespace VisualRust.Grammar
 			| view_path2 = MOD_SEP? '{' '}'
 			
 			| view_path3 = MOD_SEP? path_no_types_allowed MOD_SEP '{' refs_or_self '}'
-			| view_path4 = MOD_SEP? '{' refs_or_self '}'
+			| view_path4 = MOD_SEP? '{' (Reference; ',' sm;?)*'}'
 			| view_path5 = MOD_SEP? path_no_types_allowed MOD_SEP Asterisk='*'
 			| view_path6 = MOD_SEP? path_no_types_allowed AS Name
 		}
