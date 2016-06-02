@@ -26,13 +26,13 @@ namespace VisualRust.Grammar
 
 		syntax inner_attr
 		{
-			| inner_attr0 = SHEBANG '[' meta_item ']' nl
+			| inner_attr0 = nl SHEBANG '[' meta_item ']'
 			| inner_attr1 = INNER_DOC_COMMENT
 		}
 
 		syntax outer_attr
 		{
-			| outer_attr0 = '#' '[' meta_item ']' nl
+			| outer_attr0 = nl '#' '[' meta_item ']'
 			| outer_attr1 = OUTER_DOC_COMMENT
 		}
 
@@ -45,7 +45,7 @@ namespace VisualRust.Grammar
 
 		syntax attrs_and_vis = outer_attr* PUB?;
 
-		syntax mod_item = attrs_and_vis item nl nl;
+		syntax mod_item = nl attrs_and_vis item;
 
 		syntax item
 		{
@@ -77,7 +77,7 @@ namespace VisualRust.Grammar
 		{
 			| view_item0 = use_item
 			| view_item1 = extern_fn_item
-			| view_item2 = EXTERN CRATE Name (AS Name)? ';'
+			| view_item2 = EXTERN sm CRATE sm Name (sm AS sm Name)? ';'
 		}
 
 		syntax extern_fn_item = EXTERN abi? item_fn;
@@ -135,7 +135,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_ty_ascription = (':' ty_sum)?;
 
-		syntax maybe_init_expr = ('=' expr)?;
+		syntax maybe_init_expr = ('=' sm expr)?;
 
 		syntax item_struct
 		{
@@ -237,7 +237,7 @@ namespace VisualRust.Grammar
 		{
 			| item_impl0 = UNSAFE? IMPL sm (generic_params sm)? ty_prim_sum where_clause? '{' inner_attr* impl_item* '}'
 			| item_impl1 = UNSAFE? IMPL sm (generic_params sm)? '(' ty ')' where_clause? '{' inner_attr* impl_item* '}'
-			| item_impl2 = UNSAFE? IMPL sm (generic_params sm)? trait_ref sm FOR sm ty_sum (where_clause sm)? sm '{' inl inner_attr* impl_item* nl d '}'
+			| item_impl2 = UNSAFE? IMPL sm (generic_params sm)? trait_ref sm FOR sm ty_sum (where_clause sm)? sm '{' inl inner_attr* impl_item* d nl '}'
 			| item_impl3 = UNSAFE? IMPL sm (generic_params sm)? '!' trait_ref FOR ty_sum where_clause? '{' inner_attr* impl_item* '}'
 			| item_impl4 = UNSAFE? IMPL sm (generic_params sm)? trait_ref FOR DOTDOT '{' '}'
 			| item_impl5 = UNSAFE? IMPL sm (generic_params sm)? '!' trait_ref FOR DOTDOT '{' '}'
@@ -255,7 +255,7 @@ namespace VisualRust.Grammar
 
 		syntax impl_type = attrs_and_vis DEFAULT? TYPE ident generic_params? '=' ty_sum ';';
 
-		syntax item_fn = CONST? FN sm ident generic_params? fn_decl sm where_clause? inner_attrs_and_block;
+		syntax item_fn = CONST? FN sm ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
 		syntax item_unsafe_fn = CONST? UNSAFE (EXTERN abi?)? FN sm ident generic_params? fn_decl where_clause? inner_attrs_and_block;
 
@@ -343,9 +343,9 @@ namespace VisualRust.Grammar
 			| generic_params8 = '<''>'
 		}
 
-		syntax where_clause = WHERE where_predicates;
+		syntax where_clause = sm WHERE where_predicates;
 
-		syntax where_predicates = (where_predicate;',';?)+;
+		syntax where_predicates = (where_predicate;',' sm;?)+;
 
 		syntax where_predicate
 		{
@@ -408,9 +408,9 @@ namespace VisualRust.Grammar
 			| pat11 = path_expr '(' DOTDOT ')'
 			| pat12 = path_expr '(' pat_tup ')'
 			| pat13 = path_expr '!' ident? delimited_token_trees
-			| pat14 = binding_mode ident
+			| pat14 = binding_mode sm ident
 			| pat15 = ident '@' pat
-			| pat16 = binding_mode ident '@' pat
+			| pat16 = binding_mode sm ident '@' pat
 			| pat17 = BOX pat
 			| pat18 = '<' ty_sum maybe_as_trait_ref '>' MOD_SEP ident
 			| pat19 = SHL ty_sum maybe_as_trait_ref '>' MOD_SEP ident maybe_as_trait_ref '>' MOD_SEP ident
@@ -421,7 +421,7 @@ namespace VisualRust.Grammar
 		syntax binding_mode
 		{
 			| binding_mode0 = REF
-			| binding_mode1 = REF MUT
+			| binding_mode1 = REF sm MUT
 			| binding_mode2 = MUT
 		}
 
@@ -599,13 +599,17 @@ namespace VisualRust.Grammar
 
 		syntax trait_ref = (MOD_SEP sm)? path_generic_args_without_colons;
 
-		syntax inner_attrs_and_block = outline_begin_before sm '{' inl inner_attr* stmts? nl d '}' outline_end_before;
+		syntax inner_attrs_and_block = outline_begin_before sm '{' inl inner_attr* stmts? d nl '}' outline_end_before;
 
-		syntax block = outline_begin outer_attr* sm '{' inl stmts? nl d '}' outline_end_before;
+		syntax block
+		{
+			| block0 = outline_begin outer_attr* sm '{' sm '}' outline_end_before
+			| block1 = outline_begin outer_attr* sm '{' inl stmts d nl '}' outline_end_before
+		}
 
 		syntax stmts
 		{
-			| stmts0 = (outer_attr* stmt)+ nonblock_expr?
+			| stmts0 = (outer_attr* nl stmt)+ nonblock_expr?
 			| stmts1 = nonblock_expr
 		}
 
@@ -664,7 +668,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr outline_begin_before sm '{' inl struct_expr_fields nl d '}' outline_end_before
+				| heads4 = path_expr outline_begin_before sm '{' inl struct_expr_fields d nl '}' outline_end_before
 				| heads5 = '[' vec_expr ']'
 				| heads6 = '(' maybe_exprs ')'
 				| heads7 = CONTINUE
@@ -732,7 +736,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr sm '{' inl struct_expr_fields? nl d '}'
+				| heads4 = path_expr sm '{' inl struct_expr_fields? d nl '}'
 				| heads5 = '(' maybe_exprs ')'
 				| heads6 = '[' vec_expr ']'
 				| heads7 = CONTINUE
@@ -802,7 +806,7 @@ namespace VisualRust.Grammar
 				| heads1 = path_expr
 				| heads2 = SELF
 				| heads3 = macro_expr
-				| heads4 = path_expr sm '{' inl struct_expr_fields nl d '}'
+				| heads4 = path_expr sm '{' inl struct_expr_fields d nl '}'
 				| heads5 = '[' vec_expr ']'
 				| heads6 = CONTINUE
 				| heads7 = CONTINUE ident
@@ -1031,26 +1035,26 @@ namespace VisualRust.Grammar
 
 		syntax expr_match
 		{
-			| expr_match0 = MATCH expr_nostruct outline_begin_before sm '{' '}' outline_end_before
-			| expr_match1 = MATCH expr_nostruct outline_begin_before sm '{' match_clause+ '}' outline_end_before
-			| expr_match2 = MATCH expr_nostruct outline_begin_before sm '{' match_clause+ nonblock_match_clause '}' outline_end_before
-			| expr_match3 = MATCH expr_nostruct outline_begin_before sm '{' nonblock_match_clause '}' outline_end_before
+			| expr_match0 = MATCH sm expr_nostruct outline_begin_before sm '{' '}' outline_end_before
+			| expr_match1 = MATCH sm expr_nostruct outline_begin_before sm '{' inl match_clause+ d '}' outline_end_before
+			| expr_match2 = MATCH sm expr_nostruct outline_begin_before sm '{' inl match_clause+ nonblock_match_clause d '}' outline_end_before
+			| expr_match3 = MATCH sm expr_nostruct outline_begin_before sm '{' inl nonblock_match_clause d '}' outline_end_before
 		}
 
 		syntax match_clause
 		{
-			| match_clause0 = nonblock_match_clause ','
-			| match_clause1 = block_match_clause
-			| match_clause2 = block_match_clause ','
+			| match_clause0 = nonblock_match_clause ',' nl
+			| match_clause1 = block_match_clause nl
+			| match_clause2 = block_match_clause ',' nl
 		}
 
 		syntax nonblock_match_clause
 		{
-			| nonblock_match_clause0 = outer_attr* pats_or maybe_guard FAT_ARROW nonblock_expr
-			| nonblock_match_clause1 = outer_attr* pats_or maybe_guard FAT_ARROW full_block_expr
+			| nonblock_match_clause0 = outer_attr* pats_or maybe_guard sm FAT_ARROW sm nonblock_expr
+			| nonblock_match_clause1 = outer_attr* pats_or maybe_guard sm FAT_ARROW sm full_block_expr
 		}
 
-		syntax block_match_clause = outer_attr* pats_or maybe_guard FAT_ARROW block;
+		syntax block_match_clause = outer_attr* pats_or maybe_guard sm FAT_ARROW block;
 
 		syntax maybe_guard = (IF sm expr_nostruct)?;
 
@@ -1075,7 +1079,7 @@ namespace VisualRust.Grammar
 
 		syntax maybe_label = (lifetime ':' sm)?;
 
-		syntax let = LET sm pat maybe_ty_ascription sm maybe_init_expr ';';
+		syntax let = LET sm pat maybe_ty_ascription sm maybe_init_expr ';' nl;
 
 		syntax lit
 		{

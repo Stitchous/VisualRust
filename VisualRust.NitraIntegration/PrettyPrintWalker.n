@@ -37,13 +37,31 @@ namespace VisualRust.NitraIntegration
 		    
 		    match (ruleInfo.Name)
 		    {
-                  | "Nitra.Core.nl"  => _ = context.Append("\n").Append(GetIndent());                        
-                  | "Nitra.Core.sm"  => _ = context.Append(" ")
+                  | "Nitra.Core.nl"  =>
+                        if (_lastSpaces.IsEmpty())
+                            _ = context
+                                .Append("\n")
+                                .Append(GetIndent());
+                        else
+                            _ = context
+                                .Append(_lastSpaces)
+                                .Append(GetIndent());
+                        _lastSpaces = "";
+                      
+                  | "Nitra.Core.sm"  => _ = context.Append(' ')
                   | "Nitra.Core.d"   => DecreaseIndent();
                   | "Nitra.Core.i"   => IncreaseIndent();
                   | "Nitra.Core.inl" =>
                         IncreaseIndent();
-                        _ = context.Append("\n").Append(GetIndent());
+                        if (_lastSpaces.IsEmpty())
+                            _ = context
+                                .Append("\n")
+                                .Append(GetIndent());
+                        else
+                            _ = context
+                                .Append(_lastSpaces)
+                                .Append(GetIndent());
+                        _lastSpaces = "";
                         
                   | _ => {}
 		    }
@@ -58,22 +76,33 @@ namespace VisualRust.NitraIntegration
 		{
 		    Console.WriteLine($"OnRegularCall($ruleInfo : SubruleInfo.RegularCall, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
 		    
+		    def snapshot = parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos);
+
 		    when (ruleInfo.FullName != "SpaceToken")
-		        _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		        _ = context.Append(snapshot);
+		    
+		    _lastSpaces = string(snapshot.Where(x => x == '\n').ToArray());
 		}
+		
+		private mutable _lastSpaces : string;
 		
 		public override OnTokenString(ruleInfo : SubruleInfo.TokenString, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
 		{
 		    Console.WriteLine($"OnTokenString($ruleInfo : SubruleInfo.TokenString, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
 		    
-		    _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
+		    def snapshot = parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos);
+		    _ = context.Append(snapshot);
 		}
 		
 		public override OnSimpleCall(ruleInfo : SubruleInfo.SimpleCall, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
 		{
 		    Console.WriteLine($"OnSimpleCall($ruleInfo : SubruleInfo.SimpleCall, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void");
 		    
-		    base.OnSimpleCall(ruleInfo, startPos, endPos, parseResult, context);
+		    def snapshot = parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos);
+		    if (ruleInfo.FullName == "LIT_STR")
+		        _ = context.Append(snapshot);    
+            else
+                base.OnSimpleCall(ruleInfo, startPos, endPos, parseResult, context);
 		}
 		
 		public override OnListItem(rawTreePtr : int, ruleInfo : SubruleInfo.ListItem, startPos : int, endPos : int, parseResult : IParseResult, context : StringBuilder) : void
@@ -101,7 +130,7 @@ namespace VisualRust.NitraIntegration
 		{
 		    Console.WriteLine($"OnList($ruleInfo : SubruleInfo.List, $startPos : int, $endPos : int, $parseResult : IParseResult, $context : StringBuilder) : void, $(ruleInfo.IsOptimized)");
 		    
-		    if (ruleInfo.FullName == "SingleLineComment")
+		    if (ruleInfo.FullName == "SingleLineComment" || ruleInfo.FullName == "NestedMultiLineComment")
 		        _ = context.Append(parseResult.SourceSnapshot.Text.Substring(startPos, endPos - startPos));
 		    else
 		        base.OnList(ruleInfo, startPos, endPos, parseResult, context);
