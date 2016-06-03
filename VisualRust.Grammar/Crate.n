@@ -20,11 +20,15 @@ namespace VisualRust.Grammar
     {
         private CreateRootModule() : ModuleSymbol
         {
+            
             def rootModule = ModuleSymbol();
             
             rootModule.MemberTable = TableScope("<crate root>", rootModule);
-            rootModule.DeclaredIn  = null;
+            
             rootModule.FullName    = string.Empty;
+            
+            rootModule.Scope = rootModule.MemberTable;
+            rootModule.UsingResolveScope = rootModule.MemberTable;
             
             rootModule;
         }
@@ -35,6 +39,10 @@ namespace VisualRust.Grammar
             def context = DependentPropertyEvalContext();
             
             def root = CreateRootModule();
+            
+            def dummyRootRoot = CreateRootModule();
+            root.DeclaredIn = dummyRootRoot;
+            
             root.EvalProperties(context);
             
             (context, root);

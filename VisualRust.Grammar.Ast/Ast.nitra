@@ -36,42 +36,7 @@ namespace VisualRust.Grammar.Ast
 	{
 		
 	}
-	abstract ast PathReference
-	{
-		in DeclaredIn : ModuleSymbol;
-		in ContainingTable : TableScope;
-		
-		out Ref : DeclarationSymbol;
-
-		| Self
-		{
-			Ref = DeclaredIn;
-		}
-		| Super
-		{
-			Ref = DeclaredIn.DeclaredIn;
-		}
-
-		| Simple 
-		{ 
-			Value : Nitra.Declarations.Reference; 
-			Value.Scope = ContainingTable;
-			Ref = Value.Ref.Symbol;
-		}
-		| Qualified
-		{
-			Value	  : Nitra.Declarations.Reference; 
-			Qualifier : PathReference;
-
-			Qualifier.ContainingTable = ContainingTable;
-			Qualifier.DeclaredIn = DeclaredIn;
-			Ref = Value.Ref.Symbol;
 	
-		stage 1:			
-
-			Value.Scope = Qualifier.Ref.Scope;
-		}
-	}
 
 	abstract ast RefOrSelfPathReference
     {
@@ -141,10 +106,7 @@ namespace VisualRust.Grammar.Ast
 			Path.ContainingTable = ContainingTable;
 		}
 	}
-
-
-
-	
+		
 	abstract ast ModuleItem 
 	{
 		in DeclaredIn  : ModuleSymbol;

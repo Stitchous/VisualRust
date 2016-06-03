@@ -93,6 +93,9 @@
     <Compile Include="Module\Module.nitra">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PathReference.nitra">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.n">
       <SubType>Code</SubType>
     </Compile>

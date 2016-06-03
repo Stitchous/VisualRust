@@ -18,12 +18,16 @@ namespace VisualRust.Grammar.Ast
 			Kind = "module";
 			SpanClass = RustSpans.ModuleSpanClass;
 
-			Scope = MemberTable;
+			in UsingResolveScope : Scope;
+			Scope			 = MemberTable;
 		}
 		
 		in DeclaredIn  : ModuleSymbol;
 		
+		
 		Symbol.DeclaredIn = DeclaredIn;
+		Symbol.UsingResolveScope = Symbol.MemberTable.HideWith(DeclaredIn.UsingResolveScope);
+
 		ContainingTable = DeclaredIn.MemberTable;
 
 		ModuleItems.DeclaredIn = Symbol;
