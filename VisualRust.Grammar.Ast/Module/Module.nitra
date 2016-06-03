@@ -26,7 +26,7 @@ namespace VisualRust.Grammar.Ast
 		
 		
 		Symbol.DeclaredIn = DeclaredIn;
-		Symbol.UsingResolveScope = Symbol.MemberTable.HideWith(DeclaredIn.UsingResolveScope);
+		Symbol.UsingResolveScope = DeclaredIn.UsingResolveScope;
 
 		ContainingTable = DeclaredIn.MemberTable;
 
