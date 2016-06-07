@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Nitra;
 
+using VisualRust.Grammar.Ast;
+
 namespace VisualRust.Grammar
 {
     public module AstUtils
@@ -17,13 +19,15 @@ namespace VisualRust.Grammar
             value.OfType.[RulesParseTree.inner_attr.inner_attr0]()
         }
 
-        public Convert_path_no_types_allowed(path_no_types_allowed : RulesParseTree.path_no_types_allowed) : PathReference.IAstList
+        public Convert_path_no_types_allowed(path_no_types_allowed : RulesParseTree.path_no_types_allowed) : PathReference
         {
-            def elems = path_no_types_allowed.Path_no_types_allowed_head.GetAst() :: NList.ToList(path_no_types_allowed.Path_no_types_allowed_tails).Map(_.GetAst());
-            PathReference.AstList(path_no_types_allowed.Location, elems.ToArray());
+            def headAst = path_no_types_allowed.Path_no_types_allowed_head.GetAst();
+            def tails = NList.ToList(path_no_types_allowed.Path_no_types_allowed_tails);
+                
+            tails.FoldLeft(headAst, (tail, acc) => tail.GetAst(acc));
         }
 
-        public ConvertUsePath(usePath : UsePath) : ModItem.UseItem
+        public ConvertUsePath(usePath : UsePath) : ModuleItem.UseItem
         {
             def GetDeclarations(multi)
             {
@@ -39,7 +43,7 @@ namespace VisualRust.Grammar
                     | _                  =>  array[]
                 };
            
-            ModItem.UseItem(usePath.Location, UseAliasDeclaration.AstList(usePath.Location, declarations), usePath, true)
+            ModuleItem.UseItem(usePath.Location, UseAliasDeclaration.AstList(usePath.Location, declarations), usePath, true)
         }
     }
 }

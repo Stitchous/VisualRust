@@ -1,0 +1,53 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Nitra.Declarations;
+using Nitra;
+
+
+namespace VisualRust.Grammar.Ast
+{
+	abstract ast PathReference
+	{
+		in DeclaredIn : ModuleSymbol;
+		in ContainingTable : TableScope;
+		
+		out Ref : DeclarationSymbol;
+
+		| Self
+		{
+			Ref = DeclaredIn;
+		}
+		| Super
+		{
+			Ref = DeclaredIn.DeclaredIn;
+		}
+
+		| Simple 
+		{ 
+			Value : Nitra.Declarations.Reference; 
+			Value.Scope = DeclaredIn.UsingResolveScope;
+
+			Ref = Value.Ref.Symbol;
+		}
+		| Qualified
+		{
+			Value	  : Nitra.Declarations.Reference; 
+			Qualifier : PathReference;
+
+			Qualifier.ContainingTable = ContainingTable;
+			Qualifier.DeclaredIn = DeclaredIn;
+			Ref = Value.Ref.Symbol;
+	
+		stage 1:			
+
+			Value.Scope = Qualifier.Ref.Scope;
+		}
+	}
+}

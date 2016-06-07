@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>e7655a81-9f8d-4826-9ca6-f7fcafd4d76a</ProjectGuid>
+    <ProjectGuid>D12A3C86-10E8-48A4-85C2-A60E3D5F5C9F</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VisualRust.Grammar</RootNamespace>
-    <AssemblyName>VisualRust.Grammar</AssemblyName>
+    <RootNamespace>VisualRust.Grammar.Ast</RootNamespace>
+    <AssemblyName>VisualRust.Grammar.Ast</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NoStdLib>true</NoStdLib>
@@ -45,58 +45,17 @@
       <HintPath>..\External\Nitra.Compiler.dll</HintPath>
       <Private>False</Private>
     </MacroReference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.CoreUtility</Name>
-      <AssemblyName>Microsoft.VisualStudio.CoreUtility.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.CoreUtility.12.0.4\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Language.Intellisense</Name>
-      <AssemblyName>Microsoft.VisualStudio.Language.Intellisense.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Language.12.0.4\lib\net45\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Language.StandardClassification</Name>
-      <AssemblyName>Microsoft.VisualStudio.Language.StandardClassification.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Language.12.0.4\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Text.Data</Name>
-      <AssemblyName>Microsoft.VisualStudio.Text.Data.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Text.Logic</Name>
-      <AssemblyName>Microsoft.VisualStudio.Text.Logic.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Text.UI</Name>
-      <AssemblyName>Microsoft.VisualStudio.Text.UI.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualStudio.Text.UI.Wpf</Name>
-      <AssemblyName>Microsoft.VisualStudio.Text.UI.Wpf.dll</AssemblyName>
-      <HintPath>..\packages\VSSDK.Text.12.0.4\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Nitra.Runtime">
       <Name>Nitra.Runtime</Name>
       <AssemblyName>Nitra.Runtime.dll</AssemblyName>
       <HintPath>..\External\Nitra.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore">
-      <Name>PresentationCore</Name>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <Name>PresentationFramework</Name>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>System.Collections.Immutable</Name>
       <AssemblyName>System.Collections.Immutable.dll</AssemblyName>
-      <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition">
       <Name>System.ComponentModel.Composition</Name>
@@ -131,34 +90,21 @@
     <Compile Include="AstUtils.n">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Ast\UsePath.nitra">
+    <Compile Include="Module\Module.nitra">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Crate.n">
+    <Compile Include="PathReference.nitra">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="generated.nitra">
+    <Compile Include="Properties\AssemblyInfo.n">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Identifiers.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Literals.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="NitraRust.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.n" />
-    <Compile Include="RustComments.nitra">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tokens.nitra">
+    <Compile Include="RustSpans.nitra">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Ast" />
+    <Folder Include="Module" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -168,16 +114,6 @@
     <Content Include="packages.config">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Sample.rs">
-      <SubType>Content</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\VisualRust.Grammar.Ast\VisualRust.Grammar.Ast.nproj">
-      <Name>VisualRust.Grammar.Ast</Name>
-      <Project>{d12a3c86-10e8-48a4-85c2-a60e3d5f5c9f}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--

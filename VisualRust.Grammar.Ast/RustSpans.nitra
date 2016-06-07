@@ -1,0 +1,5 @@
+﻿
+language RustSpans
+{
+	span class Module { ForegroundColor=Goldenrod;  }
+}
