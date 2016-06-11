@@ -33,9 +33,8 @@ namespace VisualRust.Grammar
             rootModule;
         }
         
-        public RefreshReferences(cancellationToken : CancellationToken, project : Project) : object
+        public RefreshReferences() : DependentPropertyEvalContext*ModuleSymbol
         {
-            IgnoreParams();
             def context = DependentPropertyEvalContext();
             
             def root = CreateRootModule();
@@ -45,15 +44,13 @@ namespace VisualRust.Grammar
             
             root.EvalProperties(context);
             
-            (context, root);
+            (context, root)
         }
-
-        public RefreshProject(cancellationToken : CancellationToken, files : ImmutableArray[FileEvalPropertiesData], data : object) : void
+        
+        public RefreshProject(files : ImmutableArray[FileEvalPropertiesData], context : DependentPropertyEvalContext, root : ModuleSymbol) : void
         {
-            def (context, root) = data :> (DependentPropertyEvalContext * ModuleSymbol);
-            
             def scope   = root.MemberTable;
-            context.CancellationToken = cancellationToken;
+            
 
             def removeParsedSymbols(tableScope : TableScope)
             {
@@ -74,6 +71,23 @@ namespace VisualRust.Grammar
                 crate.ContainingTable = scope; 
                 crate.Root = root;
             }
+        }
+        
+        public RefreshProject(cancellationToken : CancellationToken, files : ImmutableArray[FileEvalPropertiesData], data : object) : void
+        {
+            def (context, root) = data :> (DependentPropertyEvalContext * ModuleSymbol);
+            context.CancellationToken = cancellationToken;
+            
+            RefreshProject(files, context,root);
+            
+            
+        }
+        
+        public RefreshReferences(cancellationToken : CancellationToken, project : Project) : object
+        {
+            IgnoreParams();
+            RefreshReferences()
+           
         }
     }
 

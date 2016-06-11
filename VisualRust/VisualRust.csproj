@@ -363,6 +363,10 @@
       <Project>{daf0e950-79c6-4e28-821a-aef1abc44c17}</Project>
       <Name>VisualRust.NitraIntegration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VisualRust.Shared\VisualRust.Shared.csproj">
+      <Project>{b99cc9eb-90f2-4040-9e66-418cc7042153}</Project>
+      <Name>VisualRust.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VisualRust.Templates\VisualRust.Templates.csproj">
       <Project>{59D94B96-1AF7-46F2-8790-AAB6DFAE8D9A}</Project>
       <Name>VisualRust.Templates</Name>
