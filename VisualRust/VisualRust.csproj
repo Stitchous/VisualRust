@@ -244,6 +244,8 @@
     <Compile Include="Forms\DebuggingOptionsPageControl.Designer.cs">
       <DependentUpon>DebuggingOptionsPageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectForms\TargetOutputsPropertyPage.cs" />
+    <Compile Include="ProjectForms\WpfPropertyPage.cs" />
     <Compile Include="ProjectForms\GeneralPropertyPage.cs" />
     <Compile Include="Forms\RustOptionsPageControl.cs">
       <SubType>UserControl</SubType>
@@ -358,6 +360,10 @@
     <ProjectReference Include="..\VisualRust.Grammar\VisualRust.Grammar.nproj">
       <Project>{e7655a81-9f8d-4826-9ca6-f7fcafd4d76a}</Project>
       <Name>VisualRust.Grammar</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualRust.Cargo\VisualRust.Cargo.csproj">
+      <Project>{2594DB0D-03FF-40EA-8D27-9930E5D3FF83}</Project>
+      <Name>VisualRust.Cargo</Name>
     </ProjectReference>
     <ProjectReference Include="..\VisualRust.NitraIntegration\VisualRust.NitraIntegration.nproj">
       <Project>{daf0e950-79c6-4e28-821a-aef1abc44c17}</Project>

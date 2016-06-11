@@ -35,7 +35,7 @@ namespace VisualRust
     [PackageRegistration(UseManagedResourcesOnly = true)]
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#110", "#112", "0.1.1", IconResourceID = 400)]
+    [InstalledProductRegistration("#110", "#112", "0.1.2", IconResourceID = 400)]
     [ProvideService(typeof(RustLanguage), ServiceName = "Rust Language Service")]
     [ProvideLanguageService(typeof(RustLanguage), "Rust", 100, 
         CodeSense = true, 
@@ -65,6 +65,7 @@ namespace VisualRust
     [ProvideObject(typeof(Project.Forms.ApplicationPropertyPage))]
     [ProvideObject(typeof(Project.Forms.BuildPropertyPage))]
     [ProvideObject(typeof(Project.Forms.DebugPropertyPage))]
+    [ProvideObject(typeof(Project.Forms.TargetOutputsPropertyPage))]
     [ProvideOptionPage(typeof(RustOptionsPage), "Visual Rust", "General", 110, 113, true)]
     [ProvideOptionPage(typeof(DebuggingOptionsPage), "Visual Rust", "Debugging", 110, 114, true)]
     [ProvideProfile(typeof(RustOptionsPage), "Visual Rust", "General", 110, 113, true)]
@@ -289,7 +290,7 @@ namespace VisualRust
 
         public override string GetProductVersion()
         {
-            return "0.1.1";
+            return "0.1.2";
         }
     }
 }
