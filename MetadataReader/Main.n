@@ -1,0 +1,162 @@
+﻿using Nemerle.Collections;
+using Nemerle.Extensions;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Console;
+using System.Linq;
+using System.Text;
+
+
+using PeNet;
+
+using PEReader;
+
+module Program
+{
+    Main() : void
+    {
+        def peFile = PeFile(<#C:\Program Files\Rust nightly MSVC 1.14\bin\arena-6eb85298.dll#>);
+
+        def crateMetadata = CrateMetadata.TryLoad(peFile);
+
+       Console.WriteLine(crateMetadata);
+
+    }
+}
+
+/*
+    [Record]
+    struct RbmlRecord
+    {
+        tag : ushort;
+
+        data : array[byte];
+    }
+
+    public static TryGet[TKey, TValue](this dict : Dictionary[TKey, TValue], key : TKey) : option[TValue]
+    {
+        mutable value;
+        if (dict.TryGetValue(key, out value))
+            Some(value)
+        else
+            None()
+    }
+    
+    public enum PredefindedTags
+    {
+        | EsU8 = 0x00 // + 1 byte
+        | EsU16 = 0x01 // + 2 bytes
+        | EsU32 = 0x02 // + 4 bytes
+        | EsU64 = 0x03 // + 8 bytes
+        | EsI8 = 0x04 // + 1 byte
+        | EsI16 = 0x05 // + 2 bytes
+        | EsI32 = 0x06 // + 4 bytes
+        | EsI64 = 0x07 // + 8 bytes
+        | EsBool = 0x08 // + 1 byte
+        | EsChar = 0x09 // + 4 bytes
+        | EsF32 = 0x0a // + 4 bytes
+        | EsF64 = 0x0b // + 8 bytes
+        | EsSub8 = 0x0c // + 1 byte
+        | EsSub32 = 0x0d // + 4 bytes
+         // 0x0e and 0x0f are reserved
+        | EsStr = 0x10
+        | EsEnum = 0x11 // encodes the variant id as the first EsSub*
+        | EsVec = 0x12 // encodes the # of elements as the first EsSub*
+        | EsVecElt = 0x13
+        | EsMap = 0x14 // encodes the # of pairs as the first EsSub*
+        | EsMapKey = 0x15
+        | EsMapVal = 0x16
+        | EsOpaque = 0x17
+    }
+    
+
+    
+    ParseRbml(from : int, buffer : array[byte]) : list[RbmlRecord]
+    {
+    
+        if (from >= buffer.Length) []
+        else
+        {
+            def predefinedLengths = (Dictionary() <- 
+            [
+                EsU8    = 1,
+                EsU16   = 2,
+                EsU32   = 4,
+                EsU64   = 8,
+                EsI8    = 1,
+                EsI16   = 2,
+                EsI32   = 4,
+                EsI64   = 8,
+                EsBool  = 1,
+                EsChar  = 4,
+                EsF32   = 4,
+                EsF64   = 8,
+                EsSub8  = 1,
+                EsSub32 = 4
+            
+            ]).ToDictionary(kv => kv.Key :> ushort, kv => kv.Value);
+
+            def ParseTag(from :int, buffer : array[byte]) : ushort*int
+            {
+                def firstByte = buffer[from] :> ushort;
+                when (firstByte == 0xf) throw ArgumentException("Invalid tag 0xf");
+
+                if (firstByte < 0xf0)
+                    (firstByte, from + 1)
+                else 
+                    (((firstByte & 0xf) << 8) | buffer[from+1], from+2)
+            }    
+        
+            def ParseLength(from : int, buffer : array[byte]) : int * int
+            {
+                def MakeLength(size) : int
+                {
+                    if (size == 1)
+                        buffer[size - 1 + from]
+                    else
+                        MakeLength(size-1) << 8 |  buffer[size - 1 + from]
+                }
+
+                def lengthOfLength = 
+                if (buffer[from] %&& 0x80)
+                    1
+                else if(buffer[from] %&& 40)
+                    2
+                else if (buffer[from] %&& 20)
+                    3
+                else if (buffer[from] %&& 10)
+                    4
+                else
+                    throw ArgumentOutOfRangeException($"invalid length $buffer[from]");
+
+                (MakeLength(lengthOfLength), from + lengthOfLength)
+
+            }
+
+            def (tag, offset) = ParseTag(from, buffer);
+        
+            def (length, offset) = 
+                predefinedLengths
+                    .TryGet(tag).Map(l => (l, offset))
+                    .WithDefault(ParseLength(offset, buffer));
+        
+            def data = array(length);
+            Array.Copy(buffer, offset, data, 0, length);
+
+            RbmlRecord(tag, data) :: ParseRbml(offset, buffer)
+
+        }
+        
+        
+    }
+
+    ParseRbml(buffer : array[byte]) : list[RbmlRecord]
+    {
+        ParseRbml(0, buffer)
+    }
+
+    static metadataHeader : array[byte] = array[0b,0,0,0, 'r' :> byte, 'u' :> byte, 's' :> byte, 't' :> byte, 0, 0, 0, 3];
+    */
