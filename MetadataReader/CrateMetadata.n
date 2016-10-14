@@ -1,0 +1,54 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace MetadataReader
+{
+    /*
+    pub struct Svh {
+        hash: u64,
+    }
+    
+    pub struct CrateRoot {
+        pub rustc_version: String,
+        pub name: String,
+        pub triple: String,
+        pub hash: hir::svh::Svh,
+        pub disambiguator: String,
+        pub panic_strategy: PanicStrategy,
+        pub plugin_registrar_fn: Option<DefIndex>,
+        pub macro_derive_registrar: Option<DefIndex>,
+
+        pub crate_deps: LazySeq<CrateDep>,
+        pub dylib_dependency_formats: LazySeq<Option<LinkagePreference>>,
+        pub lang_items: LazySeq<(DefIndex, usize)>,
+        pub lang_items_missing: LazySeq<lang_items::LangItem>,
+        pub native_libraries: LazySeq<(NativeLibraryKind, String)>,
+        pub codemap: LazySeq<syntax_pos::FileMap>,
+        pub macro_defs: LazySeq<MacroDef>,
+        pub impls: LazySeq<TraitImpls>,
+        pub reachable_ids: LazySeq<DefIndex>,
+        pub index: LazySeq<index::Index>,
+    }
+    */
+
+    public struct Svh
+    {
+        public hash : ulong;
+    }
+
+    public class CrateMetadata
+    {
+        public RustVersion : string;
+        public Name : string;
+        public Triple : string;
+        public Hash : Svh;
+        public Disambiguator: string;
+    }
+
+}

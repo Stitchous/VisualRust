@@ -15,11 +15,25 @@ namespace MetadataReader
     {
         public Deserialize[T](buffer : array[byte], offset : int) : T * int where T : new()
         {
-            def result = T();
+            def (obj, offset) = Deserialize(typeof(T), buffer, offset);
+            (obj :> T, offset)
+        }
+       
+       private Convert[T](inp : int -> T*int) : int -> object*int
+       {
+            i => {  def (o,p) = inp(i); (o,p) };
+       }
+
+        public Deserialize(type : Type, buffer : array[byte], offset : int) : object*int 
+        {
+            def result = Activator.CreateInstance(type);
 
             def GetReader(type : Type) : int -> object*int
             {
-                | type when type.Equals(typeof(string)) => DeserializeString(buffer, _) 
+                | type when type.Equals(typeof(string))           => Convert(DeserializeString(buffer, _))
+                | type when type.Equals(typeof(System.UInt64))    => Convert(ReadUInt64(buffer, _))
+                | type when type.IsClass                          
+                | type when type.IsValueType && !type.IsPrimitive => Deserialize(type, buffer, _)
                 | _ => throw NotSupportedException()
             }
 
@@ -36,24 +50,37 @@ namespace MetadataReader
                 }
             }
             
-            
-            def fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public %|
+            def fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public %|
                                             BindingFlags.NonPublic | BindingFlags.DeclaredOnly) |> NList.ToList;
                         
             (result, DeserializeFields(fields, offset))
         }
 
-        public DeserializeString(buffer : array[byte], offset : int) : object * int
+        
+
+        public DeserializeString(buffer : array[byte], offset : int) : string * int
         {
-            def (len, position) = ReadLeb128UInt(buffer, offset);
+            def (ulen, position) = ReadUInt(buffer, offset);
+            def len = ulen :> int;
             def value = System.Text.Encoding.UTF8.GetString(buffer, position, len);
             
             (value, position + len)
         }
 
-        private ReadLeb128UInt(buffer : array[byte], offset : int) : int*int
+        private ReadUInt(buffer : array[byte], offset : int) : uint * int
         {
-            def Read(offset, tmpResult : int, shift)
+            def (value, offset) = ReadLeb128UInt(buffer, offset);
+            (value :> uint, offset)
+        }
+
+        private ReadUInt64(buffer : array[byte], offset : int) : ulong * int
+        {
+            ReadLeb128UInt(buffer, offset)
+        }
+
+        private ReadLeb128UInt(buffer : array[byte], offset : int) : ulong*int
+        {
+            def Read(offset, tmpResult : ulong, shift)
             {
                 def byte = buffer[offset];
                 def result = tmpResult | ((byte &0x7F) << shift);

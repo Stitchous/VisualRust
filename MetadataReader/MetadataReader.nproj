@@ -69,6 +69,9 @@
     </MacroReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrateMetadata.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CrateMetadataReader.n">
       <SubType>Code</SubType>
     </Compile>
