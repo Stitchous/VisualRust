@@ -18,54 +18,86 @@ namespace MetadataReader
             def (obj, offset) = Deserialize(typeof(T), buffer, offset);
             (obj :> T, offset)
         }
-       
-       private Convert[T](inp : int -> T*int) : int -> object*int
-       {
-            i => {  def (o,p) = inp(i); (o,p) };
-       }
 
-        public Deserialize(type : Type, buffer : array[byte], offset : int) : object*int 
+        private Convert[T](inp : int -> T*int) : int -> object*int
         {
-            def result = Activator.CreateInstance(type);
+            i => {  def (o,p) = inp(i); (o,p) };
+        }
 
-            def GetReader(type : Type) : int -> object*int
+        private GetReader(type : Type, buffer : array[byte]) : int -> object*int
+        {
+            match(type)
             {
                 | type when type.Equals(typeof(string))           => Convert(DeserializeString(buffer, _))
                 | type when type.Equals(typeof(System.UInt64))    => Convert(ReadUInt64(buffer, _))
+                | type when type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(option[_]))
+                    => Convert(ReadOption(type.GetGenericArguments().Single(), buffer, _));
                 | type when type.IsEnum                           => Convert(ReadEnum(type, buffer, _))
                 | type when type.IsClass                          
                 | type when type.IsValueType && !type.IsPrimitive => Deserialize(type, buffer, _)
                 | _ => throw NotSupportedException()
             }
+        }
+
+        public Deserialize(type : Type, buffer : array[byte], offset : int) : object*int 
+        {
+            def result = Activator.CreateInstance(type);
 
             def DeserializeFields(fields, offset) 
             {
                 match(fields)
                 {
                     | field :: tail =>
-                        def reader = GetReader(field.FieldType);
+                        def reader = GetReader(field.FieldType, buffer);
                         def (value, offset) = reader(offset);
                         field.SetValue(result, value);
                         DeserializeFields(tail, offset);
                     | _            => offset
                 }
             }
-            
+
             def fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public %|
-                                            BindingFlags.NonPublic | BindingFlags.DeclaredOnly) |> NList.ToList;
-                        
+                                        BindingFlags.NonPublic | BindingFlags.DeclaredOnly) |> NList.ToList;
+
             (result, DeserializeFields(fields, offset))
         }
 
-        
+
 
         public DeserializeString(buffer : array[byte], offset : int) : string * int
         {
             def (ulen, position) = ReadUInt(buffer, offset);
             def len = ulen :> int;
             def value = System.Text.Encoding.UTF8.GetString(buffer, position, len);
-            
+
             (value, position + len)
+        }
+
+        private MakeNone[T]() : option[T]
+        {
+            None()
+        }
+
+        private ReadOption(valueType : Type, buffer : array[byte], offset : int) : object * int
+        {
+            def (disr, offset) = ReadUInt64(buffer, offset);
+
+            match (disr : ulong)
+            {
+                | 0 =>  
+                    def methodInfo = typeof(RustSerialization).GetMethod("MakeNone", BindingFlags.NonPublic | BindingFlags.Static);
+                    def method = methodInfo.MakeGenericMethod(array[valueType]);
+                    (method.Invoke(null, array[]), offset)
+                | 1 =>  
+                {
+                    def (obj, offset) = GetReader(valueType, buffer)(offset);
+                    
+                    def generic= typeof(option[_].Some);
+                    def type = generic.MakeGenericType(valueType);
+                    def some = Activator.CreateInstance(type, obj);
+                    (some, offset)
+                }
+            }
         }
 
         private ReadEnum(type : Type, buffer : array[byte], offset : int) : object * int

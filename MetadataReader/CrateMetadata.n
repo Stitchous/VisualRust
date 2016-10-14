@@ -14,6 +14,8 @@ namespace MetadataReader
         hash: u64,
     }
     
+    pub struct DefIndex(u32);
+
     pub struct CrateRoot {
         pub rustc_version: String,
         pub name: String,
@@ -42,6 +44,11 @@ namespace MetadataReader
         public hash : ulong;
     }
 
+    public struct DefIndex
+    {
+        public value : uint;
+    }
+
     public enum PanicStrategy 
     {
        | Unwind
@@ -56,6 +63,9 @@ namespace MetadataReader
         public Hash : Svh;
         public Disambiguator: string;
         public PanicStrategy : PanicStrategy;
+
+        public PluginRegistrarFn : option[DefIndex];
+        public MacroDervieRegistrar: option[DefIndex];
     }
 
 }
