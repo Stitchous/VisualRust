@@ -13,24 +13,18 @@ using Katis.Data;
 using System.IO;
 using System.IO.Compression;
 
-
-namespace PEReader
+namespace MetadataReader
 {
     public class CrateMetadata
     {
-        public this(metadataSectionBody : array[byte])
-        {
-            _ = metadataSectionBody;
+        public RustVersion : string;
+        public Name : string;
+        public Triple : string;
+    }
 
-            def offset = BitConverter.ToInt32(metadataSectionBody.Skip(metadataHeader.Length).Take(sizeof(uint)).Reverse().ToArray(), 0);
-
-            
-            def strin = System.Text.Encoding.UTF8.GetString(metadataSectionBody, offset + 1, metadataSectionBody.Length - offset - 1);
-
-            Console.WriteLine(strin);
-        }
-
-        public static TryLoad(crateFile : PeFile) : option[CrateMetadata]
+    public module CrateMetadataReader
+    {
+        public TryLoad(crateFile : PeFile) : option[CrateMetadata]
         {
             def section = 
                 crateFile
@@ -96,10 +90,22 @@ namespace PEReader
                         DeflateStream(m, CompressionMode.Decompress);
                     })
                     .Map(ReadFromStream)
-                    .Map(CrateMetadata);
+                    .Map(ReadMetadata);
         }
 
-        static metadataHeader : array[byte] = array[0b,0,0,0, 'r' :> byte, 'u' :> byte, 's' :> byte, 't' :> byte, 0, 0, 0, 3];
+        private ReadMetadata(metadataSectionBody : array[byte]) : CrateMetadata
+        {
+            def offset = BitConverter.ToInt32(metadataSectionBody.Skip(metadataHeader.Length).Take(sizeof(uint)).Reverse().ToArray(), 0);
+            def strin = 
+                System.Text.Encoding.UTF8.GetString(metadataSectionBody, offset + 1, metadataSectionBody.Length - offset - 1);
+
+            def (meta, _) = RustSerialization.Deserialize.[CrateMetadata](metadataSectionBody, offset);
+            meta
+
+
+        }
+
+        public static metadataHeader : array[byte] = array[0b,0,0,0, 'r' :> byte, 'u' :> byte, 's' :> byte, 't' :> byte, 0, 0, 0, 3];
         private static metadataSectionName = ".rustc";
     }
 }

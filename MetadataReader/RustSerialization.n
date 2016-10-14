@@ -1,0 +1,70 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using System.Reflection;
+
+namespace MetadataReader
+{
+    public module RustSerialization
+    {
+        public Deserialize[T](buffer : array[byte], offset : int) : T * int where T : new()
+        {
+            def result = T();
+
+            def GetReader(type : Type) : int -> object*int
+            {
+                | type when type.Equals(typeof(string)) => DeserializeString(buffer, _) 
+                | _ => throw NotSupportedException()
+            }
+
+            def DeserializeFields(fields, offset) 
+            {
+                match(fields)
+                {
+                    | field :: tail =>
+                        def reader = GetReader(field.FieldType);
+                        def (value, offset) = reader(offset);
+                        field.SetValue(result, value);
+                        DeserializeFields(tail, offset);
+                    | _            => offset
+                }
+            }
+            
+            
+            def fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public %|
+                                            BindingFlags.NonPublic | BindingFlags.DeclaredOnly) |> NList.ToList;
+                        
+            (result, DeserializeFields(fields, offset))
+        }
+
+        public DeserializeString(buffer : array[byte], offset : int) : object * int
+        {
+            def (len, position) = ReadLeb128UInt(buffer, offset);
+            def value = System.Text.Encoding.UTF8.GetString(buffer, position, len);
+            
+            (value, position + len)
+        }
+
+        private ReadLeb128UInt(buffer : array[byte], offset : int) : int*int
+        {
+            def Read(offset, tmpResult : int, shift)
+            {
+                def byte = buffer[offset];
+                def result = tmpResult | ((byte &0x7F) << shift);
+
+                if (byte %&& 0x80)
+                    Read(offset + 1, result, shift + 7)
+                else 
+                    (result, offset + 1)
+            }
+
+            Read(offset, 0, 0)
+        }
+    }
+}

@@ -7,8 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PEReader
+namespace MetadataReader
 {
+    
+    public class A
+    {
+        public A : int;
+        public B : string;
+    }
+
     public module OptionExensions
     {
         public Chain[T,U](this inp: option[T], m : T -> option[U]) : option[U]

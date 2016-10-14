@@ -69,7 +69,7 @@
     </MacroReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CrateMetadata.n">
+    <Compile Include="CrateMetadataReader.n">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Main.n" />
@@ -77,6 +77,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
+    <Compile Include="RustSerialization.n">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
