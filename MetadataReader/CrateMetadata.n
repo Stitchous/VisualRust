@@ -42,6 +42,12 @@ namespace MetadataReader
         public hash : ulong;
     }
 
+    public enum PanicStrategy 
+    {
+       | Unwind
+       | Abort
+	}
+
     public class CrateMetadata
     {
         public RustVersion : string;
@@ -49,6 +55,7 @@ namespace MetadataReader
         public Triple : string;
         public Hash : Svh;
         public Disambiguator: string;
+        public PanicStrategy : PanicStrategy;
     }
 
 }

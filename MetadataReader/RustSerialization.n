@@ -32,6 +32,7 @@ namespace MetadataReader
             {
                 | type when type.Equals(typeof(string))           => Convert(DeserializeString(buffer, _))
                 | type when type.Equals(typeof(System.UInt64))    => Convert(ReadUInt64(buffer, _))
+                | type when type.IsEnum                           => Convert(ReadEnum(type, buffer, _))
                 | type when type.IsClass                          
                 | type when type.IsValueType && !type.IsPrimitive => Deserialize(type, buffer, _)
                 | _ => throw NotSupportedException()
@@ -65,6 +66,12 @@ namespace MetadataReader
             def value = System.Text.Encoding.UTF8.GetString(buffer, position, len);
             
             (value, position + len)
+        }
+
+        private ReadEnum(type : Type, buffer : array[byte], offset : int) : object * int
+        {
+            def (value, offset) = ReadUInt(buffer, offset);
+            (Enum.ToObject(type, value), offset)
         }
 
         private ReadUInt(buffer : array[byte], offset : int) : uint * int

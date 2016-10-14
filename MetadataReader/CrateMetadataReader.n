@@ -26,13 +26,13 @@ namespace MetadataReader
             def metadataSectionBody = 
                 section.Chain(sec =>
                 {
-                            def rustMetadataSection = array(sec.SizeOfRawData :> int) : array[byte];
-                            Array.Copy(crateFile.Buff, sec.PointerToRawData :> int, rustMetadataSection, 0, sec.SizeOfRawData :> int);
+                    def rustMetadataSection = array(sec.SizeOfRawData :> int) : array[byte];
+                    Array.Copy(crateFile.Buff, sec.PointerToRawData :> int, rustMetadataSection, 0, sec.SizeOfRawData :> int);
 
-                            if (rustMetadataSection.Take(metadataHeader.Length).SequenceEqual(metadataHeader))
-                                Some(MemoryStream(rustMetadataSection, metadataHeader.Length, rustMetadataSection.Length - metadataHeader.Length))
-                            else
-                                None()
+                    if (rustMetadataSection.Take(metadataHeader.Length).SequenceEqual(metadataHeader))
+                        Some(MemoryStream(rustMetadataSection, metadataHeader.Length, rustMetadataSection.Length - metadataHeader.Length))
+                    else
+                        None()
                 });
 
             def ReadFromStreamCore(stream : Stream)   
@@ -91,6 +91,7 @@ namespace MetadataReader
             def strin = 
                            System.Text.Encoding.UTF8.GetString(metadataSectionBody, offset + 1, metadataSectionBody.Length - offset - 1);
 
+            Console.WriteLine(strin);
             def (meta, _) = RustSerialization.Deserialize.[CrateMetadata](metadataSectionBody, offset);
             meta
         }
