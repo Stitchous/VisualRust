@@ -7,6 +7,15 @@
       <Component Id="Cmp_Antlr4_Runtime_net45_dll_$(var.VsVersion)" Guid="{AA5E0671-0780-4EF4-9A1F-749190900F0E}">
         <File Id="File_Antlr4_Runtime_net45_dll_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)Antlr4.Runtime.net45.dll" />
       </Component>
+      <Component Id="Cmp_System_IO_Abstractions_dll_$(var.VsVersion)" Guid="{D9EB60E5-F471-4090-9540-47B85008A599}">
+        <File Id="System_IO_Abstractions_dll_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)System.IO.Abstractions.dll" />
+      </Component>
+      <Component Id="Cmp_VisualRust_Cargo_dll_$(var.VsVersion)" Guid="{9627728E-6EA7-4C9C-B3AA-36F1E0A8714C}">
+        <File Id="VisualRust_Cargo_dll_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)VisualRust.Cargo.dll" />
+      </Component>
+      <Component Id="Cmp_vist_toml_dll_$(var.VsVersion)" Guid="{FECA127C-90EE-4B47-A64D-7E645A563786}">
+        <File Id="vist_toml_dll_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)vist_toml.dll" />
+      </Component>
       <Component Id="Cmp_extension_vsixmanifest_$(var.VsVersion)" Guid="{C54951E2-13EC-4F0A-A01D-C16DE809ECF0}">
         <File Id="File_extension_vsixmanifest_$(var.VsVersion)" KeyPath="yes" Source="$(var.VisualRust.TargetDir)extension.vsixmanifest" />
       </Component>
