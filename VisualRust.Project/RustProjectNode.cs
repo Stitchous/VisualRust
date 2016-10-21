@@ -188,6 +188,13 @@ namespace VisualRust.Project
                 HierarchyNode parent = this.CreateFolderNodes(fs.Path.GetDirectoryName(file), false);
                 parent.AddChild(CreateUntrackedNode(file));
             }
+            CreateDependencyContainerNode();
+        }
+
+        private void CreateDependencyContainerNode()
+        {
+            var rustCrateDependencyContainerNode = new RustCrateDependencyContainerNode(this);
+            AddChild(rustCrateDependencyContainerNode);
         }
 
         ManifestLoadResult LoadManifest(string path)
