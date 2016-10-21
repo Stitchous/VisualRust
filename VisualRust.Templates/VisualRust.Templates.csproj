@@ -69,7 +69,9 @@
     <None Include="Projects\Application\ApplicationProject.rsproj">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Projects\Application\Cargo.toml" />
     <None Include="Projects\Application\main.rs" />
+    <None Include="Projects\Library\Cargo.toml" />
     <None Include="Projects\Library\LibraryProject.rsproj">
       <SubType>Designer</SubType>
     </None>

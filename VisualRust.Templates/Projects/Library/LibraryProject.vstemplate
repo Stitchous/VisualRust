@@ -12,6 +12,7 @@
   <TemplateContent>
     <Project File="LibraryProject.rsproj" ReplaceParameters="true">
       <ProjectItem TargetFileName="src\lib.rs" ReplaceParameters="true" OpenInEditor="true">lib.rs</ProjectItem>
+      <ProjectItem TargetFileName="Cargo.toml" ReplaceParameters="true">Cargo.toml</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>
