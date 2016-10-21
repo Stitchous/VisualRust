@@ -11,22 +11,22 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace VisualRust
 {
-    [Export(typeof(ICompletionSourceProvider))]
-    [ContentType("rust")]
-    [Name("rustCompletion")]
-    internal class RustCompletionSourceProvider : ICompletionSourceProvider
-    {
-        [Import]
-        internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
+    //[Export(typeof(ICompletionSourceProvider))]
+    //[ContentType("rust")]
+    //[Name("rustCompletion")]
+    //internal class RustCompletionSourceProvider : ICompletionSourceProvider
+    //{
+    //    [Import]
+    //    internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
 
-        [Import]
-        internal IGlyphService GlyphService { get; set; }
+    //    [Import]
+    //    internal IGlyphService GlyphService { get; set; }
 
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
-        {
-            return new RustCompletionSource(textBuffer, GlyphService);
-        }
-    }
+    //    public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
+    //    {
+    //        return new RustCompletionSource(textBuffer, GlyphService);
+    //    }
+    //}
 
 
     internal class RustCompletionSource : ICompletionSource
