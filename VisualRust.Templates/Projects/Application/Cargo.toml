@@ -1,4 +1,6 @@
 ﻿[package]
-name = "$projectname$"
-version = "0.0.1"
-authors = ["Your name <you@example.com>"]
+name = "$safeprojectname$"
+version = "0.1.0"
+authors = ["$username$"]
+
+[dependencies]

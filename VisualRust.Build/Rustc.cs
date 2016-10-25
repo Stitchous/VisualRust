@@ -1,58 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+using System.IO;
+using VisualRust.Shared.Message;
 using VisualRust.Shared;
-using Environment = VisualRust.Shared.Environment;
+using Microsoft.Build.Utilities;
 
 namespace VisualRust.Build
 {
-    public class Rustc : Task
+    // TODO: It is unclear whether we should continue to support/provide this task
+    public class Rustc : Microsoft.Build.Utilities.Task
     {
-        private static readonly Regex DefectRegex = new Regex(@"^([^\n:]+):(\d+):(\d+):\s+(\d+):(\d+)\s+(.*)$", RegexOptions.Multiline | RegexOptions.CultureInvariant);
-
-        private static readonly Regex ErrorCodeRegex = new Regex(@"\[([A-Z]\d\d\d\d)\]$", RegexOptions.CultureInvariant);
-
+        private string[] configFlags = new string[0];
         /// <summary>
         /// Sets --cfg option.
         /// </summary>
-        public string[] ConfigFlags { get; set; } = new string[0];
+        public string[] ConfigFlags
+        {
+            get { return configFlags; }
+            set { configFlags = value; }
+        }
 
+        private string[] libPaths = new string[0];
         /// <summary>
         /// Sets -L option.
         /// </summary>
-        public string[] AdditionalLibPaths { get; set; } = new string[0];
+        public string[] AdditionalLibPaths
+        {
+            get { return libPaths; }
+            set { libPaths = value; }
+        }
 
+        private string[] crateType = new string[0];
         /// <summary>
         /// Sets --crate-type option.
         /// </summary>
-        public string[] CrateType { get; set; } = new string[0];
+        public string[] CrateType 
+        { 
+            get { return crateType; }
+            set { crateType = value; }
+        }
 
+        private string[] emit = new string[0];
         /// <summary>
         /// Sets --emit option.
         /// </summary>
-        public string[] Emit { get; set; } = new string[0];
+        public string[] Emit
+        {
+            get { return emit; }
+            set { emit = value; }
+        }
 
         /// <summary>
         /// Sets --crate-name option.
         /// </summary>
         public string CrateName { get; set; }
 
-        private bool? _debugInfo;
+        private bool? debugInfo;
         /// <summary>
         /// Sets -g option.
         /// </summary>
         public bool DebugInfo 
         {
-            get { return _debugInfo.HasValue && _debugInfo.Value; }
-            set { _debugInfo = value; }
+            get { return debugInfo.HasValue && debugInfo.Value; }
+            set { debugInfo = value; }
         }
 
         /// <summary>
@@ -60,14 +76,14 @@ namespace VisualRust.Build
         /// </summary>
         public string OutputFile { get; set; }
 
-        private int? _optimizationLevel;
+        private int? optimizationLevel;
         /// <summary>
         /// Sets --opt-level option. Default value is 0.
         /// </summary>
         public int OptimizationLevel
         {
-            get { return _optimizationLevel ?? 0; }
-            set { _optimizationLevel = value; }
+            get { return optimizationLevel.HasValue ? optimizationLevel.Value : 0; }
+            set { optimizationLevel = value; }
         }
 
         /// <summary>
@@ -75,14 +91,14 @@ namespace VisualRust.Build
         /// </summary>
         public string OutputDirectory { get; set; }
 
-        private bool? _test;
+        private bool? test;
         /// <summary>
         /// Sets --test option. Default value is false.
         /// </summary>
         public bool Test
         {
-            get { return _test ?? false; }
-            set { _test = value; }
+            get { return test.HasValue ? test.Value : false; }
+            set { test = value; }
         }
 
         /// <summary>
@@ -91,39 +107,60 @@ namespace VisualRust.Build
         public string TargetTriple { get; set; }
 
 
+        private string[] lintsAsWarning = new string[0];
         /// <summary>
         /// Sets -W option.
         /// </summary>
-        public string[] LintsAsWarnings { get; set; } = new string[0];
+        public string[] LintsAsWarnings
+        { 
+            get { return lintsAsWarning; }
+            set { lintsAsWarning = value; }
+        }
 
+        private string[] lintsAsAllowed = new string[0];
         /// <summary>
         /// Sets -A option.
         /// </summary>
-        public string[] LintsAsAllowed { get; set; } = new string[0];
+        public string[] LintsAsAllowed
+        { 
+            get { return lintsAsAllowed; }
+            set { lintsAsAllowed = value; }
+        }
 
+        private string[] lintsAsDenied = new string[0];
         /// <summary>
         /// Sets -D option.
         /// </summary>
-        public string[] LintsAsDenied { get; set; } = new string[0];
+        public string[] LintsAsDenied
+        { 
+            get { return lintsAsDenied; }
+            set { lintsAsDenied = value; }
+        }
 
+        private string[] lintsAsForbidden = new string[0];
         /// <summary>
         /// Sets -F option.
         /// </summary>
-        public string[] LintsAsForbidden { get; set; } = new string[0];
+        public string[] LintsAsForbidden
+        { 
+            get { return lintsAsForbidden; }
+            set { lintsAsForbidden = value; }
+        }
 
         /// <summary>
         /// Sets -C option.
         /// </summary>
         public string CodegenOptions { get; set; }
 
-        private bool? _lto;
+        private bool? lto;
+
         /// <summary>
         /// Sets -C lto option. Default value is false.
         /// </summary>
-        public bool Lto
+        public bool LTO
         {
-            get { return _lto ?? false; }
-            set { _lto = value; }
+            get { return lto.HasValue ? lto.Value : false; }
+            set { lto = value; }
         }
 
         [Required]
@@ -132,90 +169,126 @@ namespace VisualRust.Build
         [Required]
         public string Input { get; set; }
 
-        public string AdditionalRustcOptions { get; set; } = string.Empty;
+        private String installPath;
+        private ToolVersion rustcVersion;
 
         public override bool Execute()
         {
             try
             {
+                if (!FindRustc())
+                    return false;
+
+                var version = GetVersion();
+                if (!version.HasValue)
+                    return false;
+                rustcVersion = version.Value;
+
                 return ExecuteInner();
             }
             catch (Exception ex)
             {
-                Log.LogErrorFromException(ex, true);
+                this.Log.LogErrorFromException(ex, true);
                 return false;
             }
         }
 
-        private bool ExecuteInner()
+        private bool FindRustc()
         {
-            var sb = new StringBuilder();
-            if (ConfigFlags.Length > 0)
-                sb.AppendFormat(" --cfg {0}", string.Join(",", ConfigFlags));
-            if (AdditionalLibPaths.Length > 0)
-                sb.AppendFormat(" -L {0}", string.Join(",", AdditionalLibPaths));
-            if(CrateType.Length > 0)
-                sb.AppendFormat(" --crate-type {0}", string.Join(",",CrateType));
-            if(Emit.Length > 0)
-                sb.AppendFormat(" --emit {0}", string.Join(",", Emit));
-            if(!string.IsNullOrWhiteSpace(CrateName))
-                sb.AppendFormat(" --crate-name {0}", CrateName);
-            if(DebugInfo)
-                sb.AppendFormat(" -g");
-            if(OutputFile != null)
-                sb.AppendFormat(" -o {0}", OutputFile);
-            if (_optimizationLevel.HasValue)
-                sb.AppendFormat(" -C opt-level={0}", OptimizationLevelExtension.Parse(OptimizationLevel.ToString()).ToBuildString());
-            if (OutputDirectory != null)
-                sb.AppendFormat(" --out-dir {0}", OutputDirectory);
-            if (_test.HasValue && _test.Value)
-                sb.Append(" --test");
-            if (TargetTriple != null && !string.Equals(TargetTriple, Environment.DefaultTarget, StringComparison.OrdinalIgnoreCase))
-                sb.AppendFormat(" --target {0}", TargetTriple);
-            if(LintsAsWarnings.Length > 0)
-                sb.AppendFormat(" -W {0}", string.Join(",", LintsAsWarnings));
-            if(LintsAsAllowed.Length > 0)
-                sb.AppendFormat(" -A {0}", string.Join(",", LintsAsAllowed));
-            if(LintsAsDenied.Length > 0)
-                sb.AppendFormat(" -D {0}", string.Join(",", LintsAsDenied));
-            if(LintsAsForbidden.Length > 0)
-                sb.AppendFormat(" -F {0}", string.Join(",", LintsAsForbidden));
-            if (_lto.HasValue && _lto.Value)
-                sb.AppendFormat(" -C lto");
-
-            if (CodegenOptions != null)
-                sb.Append($" -C {CodegenOptions}");
-
-            if (!string.IsNullOrWhiteSpace(AdditionalRustcOptions))
-                sb.Append($" {AdditionalRustcOptions}");
-
-            sb.AppendFormat(" {0}", Input);
-            var target = TargetTriple ?? Environment.DefaultTarget;
-            var installPath = Environment.FindInstallPath(target);
-            if(installPath == null)
+            string target = TargetTriple ?? Shared.Environment.DefaultTarget;
+            installPath = Shared.Environment.FindInstallPath(target);
+            if (installPath == null)
             {
-                if(string.Equals(target, Environment.DefaultTarget, StringComparison.OrdinalIgnoreCase))
+                if (String.Equals(target, Shared.Environment.DefaultTarget, StringComparison.OrdinalIgnoreCase))
                     Log.LogError("No Rust installation detected. You can download official Rust installer from https://www.rust-lang.org/downloads.html");
                 else
                     Log.LogError("Could not find a Rust installation that can compile target {0}.", target);
                 return false;
             }
-            var psi = new ProcessStartInfo
+
+            return true;
+        }
+
+        private Process CreateProcess(String argumets)
+        {
+            var psi = new ProcessStartInfo()
             {
                 CreateNoWindow = true,
-                FileName =  Path.Combine(installPath, "rustc.exe"),
+                FileName = Path.Combine(installPath, "rustc.exe"),
                 UseShellExecute = false,
                 WorkingDirectory = WorkingDirectory,
-                Arguments = sb.ToString(),
-                RedirectStandardError = true
+                Arguments = argumets,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
             };
-            Log.LogCommandLine(string.Join(" ", psi.FileName, psi.Arguments));
+
+            var process = new Process();
+            process.StartInfo = psi;
+
+            return process;
+        }
+
+        private ToolVersion? GetVersion()
+        {
+            var process = CreateProcess(" --version");
+            process.Start();
+            process.WaitForExit();
+            return ToolVersion.Parse(process.StandardOutput.ReadToEnd());
+        }
+
+        private bool ExecuteInner()
+        {
+            var useJsonErrorFormat = rustcVersion.Major >= 1 && rustcVersion.Minor >= 12;
+
+            StringBuilder sb = new StringBuilder();
+            if (ConfigFlags.Length > 0)
+                sb.AppendFormat(" --cfg {0}", String.Join(",", ConfigFlags));
+            if (AdditionalLibPaths.Length > 0)
+                sb.AppendFormat(" -L {0}", String.Join(",", AdditionalLibPaths));
+            if(CrateType.Length > 0)
+                sb.AppendFormat(" --crate-type {0}", String.Join(",",CrateType));
+            if(Emit.Length > 0)
+                sb.AppendFormat(" --emit {0}", String.Join(",", Emit));
+            if(!String.IsNullOrWhiteSpace(CrateName))
+                sb.AppendFormat(" --crate-name {0}", CrateName);
+            if(DebugInfo)
+                sb.AppendFormat(" -g");
+            if(OutputFile != null)
+                sb.AppendFormat(" -o {0}", OutputFile);
+            if (optimizationLevel.HasValue)
+                sb.AppendFormat(" -C opt-level={0}", Shared.OptimizationLevelExtension.Parse(OptimizationLevel.ToString()).ToBuildString());
+            if (OutputDirectory != null)
+                sb.AppendFormat(" --out-dir {0}", OutputDirectory);
+            if (test.HasValue && test.Value)
+                sb.Append(" --test");
+            if (TargetTriple != null && !String.Equals(TargetTriple, Shared.Environment.DefaultTarget, StringComparison.OrdinalIgnoreCase))
+                sb.AppendFormat(" --target {0}", TargetTriple);
+            if(LintsAsWarnings.Length > 0)
+                sb.AppendFormat(" -W {0}", String.Join(",", LintsAsWarnings));
+            if(LintsAsAllowed.Length > 0)
+                sb.AppendFormat(" -A {0}", String.Join(",", LintsAsAllowed));
+            if(LintsAsDenied.Length > 0)
+                sb.AppendFormat(" -D {0}", String.Join(",", LintsAsDenied));
+            if(LintsAsForbidden.Length > 0)
+                sb.AppendFormat(" -F {0}", String.Join(",", LintsAsForbidden));
+            if (lto.HasValue && lto.Value)
+                sb.AppendFormat(" -C lto");
+            if (CodegenOptions != null)
+                sb.AppendFormat(" -C {0}", CodegenOptions);
+            if (useJsonErrorFormat)
+                sb.Append(" --error-format=json");
+            sb.AppendFormat(" {0}", Input);
+
+            var process = CreateProcess(sb.ToString());
+            Log.LogCommandLine(String.Join(" ", process.StartInfo.FileName, process.StartInfo.Arguments));
             try
             {
-                var process = new Process {StartInfo = psi};
-                var error = new StringBuilder();
 
-                using (var errorWaitHandle = new AutoResetEvent(false))
+                StringBuilder error = new StringBuilder();
+
+                using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
                 {
                     process.ErrorDataReceived += (sender, e) =>
                     {
@@ -235,20 +308,37 @@ namespace VisualRust.Build
                     errorWaitHandle.WaitOne();
                 }
 
-                var errorOutput = error.ToString();
+                string errorOutput = error.ToString();
                 // We found some warning or errors in the output, print them out
-                var messages = ParseOutput(errorOutput);
-                // We found some warning or errors in the output, print them out
-                foreach (var msg in messages)
+                IEnumerable<RustcMessageHuman> messagesHuman = null;
+                IEnumerable<RustcMessageJson> messageJson = null;
+                bool haveAnyMessages = false;
+
+                if (useJsonErrorFormat)
                 {
-                    LogRustcMessage(msg);
+                    messageJson = RustcMessageJsonParser.Parse(errorOutput);
+                    foreach (var msg in messageJson)
+                    {
+                        LogRustcMessage(msg, WorkingDirectory, Log);
+                        haveAnyMessages = true;
+                    }
                 }
+                else
+                {
+                    messagesHuman = RustcMessageHumanParser.Parse(errorOutput);
+                    foreach (var msg in messagesHuman)
+                    {
+                        LogRustcMessage(msg);
+                        haveAnyMessages = true;
+                    }
+                }
+
                 // rustc failed but we couldn't sniff anything from stderr
                 // this could be an internal compiler error or a missing main() function (there are probably more errors without spans)
-                if (process.ExitCode != 0 && !messages.Any())
+                if (process.ExitCode != 0 && !haveAnyMessages)
                 {
                     // FIXME: This automatically sets the file to VisualRust.Rust.targets. Is there a way to set no file instead?
-                    Log.LogError(errorOutput);
+                    this.Log.LogError(errorOutput);
                     return false;
                 }
                 return process.ExitCode == 0;
@@ -260,80 +350,52 @@ namespace VisualRust.Build
             }
         }
         
-        private static IEnumerable<RustcParsedMessage> ParseOutput(string output)
+        
+        private void LogRustcMessage(RustcMessageHuman msg)
         {
-            var errorMatches = DefectRegex.Matches(output);
-
-            RustcParsedMessage previous = null;
-            foreach (Match match in errorMatches)
+            if (msg.Type == RustcMessageType.Warning)
             {
-                var remainingMsg = match.Groups[6].Value.Trim();
-                var errorMatch = ErrorCodeRegex.Match(remainingMsg);
-                var errorCode = errorMatch.Success ? errorMatch.Groups[1].Value : null;
-                var line = int.Parse(match.Groups[2].Value, NumberStyles.None);
-                var col = int.Parse(match.Groups[3].Value, NumberStyles.None);
-                var endLine = int.Parse(match.Groups[4].Value, NumberStyles.None);
-                var endCol = int.Parse(match.Groups[5].Value, NumberStyles.None);
-
-                if (remainingMsg.StartsWith("warning: "))
-                {
-                    var msg = match.Groups[6].Value.Substring(9, match.Groups[6].Value.Length - 9 - (errorCode != null ? 8 : 0));
-                    if (previous != null) yield return previous;
-                    previous = new RustcParsedMessage(RustcParsedMessageType.Warning, msg, errorCode, match.Groups[1].Value,
-                        line, col, endLine, endCol);
-                }
-                else if (remainingMsg.StartsWith("note: ") || remainingMsg.StartsWith("help: "))
-                {
-                    if (remainingMsg.StartsWith("help: pass `--explain ") && previous != null)
-                    {
-                        previous.CanExplain = true;
-                        continue;
-                    }
-
-                    // NOTE: "note: " and "help: " are both 6 characters long (though hardcoding this is probably still not a very good idea)
-                    var msg = remainingMsg.Substring(6, remainingMsg.Length - 6 - (errorCode != null ? 8 : 0));
-                    var type = remainingMsg.StartsWith("note: ") ? RustcParsedMessageType.Note : RustcParsedMessageType.Help;
-                    var note = new RustcParsedMessage(type, msg, errorCode, match.Groups[1].Value,
-                        line, col, endLine, endCol);
-
-                    if (previous != null)
-                    {
-                        // try to merge notes and help messages with a previous message (warning or error where it belongs to), if the span is the same
-                        if (previous.TryMergeWithFollowing(note))
-                        {
-                            continue; // skip setting new previous, because we successfully merged the new note into the previous message
-                        }
-                        yield return previous;
-                    }
-                    previous = note;
-                }
-                else
-                {
-                    var startsWithError = remainingMsg.StartsWith("error: ");
-                    var msg = remainingMsg.Substring((startsWithError ? 7 : 0), remainingMsg.Length - (startsWithError ? 7 : 0) - (errorCode != null ? 8 : 0));
-                    if (previous != null) yield return previous;
-                    previous = new RustcParsedMessage(RustcParsedMessageType.Error, msg, errorCode, match.Groups[1].Value,
-                        line, col, endLine, endCol);
-                }
+                this.Log.LogWarning(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, msg.Message);
             }
-
-            if (previous != null) yield return previous;
-        }
-
-        private void LogRustcMessage(RustcParsedMessage msg)
-        {
-            if (msg.Type == RustcParsedMessageType.Warning)
+            else if (msg.Type == RustcMessageType.Note)
             {
-                Log.LogWarning(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, msg.Message);
-            }
-            else if (msg.Type == RustcParsedMessageType.Note)
-            {
-                Log.LogWarning(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, "note: " + msg.Message);
+                this.Log.LogWarning(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, "note: " + msg.Message);
             }
             else
             {
-                Log.LogError(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, msg.Message);
+                this.Log.LogError(null, msg.ErrorCode, null, msg.File, msg.LineNumber, msg.ColumnNumber, msg.EndLineNumber, msg.EndColumnNumber, msg.Message);
             }
+        }
+
+        public static void LogRustcMessage(RustcMessageJson msg, string rootPath, TaskLoggingHelper log)
+        {
+            // todo multi span
+            // todo all other fields
+            // todo mb help key word is code.explanation
+
+            var type = msg.GetLevelAsEnum();
+            var primarySpan = msg.GetPrimarySpan();
+            var code = msg.GetErrorCodeAsString();
+
+            // suppress message "aborting due to previous error"
+            if (String.IsNullOrEmpty(code) && primarySpan == null && msg.message.Contains("aborting due to"))
+                return;
+
+            if (type == RustcMessageType.Error)
+            {
+                if (primarySpan == null)
+                    log.LogError(msg.message);
+                else
+                    log.LogError(null, code, null, Path.Combine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
+            }
+            else
+            {
+                if (primarySpan == null)
+                    log.LogWarning(msg.message);
+                else
+                    log.LogWarning(null, code, null, Path.Combine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
+            }
+
         }
     }
 }
