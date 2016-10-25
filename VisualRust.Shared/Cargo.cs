@@ -37,7 +37,8 @@ namespace VisualRust.Shared
         {
             var installPath = Environment.GetAllInstallPaths()
                 .Select(p => Path.Combine(Path.Combine(p, "bin"), "cargo.exe"))
-                .FirstOrDefault(p => {
+                .FirstOrDefault(p =>
+                {
                     if (!File.Exists(p)) return false;
                     var version = GetCargoVersion(p);
                     return version.HasValue && version.Value.Date >= new DateTime(2016, 10, 06);
@@ -79,16 +80,7 @@ namespace VisualRust.Shared
         public async Task<Message.CargoMetadata> ReadMetadataAsync(bool includeDependencies)
         {
             string[] args;
-            if (includeDependencies)
-            {
-                args = new string[] { "metadata" };
-            }
-            else
-            {
-                args = new string[] { "metadata", "--no-deps" };
-            }
-            
-
+            args = includeDependencies ? new[] { "metadata" } : new[] { "metadata", "--no-deps" };
             var result = await RunAsync(args);
             return JsonSerializer.Deserialize<Message.CargoMetadata>(new JsonTextReader(new StringReader(result.Output)));
         }
@@ -101,14 +93,16 @@ namespace VisualRust.Shared
                 CreateNoWindow = true,
                 FileName = exePath,
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 Arguments = "-V",
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8
             };
             try
             {
-                Process proc = Process.Start(psi);
-                string versionOutput = proc.StandardOutput.ReadToEnd();
+                var proc = Process.Start(psi);
+                if (proc == null) return null;
+                var versionOutput = proc.StandardOutput.ReadToEnd();
                 return ToolVersion.Parse(versionOutput);
             }
             catch (Win32Exception)
