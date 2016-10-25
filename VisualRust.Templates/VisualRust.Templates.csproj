@@ -60,7 +60,6 @@
     <None Include="Projects\Application\ApplicationProject.ico" />
     <None Include="Projects\Application\ApplicationProject.rsproj" />
     <None Include="Projects\Application\Cargo.toml" />
-    <None Include="Projects\Application\Cargo.toml" />
     <None Include="Projects\Application\main.rs" />
     <None Include="Projects\Library\Cargo.toml" />
     <None Include="Projects\Library\LibraryProject.rsproj">

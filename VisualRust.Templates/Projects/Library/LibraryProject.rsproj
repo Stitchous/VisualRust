@@ -4,8 +4,7 @@
     <ProjectGuid>85cf0c42-b86d-4860-9523-a1f555838778</ProjectGuid>
     <ManifestPath>Cargo.toml</ManifestPath>
   </PropertyGroup>
-
-
+ 
   <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
   <Import Project="$(MSBuildThisFileName).InMemory.Targets" Condition="Exists('$(MSBuildThisFileName).InMemory.Targets')" />
 </Project>
