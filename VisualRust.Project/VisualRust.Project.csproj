@@ -204,6 +204,8 @@
     <Compile Include="Launcher\LauncherEnviroment.cs" />
     <Compile Include="ManifestFile.cs" />
     <Compile Include="ManifestLoadResult.cs" />
+    <Compile Include="RustCrateDependencyContainerNode.cs" />
+    <Compile Include="RustCrateDependencyNode.cs" />
     <Compile Include="RustProjectLauncher.cs" />
     <Compile Include="EnvironmentPath.cs" />
     <Compile Include="FolderNode.cs" />
