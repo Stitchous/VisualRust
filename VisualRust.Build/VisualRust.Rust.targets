@@ -60,7 +60,8 @@
            DebugInfo="$(DebugSymbols)"
            OptimizationLevel="$(OptimizationLevel)"
            TargetTriple="$(PlatformTarget)"
-           CodegenOptions="$(CodegenOptions)"/>
+           CodegenOptions="$(CodegenOptions)"
+           AdditionalRustcOptions="$(AdditionalRustcOptions)"/>
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup Condition="'$(BuildStaticlib)'=='true'">

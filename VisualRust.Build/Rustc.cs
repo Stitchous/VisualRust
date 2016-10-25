@@ -132,6 +132,8 @@ namespace VisualRust.Build
         [Required]
         public string Input { get; set; }
 
+        public string AdditionalRustcOptions { get; set; } = string.Empty;
+
         public override bool Execute()
         {
             try
@@ -180,8 +182,13 @@ namespace VisualRust.Build
                 sb.AppendFormat(" -F {0}", string.Join(",", LintsAsForbidden));
             if (_lto.HasValue && _lto.Value)
                 sb.AppendFormat(" -C lto");
+
             if (CodegenOptions != null)
-                sb.AppendFormat(" -C {0}", CodegenOptions);
+                sb.Append($" -C {CodegenOptions}");
+
+            if (!string.IsNullOrWhiteSpace(AdditionalRustcOptions))
+                sb.Append($" {AdditionalRustcOptions}");
+
             sb.AppendFormat(" {0}", Input);
             var target = TargetTriple ?? Environment.DefaultTarget;
             var installPath = Environment.FindInstallPath(target);
