@@ -68,20 +68,11 @@
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-      <Private>True</Private>
-      <Private>True</Private>
-      <Private>True</Private>
-      <Private>True</Private>
-      <Private>True</Private>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\packages\VSSDK.Shell.Interop.12.12.0.4\lib\net20\Microsoft.VisualStudio.Shell.Interop.12.0.dll</HintPath>
       <Private>True</Private>
     </Reference>
-      <Private>True</Private>
-      <Private>True</Private>
-      <Private>True</Private>
-      <Private>True</Private>
     <Reference Include="Nitra.Runtime">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\External\Nitra.Runtime.dll</HintPath>
