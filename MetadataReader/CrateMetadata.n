@@ -37,6 +37,13 @@ namespace MetadataReader
         pub reachable_ids: LazySeq<DefIndex>,
         pub index: LazySeq<index::Index>,
     }
+
+    pub struct CrateDep 
+    {
+        pub name: ast::Name,
+        pub hash: hir::svh::Svh,
+        pub explicitly_linked: bool
+    }
     */
 
     public struct Svh
@@ -55,6 +62,32 @@ namespace MetadataReader
        | Abort
 	}
 
+    [Record]
+    public class LazySeq[T]
+    {
+        public Len : ulong;
+        public Position : ulong;
+       
+    }
+
+    public struct AstName 
+    {
+        public name : int;
+    }
+
+    public struct CrateDep 
+    {
+        public name: AstName;
+        public hash: Svh;
+        public explicitly_linked: bool;
+    }
+
+    public enum LinkagePreference 
+    {
+        | RequireDynamic
+        | RequireStatic
+    }
+
     public class CrateMetadata
     {
         public RustVersion : string;
@@ -65,7 +98,16 @@ namespace MetadataReader
         public PanicStrategy : PanicStrategy;
 
         public PluginRegistrarFn : option[DefIndex];
-        public MacroDervieRegistrar: option[DefIndex];
+        public MacroDeriveRegistrar: option[DefIndex];
+        
+        public CrateDeps : LazySeq[CrateDep];
+        
+        public LinkagePreference : LazySeq[LinkagePreference];
+        
+        public LangItems: LazySeq[DefIndex*ulong]; //* ulong]
+        //public LangItemsMissing : LazySeq[LangItem];
+
+        
     }
 
 }

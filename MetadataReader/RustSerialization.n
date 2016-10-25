@@ -11,6 +11,13 @@ using System.Reflection;
 
 namespace MetadataReader
 {
+    public variant LazyState
+    {
+        | NoNode
+        | NodeStart { position : ulong }
+        | Previous  { distance : ulong }
+    }
+
     public module RustSerialization
     {
         public Deserialize[T](buffer : array[byte], offset : int) : T * int where T : new()
@@ -24,14 +31,19 @@ namespace MetadataReader
             i => {  def (o,p) = inp(i); (o,p) };
         }
 
+        private mutable _lazyState : LazyState = LazyState.NoNode();
+
         private GetReader(type : Type, buffer : array[byte]) : int -> object*int
         {
             match(type)
             {
                 | type when type.Equals(typeof(string))           => Convert(DeserializeString(buffer, _))
                 | type when type.Equals(typeof(System.UInt64))    => Convert(ReadUInt64(buffer, _))
+                
                 | type when type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(option[_]))
                     => Convert(ReadOption(type.GetGenericArguments().Single(), buffer, _));
+                | type when type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(LazySeq[_]))
+                    => Convert(ReadLazySeq(type.GetGenericArguments().Single(), buffer, _));
                 | type when type.IsEnum                           => Convert(ReadEnum(type, buffer, _))
                 | type when type.IsClass                          
                 | type when type.IsValueType && !type.IsPrimitive => Deserialize(type, buffer, _)
@@ -41,6 +53,9 @@ namespace MetadataReader
 
         public Deserialize(type : Type, buffer : array[byte], offset : int) : object*int 
         {
+            
+            _lazyState = LazyState.NodeStart(offset :> ulong);
+
             def result = Activator.CreateInstance(type);
 
             def DeserializeFields(fields, offset) 
@@ -62,8 +77,6 @@ namespace MetadataReader
             (result, DeserializeFields(fields, offset))
         }
 
-
-
         public DeserializeString(buffer : array[byte], offset : int) : string * int
         {
             def (ulen, position) = ReadUInt(buffer, offset);
@@ -76,6 +89,12 @@ namespace MetadataReader
         private MakeNone[T]() : option[T]
         {
             None()
+        }
+
+        private MakeGenericType(generic : Type, typeArg : Type, params constructorParams : array[object]) : object
+        {
+            def type = generic.MakeGenericType(typeArg);
+            Activator.CreateInstance(type, constructorParams)
         }
 
         private ReadOption(valueType : Type, buffer : array[byte], offset : int) : object * int
@@ -91,10 +110,8 @@ namespace MetadataReader
                 | 1 =>  
                 {
                     def (obj, offset) = GetReader(valueType, buffer)(offset);
+                    def some = MakeGenericType(typeof(option[_].Some), valueType, obj);
                     
-                    def generic= typeof(option[_].Some);
-                    def type = generic.MakeGenericType(valueType);
-                    def some = Activator.CreateInstance(type, obj);
                     (some, offset)
                 }
             }
@@ -104,6 +121,31 @@ namespace MetadataReader
         {
             def (value, offset) = ReadUInt(buffer, offset);
             (Enum.ToObject(type, value), offset)
+        }
+
+        private ReadLazySeq(type : Type, buffer : array[byte], offset : int) : object * int
+        {
+            def (len, offset) = ReadUInt64(buffer, offset);
+
+            if (len == 0)
+                (MakeGenericType(typeof(LazySeq[_]), type, 0ul, 0ul), offset)
+            else
+                {
+                    def (distance, offset) = ReadUInt64(buffer, offset);
+                    
+                    def position = 
+                    match(_lazyState) 
+                    {
+                        | NoNode => throw InvalidOperationException()
+                        | NodeStart(start) => start - len - distance
+                        | Previous(dist) => dist + distance
+                    };
+
+                    _lazyState = LazyState.Previous(position + len);
+
+                    (MakeGenericType(typeof(LazySeq[_]), type, len, position), offset)
+                }
+                
         }
 
         private ReadUInt(buffer : array[byte], offset : int) : uint * int
