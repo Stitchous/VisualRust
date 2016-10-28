@@ -1,0 +1,6 @@
+﻿[package]
+name = "serialize"
+version = "0.1.0"
+authors = ["Stroykov"]
+
+[dependencies]

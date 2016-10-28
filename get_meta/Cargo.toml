@@ -1,0 +1,8 @@
+﻿[package]
+name = "get_meta"
+version = "0.1.0"
+authors = ["Stroykov"]
+
+[dependencies]
+serialize = { path = "../libserialize" }
+rustc_metadata = { path = "../librustc_metadata"}

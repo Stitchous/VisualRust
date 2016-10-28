@@ -1,0 +1,4 @@
+[root]
+name = "rustc_metadata"
+version = "0.0.1"
+

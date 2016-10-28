@@ -1,0 +1,16 @@
+[root]
+name = "get_meta"
+version = "0.1.0"
+dependencies = [
+ "rustc_metadata 0.0.1",
+ "serialize 0.1.0",
+]
+
+[[package]]
+name = "rustc_metadata"
+version = "0.0.1"
+
+[[package]]
+name = "serialize"
+version = "0.1.0"
+
