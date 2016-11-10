@@ -51,7 +51,7 @@ mod diagnostics;
 
 mod astencode;
 mod index_builder;
-mod index;
+pub mod index;
 mod encoder;
 mod decoder;
 mod cstore_impl;

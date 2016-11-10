@@ -3,8 +3,8 @@
   <PropertyGroup>
     <ProjectGuid>85cf0c42-b86d-4860-9523-a1f555838778</ProjectGuid>
     <ManifestPath>Cargo.toml</ManifestPath>
+    <StartArguments>"C:\Program Files\Rust nightly MSVC 1.14\bin\flate-6eb85298.dll"</StartArguments>
   </PropertyGroup>
-
   <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
   <Import Project="$(MSBuildThisFileName).InMemory.Targets" Condition="Exists('$(MSBuildThisFileName).InMemory.Targets')" />
 </Project>

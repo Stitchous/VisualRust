@@ -367,6 +367,14 @@ namespace VisualRust.Build
             }
         }
 
+        private static string SafeCombine(string root, string path)
+        {
+            if (Uri.IsWellFormedUriString(path, UriKind.Relative))
+                return Path.Combine(root, path);
+            else
+                return $"{root}/{path}";
+        }
+
         public static void LogRustcMessage(RustcMessageJson msg, string rootPath, TaskLoggingHelper log)
         {
             // todo multi span
@@ -386,14 +394,14 @@ namespace VisualRust.Build
                 if (primarySpan == null)
                     log.LogError(msg.message);
                 else
-                    log.LogError(null, code, null, Path.Combine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
+                    log.LogError(null, code, null, SafeCombine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
             }
             else
             {
                 if (primarySpan == null)
                     log.LogWarning(msg.message);
                 else
-                    log.LogWarning(null, code, null, Path.Combine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
+                    log.LogWarning(null, code, null, SafeCombine(rootPath, primarySpan.file_name), primarySpan.line_start, primarySpan.column_start, primarySpan.line_end, primarySpan.column_end, msg.message);
             }
 
         }
